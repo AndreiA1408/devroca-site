@@ -1,0 +1,814 @@
+:root{
+  --ink: #14130F;
+  --ink-2: #1B1A17;
+  --ink-3: #221F19;
+  --paper: #F4F5F3;
+  --paper-dim: #E9E4D9;
+  --gold-1: #FFF3C4;
+  --gold-2: #FFD54B;
+  --gold-3: #F5C243;
+  --gold-4: #C98A2B;
+  --gold-5: #8A5A12;
+  --gold-6: #4A2F09;
+  --text-dim: #A79E8C;
+  --text-dim-2: #8E8676;
+  --line: rgba(233,228,217,0.12);
+  --maxw: 1180px;
+  color-scheme: dark;
+}
+*{ margin:0; padding:0; box-sizing:border-box; }
+@media (prefers-reduced-motion: no-preference){
+  html{ scroll-behavior:smooth; }
+}
+/* fixed header is 76px — keep in-page anchors clear of it */
+:target{ scroll-margin-top:96px; }
+body{
+  background:var(--ink);
+  color:var(--paper);
+  font-family:'Poppins', sans-serif;
+  font-weight:400;
+  line-height:1.5;
+  overflow-x:hidden;
+}
+a{ color:inherit; text-decoration:none; }
+:focus-visible{
+  outline:2px solid var(--gold-2); outline-offset:3px; border-radius:4px;
+}
+.skip-link{
+  position:absolute; left:16px; top:-60px; z-index:300;
+  background:var(--gold-2); color:var(--ink); padding:12px 20px;
+  border-radius:0 0 8px 8px; font-weight:600; font-size:14px;
+  transition:top .2s ease;
+}
+.skip-link:focus{ top:0; }
+.sr-only{
+  position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+  overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0;
+}
+img,svg{ display:block; max-width:100%; }
+.wrap{ max-width:var(--maxw); margin:0 auto; padding-left:32px; padding-right:32px; }
+::selection{ background:var(--gold-3); color:var(--ink); }
+
+h1,h2,h3{ font-weight:700; letter-spacing:-0.01em; }
+.eyebrow{
+  font-size:13px; font-weight:600; letter-spacing:0.08em;
+  color:var(--gold-3); margin-bottom:14px; display:inline-block;
+}
+
+/* ---------- Buttons ---------- */
+.btn{
+  position:relative; display:inline-flex; align-items:center; justify-content:center;
+  padding:15px 30px; border-radius:8px; font-weight:600; font-size:15px;
+  cursor:pointer; border:none; overflow:hidden; isolation:isolate;
+  transition:transform .25s ease;
+}
+.btn:hover{ transform:translateY(-2px); }
+.btn-primary{
+  background:linear-gradient(115deg, var(--gold-4), var(--gold-2) 45%, var(--gold-1));
+  color:#1B1204;
+}
+.btn-primary::before{
+  content:''; position:absolute; inset:0; z-index:-1;
+  background:linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.55) 50%, transparent 70%);
+  transform:translateX(-120%); transition:transform .6s ease;
+}
+.btn-primary:hover::before{ transform:translateX(120%); }
+.btn-ghost{
+  background:transparent; color:var(--paper); border:1.5px solid var(--line);
+}
+.btn-ghost:hover{ border-color:var(--gold-3); color:var(--gold-2); }
+
+/* ---------- Header ---------- */
+header{
+  position:fixed; top:0; left:0; right:0; z-index:100;
+  background:rgba(20,19,15,0.72); backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);
+}
+.nav{ display:flex; align-items:center; justify-content:space-between; height:76px; }
+.brand{ display:flex; align-items:center; gap:10px; }
+.brand svg{ width:34px; height:34px; }
+.brand span{ font-weight:700; font-size:19px; letter-spacing:-0.01em; }
+nav.links{ display:flex; gap:36px; }
+nav.links a{ font-size:14.5px; font-weight:500; color:var(--text-dim); transition:color .2s; }
+nav.links a:hover, nav.links a.current{ color:var(--paper); }
+.nav-cta{ display:flex; align-items:center; gap:24px; }
+.menu-btn{ display:none; background:none; border:none; color:var(--paper); font-size:24px; cursor:pointer; }
+.mobile-menu{
+  position:fixed; inset:0; background:var(--ink); z-index:200;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:30px;
+  transform:translateY(-100%); transition:transform .4s ease, visibility .4s;
+  visibility:hidden;
+}
+.mobile-menu.open{ transform:translateY(0); visibility:visible; }
+body.menu-open{ overflow:hidden; }
+.mobile-menu a{ font-size:23px; font-weight:600; color:var(--paper); }
+.menu-close{ position:absolute; top:26px; right:28px; background:none; border:none; color:var(--paper); font-size:24px; cursor:pointer; }
+
+/* ---------- Page hero (interior pages) ---------- */
+.page-hero{ padding-top:170px; padding-bottom:80px; }
+.page-hero h1{ font-size:46px; line-height:1.1; max-width:760px; margin-bottom:20px; }
+.page-hero h1 em{
+  font-style:normal;
+  background:linear-gradient(100deg, var(--gold-4), var(--gold-2) 50%, var(--gold-1));
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.page-hero p{ font-size:18px; color:var(--text-dim); max-width:600px; }
+.breadcrumb{ font-size:13.5px; color:var(--text-dim-2); margin-bottom:22px; }
+.breadcrumb a{ color:var(--text-dim); display:inline-block; padding:3px 0; }
+.breadcrumb a:hover{ color:var(--gold-3); }
+
+/* angled divider */
+.facet-divider{ position:relative; height:70px; margin-top:-1px; }
+.facet-divider svg{ width:100%; height:100%; display:block; }
+
+/* ---------- Section shell ---------- */
+section{ position:relative; padding:100px 0; }
+.section-head{ max-width:640px; margin-bottom:60px; }
+.section-head h2{ font-size:36px; margin-bottom:16px; }
+.section-head p{ font-size:17px; color:var(--text-dim); }
+.alt-bg{ background:var(--ink-2); }
+
+.reveal{ opacity:0; transform:translateY(18px); transition:opacity .6s ease, transform .6s ease; }
+.reveal.visible{ opacity:1; transform:translateY(0); }
+@media (prefers-reduced-motion: reduce){
+  .reveal{ opacity:1; transform:none; transition:none; }
+  *, *::before, *::after{ animation-duration:.01ms !important; transition-duration:.01ms !important; }
+}
+
+/* ---------- Tabs & service cards ---------- */
+.tabs{ display:flex; gap:10px; margin-bottom:48px; flex-wrap:wrap; }
+.tab{
+  padding:11px 20px; border-radius:999px; border:1.5px solid var(--line);
+  font-size:14px; font-weight:600; color:var(--text-dim); cursor:pointer; background:transparent;
+  transition:all .25s ease;
+}
+.tab.active{ border-color:var(--gold-3); color:var(--ink); background:linear-gradient(100deg,var(--gold-4),var(--gold-2)); }
+.tab-panels{ position:relative; }
+.tab-panel{ display:none; }
+.tab-panel.active{ display:grid; grid-template-columns:repeat(2, 1fr); gap:20px; }
+
+.svc-card{
+  background:var(--ink-3); border:1px solid var(--line); padding:28px 26px;
+  clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px));
+  transition:border-color .25s ease, transform .25s ease;
+}
+.svc-card:hover{ border-color:var(--gold-4); transform:translateY(-3px); }
+.svc-card h3{ font-size:18px; margin-bottom:10px; color:var(--paper); }
+.svc-card p{ font-size:14.5px; color:var(--text-dim); }
+.svc-card ul{ margin-top:14px; padding-top:14px; border-top:1px solid var(--line); list-style:none; }
+.svc-card ul li{ font-size:13.5px; color:var(--paper-dim); padding:5px 0 5px 20px; position:relative; }
+.svc-card ul li::before{ content:'✓'; position:absolute; left:0; color:var(--gold-2); font-weight:700; }
+.svc-num{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:30px; height:30px; border-radius:7px; font-size:13px; font-weight:700;
+  background:rgba(245,194,67,0.12); color:var(--gold-2); margin-bottom:16px;
+}
+
+/* ---------- Service price tags ----------
+   The card's clip-path notches the top-right corner, so the price cannot be
+   absolutely positioned there — it would be cut off. Instead it shares a row
+   with the 01/02 badge and sits right-aligned inside the padding, clear of
+   the notch. Deliberately quieter than the service name: small, gold on a
+   low-alpha gold ground, so it reads as a reference figure rather than the
+   headline. */
+.svc-head{
+  display:flex; align-items:flex-start; justify-content:space-between;
+  gap:14px; margin-bottom:16px;
+}
+.svc-head .svc-num{ margin-bottom:0; flex-shrink:0; }
+.svc-prices{ display:flex; flex-direction:column; align-items:flex-end; gap:6px; }
+.svc-price{
+  font-size:12.5px; font-weight:600; white-space:nowrap;
+  color:var(--gold-2); background:rgba(245,194,67,0.09);
+  border:1px solid rgba(245,194,67,0.22);
+  padding:5px 11px; border-radius:999px;
+  font-variant-numeric:tabular-nums;
+}
+.svc-price .lbl{ color:var(--text-dim); font-weight:500; margin-right:5px; }
+.svc-price .per{ color:var(--text-dim); font-weight:500; }
+/* Services with no published range yet — same slot, no false precision. */
+.svc-price.tbd{
+  color:var(--text-dim); background:transparent; border-color:var(--line); font-weight:500;
+}
+@media (max-width: 560px){
+  .svc-head{ flex-direction:column; align-items:flex-start; }
+  .svc-prices{ align-items:flex-start; }
+}
+
+/* ---------- Process ---------- */
+.process{ display:grid; grid-template-columns:repeat(4,1fr); gap:24px; counter-reset:step; }
+.step{ position:relative; padding-top:20px; }
+.step::before{
+  counter-increment:step; content:counter(step, decimal-leading-zero);
+  font-size:15px; font-weight:700; color:var(--gold-3);
+  display:block; margin-bottom:18px; letter-spacing:0.05em;
+}
+.step h3{ font-size:19px; margin-bottom:10px; }
+.step p{ font-size:14.5px; color:var(--text-dim); }
+
+/* ---------- Why / feature grid ---------- */
+.why-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:2px; background:var(--line); border:1px solid var(--line); }
+.why-item{ background:var(--ink); padding:44px 40px; }
+.why-item h3{ font-size:20px; margin-bottom:12px; display:flex; align-items:center; gap:12px; }
+.why-item h3 .dot{ width:8px; height:8px; border-radius:2px; background:var(--gold-3); transform:rotate(45deg); flex-shrink:0; }
+.why-item p{ color:var(--text-dim); font-size:15px; }
+
+/* ---------- Work / capability categories ---------- */
+.work-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:20px; }
+.work-card{
+  aspect-ratio:1/1.1; border-radius:14px; padding:26px; position:relative; overflow:hidden;
+  display:flex; flex-direction:column; justify-content:flex-end;
+  border:1px solid var(--line);
+  background:linear-gradient(160deg, var(--ink-3), var(--ink-2));
+}
+.work-card::before{
+  content:''; position:absolute; top:-40%; right:-40%; width:140%; height:140%;
+  background:radial-gradient(circle, rgba(245,194,67,0.12), transparent 60%);
+  opacity:0; transition:opacity .35s ease;
+}
+.work-card:hover::before{ opacity:1; }
+.work-card h3{ font-size:17px; margin-bottom:8px; position:relative; }
+.work-card p{ font-size:13.5px; color:var(--text-dim); position:relative; }
+
+/* ---------- Contact ---------- */
+.contact-grid{ display:grid; grid-template-columns:0.9fr 1.1fr; gap:60px; }
+.contact-info h2{ font-size:36px; margin-bottom:18px; }
+.contact-info p{ color:var(--text-dim); font-size:16px; margin-bottom:34px; max-width:400px; }
+.contact-line{ display:flex; align-items:center; gap:12px; font-size:15px; margin-bottom:16px; color:var(--paper-dim); }
+.contact-line .ic{ color:var(--gold-3); font-weight:700; }
+.contact-line a{ color:inherit; padding:3px 0; display:inline-block; }
+.contact-line a:hover{ color:var(--gold-3); }
+
+form{ display:grid; gap:18px; }
+.form-row{ display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+label{ font-size:13px; color:var(--text-dim); margin-bottom:7px; display:block; }
+input, select, textarea{
+  width:100%; background:var(--ink-2); border:1px solid var(--line); border-radius:8px;
+  padding:13px 14px; color:var(--paper); font-family:inherit; font-size:14.5px;
+  transition:border-color .2s;
+}
+input:focus, select:focus, textarea:focus{ border-color:var(--gold-3); }
+textarea{ min-height:120px; resize:vertical; }
+
+/* ---------- Custom select (Project type) ----------
+   A progressive enhancement over the native <select>, not a replacement:
+   main.js keeps the real control in the DOM and writes every change back
+   to it, so the native POST still carries the value and a visitor without
+   JS just gets the plain browser select. Nothing here is load-bearing for
+   submission. */
+.sel{ position:relative; }
+.sel-native{ display:none; }
+
+.sel-btn{
+  width:100%; display:flex; align-items:center; justify-content:space-between; gap:12px;
+  background:var(--ink-2); border:1px solid var(--line); border-radius:8px;
+  padding:13px 14px; color:var(--paper); font-family:inherit; font-size:14.5px;
+  text-align:left; cursor:pointer;
+  position:relative; overflow:hidden; isolation:isolate;
+  transition:border-color .2s ease;
+}
+/* Same negative-z sweep as .btn-primary, dialled down to a gold tint so it
+   reads as a field rather than a call to action. */
+.sel-btn::before{
+  content:''; position:absolute; inset:0; z-index:-1;
+  background:linear-gradient(115deg, transparent 30%, rgba(245,194,67,0.10) 50%, transparent 70%);
+  transform:translateX(-120%); transition:transform .6s ease;
+}
+.sel-btn:hover::before{ transform:translateX(120%); }
+.sel-btn:hover{ border-color:var(--gold-4); }
+.sel[data-open="true"] .sel-btn{ border-color:var(--gold-3); }
+
+.sel-caret{
+  width:8px; height:8px; flex-shrink:0; margin-right:3px;
+  border-right:2px solid var(--gold-3); border-bottom:2px solid var(--gold-3);
+  transform:translateY(-2px) rotate(45deg);
+  transition:transform .3s ease;
+}
+.sel[data-open="true"] .sel-caret{ transform:translateY(2px) rotate(-135deg); }
+
+.sel-list{
+  position:absolute; z-index:40; top:calc(100% + 6px); left:0; right:0;
+  list-style:none; margin:0; padding:5px;
+  background:var(--ink-3); border:1px solid var(--gold-5); border-radius:8px;
+  box-shadow:0 18px 40px rgba(0,0,0,0.55);
+  max-height:260px; overflow-y:auto;
+  opacity:0; transform:translateY(-6px); pointer-events:none; visibility:hidden;
+  transition:opacity .2s ease, transform .2s ease, visibility 0s linear .2s;
+}
+.sel[data-open="true"] .sel-list{
+  opacity:1; transform:translateY(0); pointer-events:auto; visibility:visible;
+  transition:opacity .2s ease, transform .2s ease, visibility 0s;
+}
+
+.sel-opt{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  padding:11px 12px; border-radius:6px;
+  font-size:14.5px; color:var(--paper-dim); cursor:pointer;
+  transition:background-color .15s ease, color .15s ease;
+}
+/* Hover and keyboard cursor are the same highlight on purpose — there is
+   only ever one active option, whichever input moved it. */
+.sel-opt[data-active="true"]{ background:rgba(245,194,67,0.12); color:var(--paper); }
+.sel-opt[aria-selected="true"]{ color:var(--gold-2); font-weight:600; }
+.sel-opt[aria-selected="true"]::after{ content:'\2713'; font-size:12px; color:var(--gold-2); }
+
+/* ---------- FAQ (accordion) ---------- */
+.faq-item{ border-top:1px solid var(--line); }
+.faq-item:last-child{ border-bottom:1px solid var(--line); }
+.faq-q{
+  width:100%; text-align:left; background:none; border:none; color:var(--paper);
+  font-family:inherit; font-size:16.5px; font-weight:600; padding:24px 0; cursor:pointer;
+  display:flex; justify-content:space-between; align-items:center; gap:20px;
+}
+.faq-q .plus{ font-size:20px; color:var(--gold-3); transition:transform .3s ease; flex-shrink:0; }
+.faq-item.open .faq-q .plus{ transform:rotate(45deg); }
+.faq-a{ max-height:0; overflow:hidden; transition:max-height .35s ease; }
+.faq-a p{ color:var(--text-dim); font-size:15px; padding-bottom:24px; max-width:700px; }
+
+/* ---------- Simple content blocks (about/story) ---------- */
+.two-col{ display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:start; }
+.stat-row{ display:flex; gap:44px; flex-wrap:wrap; margin-top:36px; }
+.stat-row .num{ font-size:30px; font-weight:800; color:var(--gold-2); display:block; }
+.stat-row .lbl{ font-size:13.5px; color:var(--text-dim); }
+.value-list{ list-style:none; display:grid; gap:22px; }
+.value-list li{ padding-left:28px; position:relative; color:var(--paper-dim); font-size:15.5px; }
+.value-list li::before{ content:'◆'; position:absolute; left:0; top:1px; color:var(--gold-3); font-size:12px; }
+
+/* ---------- Final CTA band ---------- */
+.cta-band{
+  background:linear-gradient(135deg, var(--ink-2), var(--ink-3));
+  border:1px solid var(--line); border-radius:20px; padding:60px 56px;
+  display:flex; align-items:center; justify-content:space-between; gap:40px; flex-wrap:wrap;
+}
+.cta-band h2{ font-size:30px; margin-bottom:8px; }
+.cta-band p{ color:var(--text-dim); font-size:15.5px; }
+
+/* ---------- Footer ---------- */
+footer{ border-top:1px solid var(--line); padding:44px 0; }
+.foot-row{ display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:20px; }
+.foot-row .brand span{ font-size:16px; }
+.foot-links{ display:flex; gap:8px 26px; flex-wrap:wrap; justify-content:center; }
+.foot-links a{ font-size:13.5px; color:var(--text-dim); padding:5px 0; display:inline-block; }
+.foot-note{ font-size:13px; color:var(--text-dim-2); }
+
+@media (max-width: 980px){
+  nav.links{ display:none; }
+  .nav-cta{ display:none; }
+  .menu-btn{
+    display:inline-flex; align-items:center; justify-content:center;
+    min-width:44px; min-height:44px;
+  }
+  .page-hero h1{ font-size:34px; }
+  .tab-panel.active{ grid-template-columns:1fr; }
+  .process{ grid-template-columns:1fr 1fr; row-gap:36px; }
+  .why-grid{ grid-template-columns:1fr; }
+  .work-grid{ grid-template-columns:1fr 1fr; }
+  .contact-grid{ grid-template-columns:1fr; gap:40px; }
+  .form-row{ grid-template-columns:1fr; }
+  .two-col{ grid-template-columns:1fr; gap:36px; }
+  .cta-band{ padding:40px 28px; flex-direction:column; align-items:flex-start; }
+  .wrap{ padding-left:22px; padding-right:22px; }
+}
+
+@media (max-width: 600px){
+  .work-grid{ grid-template-columns:1fr; }
+  .process{ grid-template-columns:1fr; }
+  .stat-row{ gap:24px; }
+  .page-hero{ padding-top:140px; padding-bottom:60px; }
+  .page-hero h1{ font-size:29px; }
+  .section-head h2{ font-size:27px; }
+  .cta-band h2{ font-size:25px; }
+  .contact-info h2{ font-size:27px; }
+  section{ padding:70px 0; }
+  .why-item{ padding:32px 24px; }
+  .foot-row{ justify-content:center; text-align:center; }
+}
+
+/* ============================================================
+   Motion layer
+   Interaction and scroll behaviour shared by every page.
+   Everything here degrades to a static, fully-visible page when
+   prefers-reduced-motion is set — see the guard at the bottom.
+   ============================================================ */
+
+/* ---------- Scroll progress ---------- */
+.scroll-progress{
+  position:fixed; top:0; left:0; height:2px; width:100%; z-index:150;
+  transform:scaleX(0); transform-origin:0 50%;
+  background:linear-gradient(90deg, var(--gold-5), var(--gold-2) 60%, var(--gold-1));
+  pointer-events:none;
+}
+
+/* ---------- Header condense on scroll ---------- */
+header{ transition:background .3s ease, border-color .3s ease, box-shadow .3s ease; }
+header.scrolled{
+  background:rgba(20,19,15,0.88);
+  border-bottom-color:rgba(245,194,67,0.18);
+  box-shadow:0 10px 30px -22px rgba(0,0,0,0.9);
+}
+nav.links a{ position:relative; }
+/* Underline grows from the centre rather than snapping in. */
+nav.links a::after{
+  content:''; position:absolute; left:0; right:0; bottom:-6px; height:1.5px;
+  background:linear-gradient(90deg, var(--gold-4), var(--gold-2));
+  transform:scaleX(0); transform-origin:50% 50%;
+  transition:transform .3s cubic-bezier(.22,.68,.32,1);
+}
+nav.links a:hover::after, nav.links a.current::after{ transform:scaleX(1); }
+
+/* ---------- Reveal (staggered, decelerating) ---------- */
+.reveal{
+  opacity:0; transform:translateY(22px);
+  transition:opacity .7s cubic-bezier(.22,.68,.32,1), transform .7s cubic-bezier(.22,.68,.32,1);
+  transition-delay:var(--reveal-delay, 0ms);
+}
+.reveal.visible{ opacity:1; transform:none; }
+
+/* ---------- Card hover: light sweep + pointer glow ----------
+   Same isolation/negative-z trick as .btn-primary, so the sweep
+   passes over the card face but stays under the text. */
+.svc-card, .teaser-card, .work-card, .step, .why-item, .quote-doc{ position:relative; isolation:isolate; }
+.svc-card::before, .teaser-card::before, .work-card::after, .quote-doc::before{
+  content:''; position:absolute; inset:0; z-index:-1; pointer-events:none;
+  background:linear-gradient(115deg, transparent 38%, rgba(255,243,196,0.09) 50%, transparent 62%);
+  transform:translateX(-130%);
+  transition:transform .75s cubic-bezier(.22,.68,.32,1);
+}
+.svc-card:hover::before, .teaser-card:hover::before, .work-card:hover::after, .quote-doc:hover::before{
+  transform:translateX(130%);
+}
+/* Glow follows the cursor across the card face. */
+.svc-card::after, .teaser-card::after, .quote-doc::after{
+  content:''; position:absolute; inset:0; z-index:-1; pointer-events:none;
+  background:radial-gradient(320px circle at var(--mx,50%) var(--my,50%), rgba(245,194,67,0.13), transparent 60%);
+  opacity:0; transition:opacity .35s ease;
+}
+.svc-card:hover::after, .teaser-card:hover::after, .quote-doc:hover::after{ opacity:1; }
+.svc-card{ transition:border-color .25s ease, transform .35s cubic-bezier(.22,.68,.32,1); }
+.teaser-card{ transition:border-color .25s ease, transform .35s cubic-bezier(.22,.68,.32,1); }
+.svc-card:hover, .teaser-card:hover{ transform:translateY(-4px); }
+.work-card{ transition:transform .35s cubic-bezier(.22,.68,.32,1), border-color .25s ease; }
+.work-card:hover{ transform:translateY(-5px); border-color:var(--gold-4); }
+
+/* Process steps and why-items get a quieter version: the accent
+   marker responds, the card itself stays put. */
+.step::before{ transition:color .3s ease, transform .35s cubic-bezier(.22,.68,.32,1); }
+.step:hover::before{ color:var(--gold-2); transform:translateX(4px); }
+.why-item{ transition:background .35s ease; }
+.why-item:hover{ background:var(--ink-3); }
+.why-item h3 .dot{ transition:transform .45s cubic-bezier(.22,.68,.32,1), box-shadow .35s ease; }
+.why-item:hover h3 .dot{ transform:rotate(135deg) scale(1.25); box-shadow:0 0 14px rgba(245,194,67,0.6); }
+
+/* ---------- Interior page hero parallax ---------- */
+.page-hero h1, .page-hero > p, .page-hero .breadcrumb{ will-change:transform; }
+
+/* ---------- Tabs ---------- */
+.tab{ transition:border-color .25s ease, color .25s ease, background .25s ease, transform .25s ease; }
+.tab:hover{ border-color:var(--gold-4); color:var(--paper); }
+.tab:active{ transform:scale(.97); }
+.tab-panel.active > *{
+  animation:panel-in .5s cubic-bezier(.22,.68,.32,1) both;
+  animation-delay:var(--card-delay, 0ms);
+}
+@keyframes panel-in{
+  from{ opacity:0; transform:translateY(14px); }
+  to{ opacity:1; transform:none; }
+}
+
+/* ---------- FAQ ---------- */
+.faq-q{ transition:color .25s ease; }
+.faq-q:hover{ color:var(--gold-2); }
+.faq-a{ transition:max-height .4s cubic-bezier(.22,.68,.32,1); }
+/* The answer text slides down as the panel opens. Deliberately no opacity
+   here: if a transition never runs, the text must still be readable. */
+.faq-a p{ transform:translateY(-8px); transition:transform .45s cubic-bezier(.22,.68,.32,1); }
+.faq-item.open .faq-a p{ transform:none; }
+.faq-item{ transition:border-color .3s ease; }
+.faq-item.open{ border-top-color:rgba(245,194,67,0.35); }
+
+/* ---------- Mobile menu ---------- */
+.mobile-menu a{
+  opacity:0; transform:translateY(14px);
+  transition:opacity .4s ease, transform .4s cubic-bezier(.22,.68,.32,1);
+}
+.mobile-menu.open a{ opacity:1; transform:none; }
+.mobile-menu.open a:nth-child(2){ transition-delay:.06s; }
+.mobile-menu.open a:nth-child(3){ transition-delay:.12s; }
+.mobile-menu.open a:nth-child(4){ transition-delay:.18s; }
+.mobile-menu.open a:nth-child(5){ transition-delay:.24s; }
+.mobile-menu.open a:nth-child(6){ transition-delay:.30s; }
+.mobile-menu.open a:nth-child(7){ transition-delay:.36s; }
+
+/* ---------- Counters ----------
+   Reserve the final width so the layout does not reflow while the
+   number ticks up. */
+[data-count]{ font-variant-numeric:tabular-nums; }
+
+/* ============================================================
+   Texture layer
+   Two quiet layers of depth over the flat ink background:
+   a film grain across the whole viewport, and large faceted
+   wedges inside each section. Both are deliberately at the
+   edge of visibility — everything here sits between 1% and 4%
+   opacity so it reads as material, never as content.
+   ============================================================ */
+
+/* ---------- Grain ----------
+   A fixed, pointer-transparent overlay above everything, which is
+   how a film grain actually behaves. Static: animating a viewport-
+   sized layer costs a full repaint per frame and buys almost nothing
+   at this opacity. */
+body::after{
+  content:''; position:fixed; inset:0; z-index:400; pointer-events:none;
+  opacity:0.038;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:140px 140px;
+}
+
+/* ---------- Faceted section fields ----------
+   Painted as the section's own background-image rather than a pseudo
+   element, so there is no extra stacking context to reason about and
+   no risk of a layer landing on top of text. preserveAspectRatio is
+   off and the image is sized to the box, so a tall section and a short
+   one get different cuts of the same geometry — the rhythm comes free.
+   Wedge angles run one way on --ink sections and the other on --ink-2,
+   so alternating bands read as facets meeting along an edge.
+
+   Both the band colour and the wedge geometry restart at every section
+   boundary, which used to land as a hard horizontal cut across the page.
+   --seam-fade is the answer: an opaque --ink stop at each end of the
+   section that dissolves into the field within ~14% of the section's
+   height. Because it is the topmost background layer it fades the wedges
+   AND the --ink-2 band down to the shared body colour, so whatever two
+   sections meet, they meet on the same --ink and the join disappears.
+   Kept in variables so the fade and the artwork can be recombined per
+   case without repeating the data URIs. */
+:root{
+  --seam-fade:linear-gradient(180deg,
+    var(--ink) 0%, rgba(20,19,15,0) 14%,
+    rgba(20,19,15,0) 86%, var(--ink) 100%);
+  /* For the one section the angled divider hands off to: the divider's
+     polygon is already --ink-2, so the colour there is continuous and only
+     the wedge artwork needs hiding. Fading the top to --ink-2 rather than
+     --ink keeps the handoff invisible while still killing the hard edge
+     where the alt field's top triangle would otherwise switch on. */
+  --seam-fade-divider:linear-gradient(180deg,
+    var(--ink-2) 0%, rgba(27,26,23,0) 14%,
+    rgba(20,19,15,0) 86%, var(--ink) 100%);
+  /* Heroes only need the bottom half of the treatment: their top is the top
+     of the page, but their diagonals run the full height of the box and so
+     would otherwise be sliced off square where the hero meets section one. */
+  --seam-fade-bottom:linear-gradient(180deg,
+    rgba(20,19,15,0) 78%, var(--ink) 100%);
+  --tex-section:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 600' preserveAspectRatio='none'%3E%3Cg fill='%23F5C243'%3E%3Cpolygon points='0,0 470,0 180,600 0,600' opacity='.022'/%3E%3Cpolygon points='470,0 880,0 610,600 180,600' opacity='.010'/%3E%3Cpolygon points='880,0 1200,0 1200,600 610,600' opacity='.026'/%3E%3C/g%3E%3Cg fill='%23FFF3C4'%3E%3Cpolygon points='466,0 474,0 184,600 176,600' opacity='.030'/%3E%3Cpolygon points='876,0 884,0 614,600 606,600' opacity='.022'/%3E%3Cpolygon points='0,600 1200,170 1200,600' opacity='.013'/%3E%3C/g%3E%3C/svg%3E");
+  --tex-alt:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 600' preserveAspectRatio='none'%3E%3Cg fill='%23F5C243'%3E%3Cpolygon points='0,0 340,0 700,600 300,600' opacity='.020'/%3E%3Cpolygon points='340,0 770,0 1140,600 700,600' opacity='.009'/%3E%3Cpolygon points='770,0 1200,0 1200,600 1140,600' opacity='.024'/%3E%3C/g%3E%3Cg fill='%23FFF3C4'%3E%3Cpolygon points='336,0 344,0 704,600 696,600' opacity='.028'/%3E%3Cpolygon points='0,0 1200,0 0,430' opacity='.011'/%3E%3C/g%3E%3C/svg%3E");
+}
+section{
+  background-repeat:no-repeat;
+  background-position:center;
+  background-size:100% 100%;
+  background-image:var(--seam-fade), var(--tex-section);
+}
+.alt-bg{
+  background-color:var(--ink-2);
+  background-image:var(--seam-fade), var(--tex-alt);
+}
+/* The angled divider already hands the hero off to the band below it, so
+   that join fades to --ink-2 at the top instead of --ink — see the note on
+   --seam-fade-divider. */
+.facet-divider + .alt-bg{
+  background-image:var(--seam-fade-divider), var(--tex-alt);
+}
+/* Heroes are the exception: both of them sit inside .wrap, so their box
+   stops short of the viewport. A wedge flush to that box edge would read
+   as a panel seam rather than a facet, so the hero field is built only
+   from diagonals that terminate inside the box, plus a soft gold bloom.
+
+   That field must not be painted on the .wrap box itself. background-size
+   is resolved against the padding box, so a bloom that is meant to fall
+   off softly instead got sliced flat at x = the wrap edge, printing a
+   dark rectangle down the left of the hero where the lit area stopped.
+   It is painted on a full-bleed pseudo element instead: the content stays
+   inside .wrap, the light spans the viewport, and there is no box to see.
+   z-index:-1 keeps it behind the hero's own content, and neither hero
+   creates a stacking context, so it still sits above the body colour. */
+.page-hero, section.hero{ position:relative; background-image:none; }
+.page-hero::before, section.hero::before{
+  content:''; position:absolute; z-index:-1; pointer-events:none;
+  top:0; bottom:0; left:calc(50% - 50vw); width:100vw;
+  background-repeat:no-repeat;
+  background-position:center;
+  background-size:100% 100%;
+  background-image:
+    var(--seam-fade-bottom),
+    radial-gradient(760px 440px at 28% 32%, rgba(245,194,67,0.05), transparent 72%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 400' preserveAspectRatio='none'%3E%3Cpolygon points='640,0 1070,0 1132,400 894,400' fill='%23F5C243' opacity='.020'/%3E%3Cg fill='%23FFF3C4'%3E%3Cpolygon points='635,0 645,0 903,400 893,400' opacity='.028'/%3E%3Cpolygon points='1065,0 1075,0 1137,400 1127,400' opacity='.020'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* ============================================================
+   Trust blocks
+   Plain, concrete statements of what happens next. Nothing here
+   is decorative — each item restates a commitment already made
+   elsewhere on the site.
+   ============================================================ */
+.assure{
+  margin-top:36px; padding-top:28px; border-top:1px solid var(--line);
+}
+.assure ol{ list-style:none; counter-reset:assure; display:grid; gap:16px; margin-top:14px; }
+.assure li{
+  position:relative; padding-left:38px; font-size:14.5px; color:var(--text-dim);
+  max-width:360px;
+}
+.assure li strong{ color:var(--paper-dim); font-weight:600; }
+.assure li::before{
+  counter-increment:assure; content:counter(assure);
+  position:absolute; left:0; top:-1px;
+  width:24px; height:24px; display:flex; align-items:center; justify-content:center;
+  font-size:11.5px; font-weight:700; color:var(--gold-2);
+  background:rgba(245,194,67,0.10);
+  clip-path:polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+}
+.form-note{
+  font-size:12.5px; color:var(--text-dim-2); max-width:420px; margin-top:-4px;
+}
+
+/* Deliverable line closing each process stage. */
+.step-out{
+  margin-top:18px; padding:12px 16px;
+  border-left:2px solid var(--gold-4);
+  background:rgba(245,194,67,0.045);
+  font-size:14px; color:var(--paper-dim);
+}
+.step-out b{ color:var(--gold-2); font-weight:600; }
+
+/* What the quote document contains — pricing page. */
+.quote-doc{
+  margin-top:44px; border:1px solid var(--line); background:var(--ink-3);
+  padding:34px 34px 30px;
+  clip-path:polygon(0 0, calc(100% - 22px) 0, 100% 22px, 100% 100%, 22px 100%, 0 calc(100% - 22px));
+}
+/* On an alt-bg section the panel's own --ink-3 sits only a few values off
+   the ground and the edge disappears. Drop it to --ink so it reads as a
+   recessed panel instead, and firm up the border. Scoped to .alt-bg, so the
+   pricing page's panel (on a plain section) is untouched. */
+.alt-bg .quote-doc{ background:var(--ink); border-color:rgba(233,228,217,0.18); }
+.quote-doc h3{ font-size:19px; margin-bottom:8px; }
+.quote-doc > p{ font-size:14.5px; color:var(--text-dim); max-width:620px; }
+.quote-doc ol{
+  list-style:none; counter-reset:qd; display:grid; grid-template-columns:repeat(2,1fr);
+  gap:16px 30px; margin-top:24px;
+}
+.quote-doc li{ position:relative; padding-left:30px; font-size:14.5px; color:var(--text-dim); }
+.quote-doc li strong{ display:block; color:var(--paper); font-weight:600; font-size:15px; margin-bottom:3px; }
+.quote-doc li::before{
+  counter-increment:qd; content:'◆';
+  position:absolute; left:4px; top:2px; font-size:11px; color:var(--gold-3);
+}
+@media (max-width: 760px){
+  .quote-doc{ padding:26px 22px; }
+  .quote-doc ol{ grid-template-columns:1fr; }
+  .rate-group{ padding:24px 20px 8px; }
+}
+
+/* ============================================================
+   Send confirmation
+   The one moment of delight on the site: the submit button resolves
+   into a drawn checkmark and throws a short burst of gold facet
+   shards. It has a job — the form posts in the background, so this
+   is the only signal the visitor gets that the message left.
+   ============================================================ */
+.sent-panel{
+  border:1px solid rgba(245,194,67,0.28); background:var(--ink-2);
+  padding:34px 30px; text-align:center;
+  clip-path:polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px));
+}
+.sent-panel h2{ font-size:21px; margin-bottom:10px; }
+.sent-panel p{ font-size:14.5px; color:var(--text-dim); max-width:420px; margin:0 auto; }
+.sent-mark{
+  position:relative; width:62px; height:62px; margin:0 auto 20px;
+  display:flex; align-items:center; justify-content:center;
+}
+.sent-mark svg{ width:62px; height:62px; overflow:visible; }
+.sent-mark .ring{
+  fill:none; stroke:var(--gold-3); stroke-width:2; opacity:.55;
+  stroke-dasharray:220; stroke-dashoffset:220;
+  animation:mark-ring .5s cubic-bezier(.22,.68,.32,1) forwards;
+}
+.sent-mark .tick{
+  fill:none; stroke:var(--gold-2); stroke-width:5; stroke-linecap:round; stroke-linejoin:round;
+  stroke-dasharray:40; stroke-dashoffset:40;
+  animation:mark-tick .35s cubic-bezier(.3,.7,.4,1) .28s forwards;
+}
+@keyframes mark-ring{ to{ stroke-dashoffset:0; } }
+@keyframes mark-tick{ to{ stroke-dashoffset:0; } }
+
+/* Shards are placed by JS as --a (angle) / --d (travel). Each is a
+   small gold facet, not a circle, so the burst stays on-motif. */
+.shard{
+  position:absolute; left:50%; top:50%; width:9px; height:9px; margin:-4.5px 0 0 -4.5px;
+  background:linear-gradient(140deg, var(--gold-1), var(--gold-3) 55%, var(--gold-4));
+  clip-path:polygon(50% 0, 100% 38%, 78% 100%, 22% 100%, 0 38%);
+  pointer-events:none; opacity:0;
+  animation:shard-out .72s cubic-bezier(.16,.72,.3,1) var(--sd, 0ms) forwards;
+}
+@keyframes shard-out{
+  0%{ opacity:0; transform:rotate(var(--a)) translateX(6px) rotate(0deg) scale(.4); }
+  18%{ opacity:1; }
+  100%{ opacity:0; transform:rotate(var(--a)) translateX(var(--d)) rotate(220deg) scale(.85); }
+}
+
+/* form carries display:grid, which outranks the UA rule for [hidden] —
+   without this the form stays on screen behind the confirmation. */
+[hidden]{ display:none !important; }
+
+/* Button while the request is in flight. */
+.btn[aria-disabled="true"]{ opacity:.65; cursor:default; }
+.btn[aria-disabled="true"]:hover{ transform:none; }
+
+/* ---------- Reduced motion ----------
+   Anything above that moves is stripped back to a plain state. */
+@media (prefers-reduced-motion: reduce){
+  .reveal{ opacity:1; transform:none; transition:none; transition-delay:0ms !important; }
+  .scroll-progress{ display:none; }
+  .svc-card::before, .teaser-card::before, .work-card::after,
+  .svc-card::after, .teaser-card::after,
+  .quote-doc::before, .quote-doc::after{ display:none; }
+  /* Pricing rows: rule and tint still appear, they just don't grow in. */
+  .rate-list li::before, .rate-list li::after,
+  .rate-name, .rate-val{ transition:none; }
+  .svc-card:hover, .teaser-card:hover, .work-card:hover{ transform:none; }
+  .tab-panel.active > *{ animation:none; }
+  .mobile-menu a{ opacity:1; transform:none; transition:none; }
+  .faq-a p{ transform:none; transition:none; }
+  .why-item:hover h3 .dot{ transform:rotate(45deg); box-shadow:none; }
+  nav.links a::after{ transition:none; }
+  /* Confirmation: the checkmark and panel still appear, they just
+     arrive already drawn. The shard burst is dropped entirely. */
+  .sent-mark .ring, .sent-mark .tick{ animation:none; stroke-dashoffset:0; }
+  .shard{ display:none; }
+  /* Custom select: it still opens and closes, it just does it at once. */
+  .sel-btn::before{ display:none; }
+  .sel-caret{ transition:none; }
+  .sel-list, .sel[data-open="true"] .sel-list{ transition:none; transform:none; }
+  .sel-opt{ transition:none; }
+  /* Texture is static anyway; stated here so it stays that way. */
+  body::after{ animation:none; }
+}
+
+/* Cascade the cards inside a freshly-activated tab panel. */
+.tab-panel.active > *:nth-child(2){ --card-delay:60ms; }
+.tab-panel.active > *:nth-child(3){ --card-delay:120ms; }
+.tab-panel.active > *:nth-child(4){ --card-delay:180ms; }
+.tab-panel.active > *:nth-child(5){ --card-delay:240ms; }
+.tab-panel.active > *:nth-child(6){ --card-delay:300ms; }
+.tab-panel.active > *:nth-child(7){ --card-delay:360ms; }
+
+/* ---------- Rate tables (pricing page) ----------
+   Same panel treatment as .svc-card, including the corner notch, so the
+   pricing page reads as part of the same family as the service cards these
+   numbers are drawn from. */
+.rate-groups{ display:grid; gap:24px; max-width:880px; }
+.rate-group{
+  background:var(--ink-3); border:1px solid var(--line); padding:26px 26px 8px;
+  clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px));
+}
+.rate-group > h3{
+  font-size:11.5px; font-weight:700; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--gold-2); margin-bottom:4px;
+}
+.rate-list{ list-style:none; }
+/* Rows read as a plain table at rest; hovering one gives it the same gold
+   left-rule the .step-out panels use, plus a faint tint bled past the
+   padding so the highlight reaches the panel edge. Resting layout is
+   untouched — both effects are pseudo-elements. */
+.rate-list li{
+  display:flex; align-items:baseline; justify-content:space-between; gap:24px;
+  padding:15px 0; border-top:1px solid var(--line);
+  position:relative; isolation:isolate;
+}
+.rate-list li::before{
+  content:''; position:absolute; left:-26px; top:0; bottom:0; width:2px;
+  background:linear-gradient(180deg, var(--gold-4), var(--gold-2), var(--gold-4));
+  transform:scaleY(0); transform-origin:center;
+  transition:transform .3s cubic-bezier(.22,.68,.32,1);
+}
+.rate-list li::after{
+  content:''; position:absolute; inset:0 -14px; z-index:-1;
+  background:rgba(245,194,67,0.05); opacity:0; transition:opacity .25s ease;
+}
+.rate-list li:hover::before{ transform:scaleY(1); }
+.rate-list li:hover::after{ opacity:1; }
+.rate-name, .rate-val{ transition:color .25s ease; }
+.rate-list li:hover .rate-val{ color:var(--gold-1); }
+.rate-name{ font-size:15px; color:var(--paper); font-weight:500; }
+.rate-note{ display:block; font-size:13px; color:var(--text-dim); margin-top:3px; font-weight:400; }
+.rate-val{
+  font-size:15.5px; font-weight:700; color:var(--gold-2);
+  white-space:nowrap; font-variant-numeric:tabular-nums;
+}
+.rate-val .per{ font-size:12.5px; color:var(--text-dim); font-weight:500; }
+.rate-val.tbd{ color:var(--text-dim); font-weight:500; font-size:14px; }
+.rate-foot{ margin-top:26px; font-size:13.5px; color:var(--text-dim); max-width:640px; }
+@media (max-width: 560px){
+  .rate-list li{ flex-direction:column; gap:6px; }
+}

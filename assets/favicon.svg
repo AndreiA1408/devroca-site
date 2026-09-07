@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <rect width="200" height="200" rx="42" fill="#141310"/>
+  <linearGradient id="a" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FFE694"/><stop offset="100%" stop-color="#E8A93D"/></linearGradient>
+  <linearGradient id="b" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#C98A2B"/><stop offset="100%" stop-color="#5C3A0C"/></linearGradient>
+  <linearGradient id="c" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FFE694"/><stop offset="100%" stop-color="#D89C34"/></linearGradient>
+  <g transform="rotate(-9 100 100)">
+    <polygon points="100,20 171,61 171,143 100,184 29,143 29,61" fill="url(#b)"/>
+    <polygon points="100,20 120,67.4 80,67.4" fill="url(#a)"/>
+    <polygon points="171,61 140,102 120,67.4" fill="url(#a)"/>
+    <polygon points="29,61 80,67.4 60,102" fill="url(#a)"/>
+    <polygon points="120,67.4 140,102 120,136.6 80,136.6 60,102 80,67.4" fill="url(#c)"/>
+    <g fill="none" stroke="#3A2408" stroke-width="3" stroke-opacity="0.55" stroke-linejoin="round">
+      <polygon points="100,20 171,61 171,143 100,184 29,143 29,61"/>
+      <polygon points="120,67.4 140,102 120,136.6 80,136.6 60,102 80,67.4"/>
+    </g>
+  </g>
+</svg>

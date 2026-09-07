@@ -1,0 +1,45 @@
+# Dependencies — reinstalled from package-lock.json, never committed.
+node_modules/
+
+# macOS / editor cruft
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+*.swp
+*~
+.idea/
+.vscode/
+
+# Local dev server logs and temp output
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.cache/
+tmp/
+temp/
+*.pid
+*.seed
+
+# Environment / secrets — none used today, but keep the door shut.
+.env
+.env.*
+!.env.example
+
+# Machine-local Claude Code settings (permissions allowlist, not project config)
+.claude/settings.local.json
+
+# Vercel
+.vercel
+
+# ---------------------------------------------------------------------------
+# NOT ignored, deliberately: gem3d.bundle.js
+#
+# It is build output (npm run build -> esbuild bundles src/gem3d.js), which
+# would normally be generated rather than committed. But nothing runs a build
+# step on Vercel for this project — the site is served as plain static files —
+# so the compiled bundle MUST be in the repo or the homepage gem will 404.
+# If a build step is ever added to the deploy, revisit this.
+# ---------------------------------------------------------------------------

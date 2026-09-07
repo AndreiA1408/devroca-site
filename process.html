@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Process — Devroca</title>
+<meta name="description" content="How a Devroca project actually goes, from discovery to launch to ongoing growth.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/styles.css">
+<style>
+  .big-steps{ display:grid; gap:2px; background:var(--line); border:1px solid var(--line); }
+  .big-step{ background:var(--ink); padding:48px; display:grid; grid-template-columns:120px 1fr; gap:32px; }
+  .big-step .num{ font-size:44px; font-weight:800; color:var(--gold-3); line-height:1; }
+  .big-step h3{ font-size:24px; margin-bottom:12px; }
+  .big-step p{ color:var(--text-dim); font-size:15.5px; margin-bottom:18px; max-width:640px; }
+  .big-step ul{ list-style:none; display:grid; gap:8px; }
+  .big-step ul li{ font-size:14.5px; color:var(--paper-dim); padding-left:22px; position:relative; }
+  .big-step ul li::before{ content:'—'; position:absolute; left:0; color:var(--gold-4); }
+  .big-step .duration{ display:inline-block; margin-top:16px; font-size:12.5px; color:var(--text-dim-2); letter-spacing:0.04em; }
+  /* The four steps read as separate blocks; a rule drawn down the left
+     gutter ties them into one sequence, with a faceted node at each number
+     that lights as the line reaches it. Progress comes from the shared
+     rAF-gated scroll handler in main.js — no extra listener. The node is
+     the same rotated square already used on .why-item headings. */
+  .big-steps{ position:relative; }
+  .big-steps::before{
+    content:''; position:absolute; left:24px; top:70px; bottom:60px; width:2px; z-index:1;
+    background:linear-gradient(180deg, var(--gold-4), var(--gold-2) 45%, var(--gold-4) 85%, transparent);
+    transform:scaleY(var(--step-progress, 0)); transform-origin:top;
+    transition:transform .15s linear;
+  }
+  .big-step .num{ position:relative; }
+  .big-step .num::before{
+    content:''; position:absolute; left:-32px; top:14px; width:12px; height:12px; z-index:2;
+    border-radius:3px; transform:rotate(45deg);
+    background:var(--ink); border:2px solid var(--gold-5);
+    transition:background-color .35s ease, border-color .35s ease, box-shadow .35s ease;
+  }
+  .big-step.lit .num::before{
+    background:var(--gold-2); border-color:var(--gold-2);
+    box-shadow:0 0 14px rgba(245,194,67,0.40);
+  }
+  @media (max-width: 700px){
+    .big-step{ grid-template-columns:1fr; gap:14px; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    /* Line arrives already drawn and every node already lit. */
+    .big-steps::before{ transform:scaleY(1); transition:none; }
+    .big-step .num::before{
+      background:var(--gold-2); border-color:var(--gold-2);
+      box-shadow:none; transition:none;
+    }
+  }
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<header>
+  <div class="wrap nav">
+    <a href="index.html" class="brand">
+      <svg viewBox="0 0 200 200" aria-hidden="true" focusable="false"><use href="#gem-mark"></use></svg>
+      <span>devroca</span>
+    </a>
+    <nav class="links">
+      <a href="services.html">Services</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="process.html" class="current" aria-current="page">Process</a>
+      <a href="about.html">Why Us</a>
+      <a href="work.html">What We Build</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <div class="nav-cta">
+      <a href="contact.html" class="btn btn-primary" style="padding:11px 22px; font-size:14px;">Start a Project</a>
+    </div>
+    <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">☰</button>
+  </div>
+</header>
+
+<div class="mobile-menu" id="mobileMenu">
+  <button class="menu-close" id="menuClose" aria-label="Close menu">✕</button>
+  <a href="services.html">Services</a>
+  <a href="pricing.html">Pricing</a>
+  <a href="process.html">Process</a>
+  <a href="about.html">Why Us</a>
+  <a href="work.html">What We Build</a>
+  <a href="contact.html" class="btn btn-primary" style="margin-top:10px;">Start a Project</a>
+</div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="gem-mark" viewBox="0 0 200 200">
+      <rect x="4" y="4" width="192" height="192" rx="42" fill="#141310"/>
+      <linearGradient id="gTop" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FFF3C4"/><stop offset="100%" stop-color="#F5C243"/></linearGradient>
+      <linearGradient id="gTopLeft" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FFE694"/><stop offset="100%" stop-color="#E8A93D"/></linearGradient>
+      <linearGradient id="gRight" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#F0BE45"/><stop offset="100%" stop-color="#C98A2B"/></linearGradient>
+      <linearGradient id="gLowerRight" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#C98A2B"/><stop offset="100%" stop-color="#8A5A12"/></linearGradient>
+      <linearGradient id="gBottom" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#7A4E10"/><stop offset="100%" stop-color="#4A2F09"/></linearGradient>
+      <linearGradient id="gLowerLeft" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#8A5A12"/><stop offset="100%" stop-color="#5C3A0C"/></linearGradient>
+      <linearGradient id="gLeft" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#D89C34"/><stop offset="100%" stop-color="#A6721F"/></linearGradient>
+      <linearGradient id="gTable" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FFE694"/><stop offset="100%" stop-color="#D89C34"/></linearGradient>
+      <radialGradient id="gShadow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#000000" stop-opacity="0.45"/><stop offset="100%" stop-color="#000000" stop-opacity="0"/></radialGradient>
+      <ellipse cx="103" cy="172" rx="58" ry="12" fill="url(#gShadow)"/>
+      <g transform="rotate(-9 100 100)">
+        <polygon points="100,20 120,67.4 171,61" fill="url(#gTop)"/>
+        <polygon points="171,61 140,102 171,143" fill="url(#gRight)"/>
+        <polygon points="171,143 120,136.6 100,184" fill="url(#gLowerRight)"/>
+        <polygon points="100,184 80,136.6 29,143" fill="url(#gBottom)"/>
+        <polygon points="29,143 60,102 29,61" fill="url(#gLowerLeft)"/>
+        <polygon points="29,61 80,67.4 100,20" fill="url(#gLeft)"/>
+        <polygon points="120,67.4 171,61 140,102" fill="url(#gTopLeft)"/>
+        <polygon points="140,102 171,143 120,136.6" fill="url(#gLowerRight)"/>
+        <polygon points="120,136.6 100,184 80,136.6" fill="url(#gBottom)"/>
+        <polygon points="80,136.6 29,143 60,102" fill="url(#gLowerLeft)"/>
+        <polygon points="60,102 29,61 80,67.4" fill="url(#gLeft)"/>
+        <polygon points="80,67.4 100,20 120,67.4" fill="url(#gTopLeft)"/>
+        <polygon points="120,67.4 140,102 120,136.6 80,136.6 60,102 80,67.4" fill="url(#gTable)"/>
+        <g fill="none" stroke="#3A2408" stroke-width="1.3" stroke-opacity="0.5" stroke-linejoin="round">
+          <polygon points="100,20 171,61 171,143 100,184 29,143 29,61"/>
+          <polygon points="120,67.4 140,102 120,136.6 80,136.6 60,102 80,67.4"/>
+          <line x1="100" y1="20" x2="120" y2="67.4"/><line x1="171" y1="61" x2="140" y2="102"/>
+          <line x1="171" y1="143" x2="120" y2="136.6"/><line x1="100" y1="184" x2="80" y2="136.6"/>
+          <line x1="29" y1="143" x2="60" y2="102"/><line x1="29" y1="61" x2="80" y2="67.4"/>
+        </g>
+      </g>
+    </symbol>
+  </defs>
+</svg>
+
+<main id="main">
+
+<div class="page-hero wrap">
+  <div class="breadcrumb"><a href="index.html">Home</a> / Process</div>
+  <h1>How a project <em>actually goes.</em></h1>
+  <p>No black box. Here's exactly what happens from the first conversation to an ongoing relationship.</p>
+</div>
+
+<section style="padding-top:0;">
+  <div class="wrap" style="padding:0;">
+    <h2 class="sr-only">Project stages</h2>
+    <div class="big-steps reveal">
+      <div class="big-step">
+        <div class="num">01</div>
+        <div>
+          <h3>Discovery</h3>
+          <p>We talk through your business, your goals, and what "done" actually looks like for you — before anything gets designed or built.</p>
+          <ul>
+            <li>A short call or written brief about your business and audience</li>
+            <li>Clarifying which services actually fit</li>
+            <li>A clear, specific quote — not a vague estimate</li>
+          </ul>
+          <div class="step-out"><b>You end up with:</b> a written scope — the specific services in your project — and one price quoted for that scope, set to be competitive for what it covers.</div>
+          <span class="duration">TYPICALLY 1–3 DAYS</span>
+        </div>
+      </div>
+      <div class="big-step">
+        <div class="num">02</div>
+        <div>
+          <h3>Design &amp; Build</h3>
+          <p>Your site or app takes shape, with regular check-ins so there are no surprises when it's time to launch.</p>
+          <ul>
+            <li>Structure and design direction shared early for feedback</li>
+            <li>Development in visible stages, not a black box until the end</li>
+            <li>Room for revisions as it comes together</li>
+          </ul>
+          <div class="step-out"><b>You end up with:</b> a working site or app you've already seen at each stage, with your feedback built in.</div>
+          <span class="duration">TYPICALLY 1–4 WEEKS, DEPENDING ON SCOPE</span>
+        </div>
+      </div>
+      <div class="big-step">
+        <div class="num">03</div>
+        <div>
+          <h3>Launch</h3>
+          <p>We ship it, test it thoroughly, and make sure everything works exactly as expected before it goes live.</p>
+          <ul>
+            <li>Cross-device and cross-browser testing</li>
+            <li>Domain and hosting connected</li>
+            <li>A final walkthrough so you know how everything works</li>
+          </ul>
+          <div class="step-out"><b>You end up with:</b> the site live on your own domain, tested across devices, plus a walkthrough of how to run it.</div>
+          <span class="duration">TYPICALLY 1–2 DAYS</span>
+        </div>
+      </div>
+      <div class="big-step">
+        <div class="num">04</div>
+        <div>
+          <h3>Grow</h3>
+          <p>Ongoing maintenance, plus any add-ons you want, whenever you're ready for them — the relationship doesn't end at launch.</p>
+          <ul>
+            <li>Monthly maintenance and monitoring if you want it</li>
+            <li>Add booking, multi-language, integrations, or anything else later</li>
+            <li>No pressure, no long-term contract required</li>
+          </ul>
+          <div class="step-out"><b>You end up with:</b> a maintained site and an open door — add-ons get quoted the same way, whenever you want them.</div>
+          <span class="duration">ONGOING</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="alt-bg">
+  <div class="wrap">
+    <div class="cta-band reveal">
+      <div>
+        <h2>Ready for step one?</h2>
+        <p>Discovery starts with a short conversation about your business.</p>
+      </div>
+      <a href="contact.html" class="btn btn-primary">Start a Project</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap foot-row">
+    <a href="index.html" class="brand">
+      <svg viewBox="0 0 200 200" style="width:26px;height:26px;" aria-hidden="true" focusable="false"><use href="#gem-mark"></use></svg>
+      <span>devroca</span>
+    </a>
+    <div class="foot-links">
+      <a href="services.html">Services</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="process.html">Process</a>
+      <a href="about.html">Why Us</a>
+      <a href="work.html">What We Build</a>
+      <a href="contact.html">Contact</a>
+    </div>
+    <div class="foot-note">© 2026 Devroca. Based in Bucharest, Romania.</div>
+  </div>
+</footer>
+
+<script src="assets/main.js"></script>
+</body>
+</html>

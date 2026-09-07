@@ -1,0 +1,15 @@
+{
+  "name": "devroca-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Devroca studio site — static pages plus the Three.js hero gemstone.",
+  "scripts": {
+    "build": "esbuild src/gem3d.js --bundle --minify --format=iife --legal-comments=eof --outfile=gem3d.bundle.js"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.0"
+  },
+  "dependencies": {
+    "three": "^0.180.0"
+  }
+}
