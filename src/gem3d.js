@@ -3,6 +3,7 @@ import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
+import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
 
 /* ---------------------------------------------------------------
    Geometry — hexagonal rosette cut, matching the 2D logo mark.
@@ -152,6 +153,12 @@ function buildGlow() {
    Fix the blend rather than the background: add bloom to RGB additively,
    and let alpha grow only by the glow's actual luminance, so the halo
    composites over the page and empty space stays at alpha 0.
+
+   This still leaves RGB above alpha wherever bloom lands, which is fine
+   — PremultiplyShader below resolves that into a defined pixel before
+   the browser ever sees it. What matters here is only that alpha stays a
+   truthful coverage value; if bloom were allowed to drive alpha toward 1
+   the premultiply would hand the page an opaque box instead of a halo.
 --------------------------------------------------------------- */
 function makeBloomAlphaSafe(bloom) {
   const m = bloom.blendMaterial;
@@ -178,6 +185,48 @@ function makeBloomAlphaSafe(bloom) {
 }
 
 /* ---------------------------------------------------------------
+   Final compositing contract.
+
+   The canvas hands the page PREMULTIPLIED pixels, so the browser only
+   has to evaluate `src.rgb + page * (1 - src.a)`. Skia and Core
+   Animation both store premultiplied natively, so that path involves
+   no conversion for either engine to disagree about.
+
+   The previous `premultipliedAlpha: false` asked the browser to
+   un-premultiply on our behalf. That attribute is optional, is not
+   feature-detectable, and is not implemented consistently across
+   engines — and it matters enormously here, because the composer's
+   buffer is full of "super-luminous" pixels: additive bloom pushes RGB
+   far above alpha (measured at up to +127/255 across a quarter of the
+   canvas, plus ~10k pixels carrying color at alpha 0). How much of
+   that color survives depends entirely on how a given browser rounds
+   and color-manages the divide, which is exactly the sort of thing
+   Safari and Chrome do differently.
+
+   So do the multiply here, in float, where the answer is defined. Two
+   things follow: RGB <= A always holds, and an untouched pixel is
+   exactly (0,0,0,0), so the canvas cannot tint the page it sits on in
+   any engine. The composited result matches what Chrome already shows.
+--------------------------------------------------------------- */
+const PremultiplyShader = {
+  uniforms: { tDiffuse: { value: null } },
+  vertexShader: `
+    varying vec2 vUv;
+    void main() {
+      vUv = uv;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+    }`,
+  fragmentShader: `
+    uniform sampler2D tDiffuse;
+    varying vec2 vUv;
+    void main() {
+      vec4 c = texture2D( tDiffuse, vUv );
+      float a = clamp( c.a, 0.0, 1.0 );
+      gl_FragColor = vec4( c.rgb * a, a );
+    }`
+};
+
+/* ---------------------------------------------------------------
    Rest pose.
 
    The stone's own axis is +Y, so laying the table toward the camera
@@ -194,10 +243,10 @@ const SWAY_Y   = 0.115;
 
 function init(canvas) {
   const renderer = new THREE.WebGLRenderer({
-    canvas, antialias: true, alpha: true,
-    // Straight (non-premultiplied) alpha. Bloom is additive, so RGB can exceed
-    // alpha; under premultiplied compositing that clips and haloes.
-    premultipliedAlpha: false
+    canvas, antialias: true, alpha: true
+    // premultipliedAlpha is left at its default (true). See PremultiplyShader:
+    // the canvas hands the page premultiplied pixels, which is the only
+    // compositing path both engines implement without a conversion of their own.
   });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -272,6 +321,9 @@ function init(canvas) {
   makeBloomAlphaSafe(bloom);
   composer.addPass(bloom);
   composer.addPass(new OutputPass());
+  // Must be last: OutputPass tone maps and sRGB-encodes RGB but leaves alpha
+  // alone, so the premultiply has to happen on the encoded values.
+  composer.addPass(new ShaderPass(PremultiplyShader));
 
   // Frame the stone to whatever aspect the canvas actually has, so the
   // rosette is never cropped left/right on narrow or short stages.

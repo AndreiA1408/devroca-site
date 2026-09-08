@@ -50,8 +50,35 @@ bloom's alpha into the scene's and empty pixels drift toward opaque — the
 canvas renders as a dark box. `makeBloomAlphaSafe()` replaces that blend:
 RGB is added exactly as before (`src.rgb * src.a`, so bloom brightness and the
 no-blown-facets guarantee are unchanged), while alpha grows only by the glow's
-luminance. The renderer also uses `premultipliedAlpha: false`, since additive
-bloom can push RGB above alpha.
+luminance.
+
+## Canvas compositing (premultiplied — do not switch back)
+
+The canvas hands the page **premultiplied** pixels. `premultipliedAlpha` is
+left at its default (`true`) and the final `PremultiplyShader` pass does the
+`rgb * a` multiply itself, in float, after `OutputPass` has tone mapped and
+sRGB-encoded.
+
+This used to be `premultipliedAlpha: false`, which asks the *browser* to
+un-premultiply instead. That attribute is optional, is not feature-detectable,
+and is not implemented consistently between engines — and it mattered a great
+deal here, because additive bloom leaves the composer buffer full of
+"super-luminous" pixels. Measured on the old build: RGB exceeded alpha on 25.8%
+of the canvas by up to 127/255, and ~10.5k pixels carried color at alpha 0.
+How much of that color survived was entirely up to the browser's rounding and
+color management of the divide, so Safari and Chrome did not agree — which is
+what produced a visible box around the canvas in Safari, and a flatter, less
+vibrant glint there.
+
+Doing the multiply ourselves makes the pixel handed to the compositor
+unambiguous. Two invariants now hold at every aspect ratio (verified 0.88,
+1.21 and 4.5): `RGB <= A` for every pixel, and an untouched pixel is exactly
+`(0,0,0,0)`, so the canvas cannot tint the page it sits on. The composited
+result is unchanged from what Chrome rendered before.
+
+If you ever add a pass, it must go **before** `PremultiplyShader` — that one
+has to stay last, and it has to run after `OutputPass`, which encodes RGB but
+leaves alpha alone.
 
 The glow sprite is sized to the camera frustum in `resize()` so its gradient
 reaches zero inside the canvas; a halo still bright at the boundary would be
