@@ -153,6 +153,8 @@ section{ position:relative; padding:100px 0; }
   transition:border-color .25s ease, transform .25s ease;
 }
 .svc-card:hover{ border-color:var(--gold-4); transform:translateY(-3px); }
+/* Card arrived at via a deep link (e.g. from work.html) keeps the hover border. */
+.svc-card:target{ border-color:var(--gold-4); }
 .svc-card h3{ font-size:18px; margin-bottom:10px; color:var(--paper); }
 .svc-card p{ font-size:14.5px; color:var(--text-dim); }
 .svc-card ul{ margin-top:14px; padding-top:14px; border-top:1px solid var(--line); list-style:none; }

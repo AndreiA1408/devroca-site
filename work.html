@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>What We Build — Devroca</title>
-<meta name="description" content="The kinds of websites and web apps that fit naturally into the Devroca approach — clinics, restaurants, retail, service businesses, and more.">
+<meta name="description" content="Six common kinds of project — clinics, restaurants, retail, booking platforms, and more — and the Devroca services each one is usually built from.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -40,6 +40,16 @@
     transition:opacity .3s ease, transform .35s cubic-bezier(.22,.68,.32,1);
   }
   .cat-item:hover .cat-visual .glyph{ opacity:1; transform:scale(1.06); }
+  /* Service names in the "Often built with" line deep-link to services.html.
+     Kept out of the gold label's colour (as process.html's callouts read:
+     gold label, plain text after it); the underline marks where each name
+     starts and ends, and turns gold-3 — the site's link colour — on hover. */
+  .cat-item .step-out a{
+    color:var(--paper); font-weight:500;
+    text-decoration:underline; text-decoration-color:var(--gold-4); text-underline-offset:3px;
+    transition:color .2s ease, text-decoration-color .2s ease;
+  }
+  .cat-item .step-out a:hover{ color:var(--gold-3); text-decoration-color:var(--gold-3); }
   @media (max-width:820px){
     .cat-item{ grid-template-columns:1fr; }
     .cat-item .cat-visual{ order:-1; }
@@ -137,7 +147,7 @@
 <div class="page-hero wrap">
   <div class="breadcrumb"><a href="index.html">Home</a> / What We Build</div>
   <h1>Built for <em>your kind of business.</em></h1>
-  <p>A look at the kinds of sites and apps that fit naturally into the Devroca approach — not a portfolio of past clients, but a clear picture of what's possible.</p>
+  <p>Six common kinds of project, and the services each one is usually built from. These are examples of what fits, not a portfolio of past clients.</p>
   <div class="step-out" style="font-size:15.5px; max-width:640px; margin-top:26px;">I work with <b>small businesses and large companies, in any industry</b> — and because it&rsquo;s one person behind every project, you get direct, consistent attention rather than a rotating team or an account manager relaying messages.</div>
 </div>
 
@@ -148,72 +158,78 @@
       <div class="cat-item">
         <div>
           <h3>Clinics &amp; Healthcare</h3>
-          <p>Sites that build trust quickly and make booking an appointment the easiest thing on the page.</p>
+          <p>Patients find a service, see who provides it, and book without phoning the front desk.</p>
           <ul>
-            <li>Online booking integration</li>
-            <li>Clear service &amp; doctor info</li>
-            <li>Patient-friendly, accessible design</li>
+            <li>Booking built into the site, with automated confirmations</li>
+            <li>Service and practitioner pages, built from your information</li>
+            <li>Accessible, mobile-responsive build</li>
           </ul>
+          <div class="step-out"><b>Often built with:</b> <a href="services.html#svc-website">Website Development</a> &middot; <a href="services.html#svc-booking">Online Booking Systems</a> &middot; <a href="services.html#svc-google-reviews">Google Reviews Integration</a></div>
         </div>
         <div class="cat-visual"><svg class="glyph" aria-hidden="true" focusable="false"><use href="#glyph-clinic"></use></svg></div>
       </div>
       <div class="cat-item">
         <div>
           <h3>Restaurants &amp; Hospitality</h3>
-          <p>Menus and reservations presented the way the food deserves — fast to load, easy to update.</p>
+          <p>Menu, opening hours, and reservations on a site that loads fast on a phone.</p>
           <ul>
-            <li>Digital menu, easy to update</li>
-            <li>Reservation &amp; booking flow</li>
-            <li>Multi-language for tourist areas</li>
+            <li>Menu as real page content, not a PDF</li>
+            <li>Reservation flow with automated confirmations</li>
+            <li>Extra languages, with translations supplied by you</li>
           </ul>
+          <div class="step-out"><b>Often built with:</b> <a href="services.html#svc-website">Website Development</a> &middot; <a href="services.html#svc-booking">Online Booking Systems</a> &middot; <a href="services.html#svc-multi-language">Multi-Language Support</a> &middot; <a href="services.html#svc-content-updates">Content Update Subscription</a></div>
         </div>
         <div class="cat-visual"><svg class="glyph" aria-hidden="true" focusable="false"><use href="#glyph-hospitality"></use></svg></div>
       </div>
       <div class="cat-item">
         <div>
           <h3>Retail &amp; E-commerce</h3>
-          <p>Product catalogs and a checkout flow that doesn't lose sales at the last step.</p>
+          <p>A product catalog, and a checkout that handles failed payments, refunds, and receipts &mdash; not just the happy path.</p>
           <ul>
-            <li>Product catalog &amp; categories</li>
-            <li>Smooth, tested checkout</li>
-            <li>Inventory-friendly structure</li>
+            <li>Catalog with categories and filtering</li>
+            <li>Checkout wired to Stripe, PayPal, or a local processor</li>
+            <li>Admin dashboard to manage orders and stock levels</li>
           </ul>
+          <div class="step-out"><b>Often built with:</b> <a href="services.html#svc-web-app">Web App Development</a> &middot; <a href="services.html#svc-payments">Payment Gateway Integration</a> &middot; <a href="services.html#svc-analytics">Analytics &amp; Event Tracking Setup</a></div>
         </div>
         <div class="cat-visual"><svg class="glyph" aria-hidden="true" focusable="false"><use href="#glyph-retail"></use></svg></div>
       </div>
       <div class="cat-item">
         <div>
           <h3>Service &amp; Booking Platforms</h3>
-          <p>Scheduling-first web apps for businesses whose whole model runs on appointments.</p>
+          <p>Scheduling-first web apps for businesses whose whole model runs on appointments &mdash; where booking is the product, not one feature of a site.</p>
           <ul>
             <li>Calendar &amp; availability logic</li>
             <li>Automated confirmations</li>
             <li>Dashboard for managing bookings</li>
           </ul>
+          <div class="step-out"><b>Often built with:</b> <a href="services.html#svc-web-app">Web App Development</a> &middot; <a href="services.html#svc-payments">Payment Gateway Integration</a> &middot; <a href="services.html#svc-maintenance">Maintenance &amp; Support</a></div>
         </div>
         <div class="cat-visual"><svg class="glyph" aria-hidden="true" focusable="false"><use href="#glyph-booking"></use></svg></div>
       </div>
       <div class="cat-item">
         <div>
           <h3>Professional Services &amp; Consultancies</h3>
-          <p>A credible, clear site that explains what you do and makes it easy to get in touch.</p>
+          <p>A fast, clean site for your services and case studies, built from the material you already have.</p>
           <ul>
-            <li>Clear service breakdown</li>
-            <li>Case study / results-friendly layout</li>
-            <li>Lead capture built in</li>
+            <li>Service and case-study pages</li>
+            <li>Enquiry form, plus newsletter signup wired to your email platform</li>
+            <li>Technical SEO so pages are indexed properly</li>
           </ul>
+          <div class="step-out"><b>Often built with:</b> <a href="services.html#svc-website">Website Development</a> &middot; <a href="services.html#svc-email-capture">Email Capture &amp; Automation Integration</a> &middot; <a href="services.html#svc-technical-seo">Technical SEO Implementation</a></div>
         </div>
         <div class="cat-visual"><svg class="glyph" aria-hidden="true" focusable="false"><use href="#glyph-professional"></use></svg></div>
       </div>
       <div class="cat-item">
         <div>
           <h3>Fitness &amp; Wellness</h3>
-          <p>Class schedules, memberships, and booking, built for a business that runs on routine.</p>
+          <p>Class timetables and booking for a business that runs on a weekly schedule.</p>
           <ul>
-            <li>Class/session booking</li>
-            <li>Membership-friendly structure</li>
-            <li>Instructor &amp; schedule pages</li>
+            <li>Class and session booking</li>
+            <li>Timetable and instructor pages</li>
+            <li>Payment taken at booking, per class or session</li>
           </ul>
+          <div class="step-out"><b>Often built with:</b> <a href="services.html#svc-website">Website Development</a> &middot; <a href="services.html#svc-booking">Online Booking Systems</a> &middot; <a href="services.html#svc-payments">Payment Gateway Integration</a></div>
         </div>
         <div class="cat-visual"><svg class="glyph" aria-hidden="true" focusable="false"><use href="#glyph-fitness"></use></svg></div>
       </div>
@@ -226,7 +242,7 @@
     <div class="cta-band reveal">
       <div>
         <h2>Don't see your kind of business?</h2>
-        <p>The approach adapts — tell me what you're working with.</p>
+        <p>The list above covers the common cases, not every case. Tell me what you&rsquo;re working with and I&rsquo;ll tell you honestly whether it&rsquo;s a fit.</p>
       </div>
       <a href="contact.html" class="btn btn-primary">Start a Project</a>
     </div>

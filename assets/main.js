@@ -116,6 +116,31 @@ if (!('IntersectionObserver' in window) || prefersReduced) {
   });
 }
 
+// Deep links into the services tabs. A card inside a hidden panel has no
+// box, so the browser can't scroll to it — open its tab first, then scroll.
+const openHashTab = () => {
+  const target = location.hash.length > 1 && document.getElementById(location.hash.slice(1));
+  const panel = target && target.closest('.tab-panel');
+  if (!panel) return null;
+  const tab = document.querySelector(`.tab[data-tab="${panel.dataset.panel}"]`);
+  if (tab && !panel.classList.contains('active')) tab.click();
+  return target;
+};
+// Measured from layout (offsetTop ignores transforms), because the reveal
+// and tab-entrance slides are still mid-flight when this runs.
+const scrollToCard = (target) => {
+  if (!target) return;
+  let top = -(parseFloat(getComputedStyle(target).scrollMarginTop) || 0);
+  for (let el = target; el; el = el.offsetParent) top += el.offsetTop;
+  window.scrollTo({ top, behavior: prefersReduced ? 'auto' : 'smooth' });
+};
+// On first load, open the tab now but scroll after load: the web-font swap
+// reflows the page, and the browser's own fragment scroll (which measures the
+// mid-slide position) starts at load too — this one has to land last.
+const hashCard = openHashTab();
+if (hashCard) window.addEventListener('load', () => requestAnimationFrame(() => scrollToCard(hashCard)));
+window.addEventListener('hashchange', () => scrollToCard(openHashTab()));
+
 
 // Count-up stat numbers. Only elements carrying data-count animate, so
 // non-numeric badges ("Custom", "Web+App") are left exactly as authored.
