@@ -122,6 +122,10 @@
         <div><label for="f-email">Email</label><input id="f-email" type="email" name="Email" required></div>
       </div>
       <div>
+        <label for="f-business">Business name (optional)</label>
+        <input id="f-business" type="text" name="Business name" autocomplete="organization">
+      </div>
+      <div>
         <label for="f-type">Project type</label>
         <select id="f-type" name="Project type">
           <option>New website</option>
@@ -130,6 +134,34 @@
           <option>Something else / custom request</option>
           <option>Not sure yet</option>
         </select>
+      </div>
+
+      <!-- Meeting request.
+           The two follow-up fields are authored visible on purpose: without
+           JS they are simply part of the form, and main.js is what collapses
+           them behind the checkbox. Nothing here depends on JS to submit.
+
+           The hidden twin below carries "No" so the answer reaches the inbox
+           either way — an unchecked checkbox posts nothing at all. main.js
+           disables it while the box is checked, so exactly one value goes out. -->
+      <div class="meet">
+        <div class="check">
+          <input type="hidden" name="Face-to-face meeting" value="No" id="f-meet-no">
+          <input type="checkbox" id="f-meet" name="Face-to-face meeting" value="Yes" aria-controls="meetFields">
+          <label for="f-meet">I&rsquo;d like to meet face-to-face (video call) before sending a full request</label>
+        </div>
+        <div class="meet-fields" id="meetFields">
+          <div class="form-row">
+            <div>
+              <label for="f-days">Which days of the week work for you? (optional)</label>
+              <input id="f-days" type="text" name="Preferred days" placeholder="e.g. Tuesdays and Thursdays" autocomplete="off">
+            </div>
+            <div>
+              <label for="f-times">What times generally work? (optional)</label>
+              <input id="f-times" type="text" name="Preferred times" placeholder="e.g. mornings before 11" autocomplete="off">
+            </div>
+          </div>
+        </div>
       </div>
       <div>
         <label for="f-message">Tell me about your project</label>

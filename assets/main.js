@@ -578,3 +578,35 @@ if (!prefersReduced && window.matchMedia('(hover: hover)').matches) {
     });
   }
 }
+
+
+// Meeting request — "meet face-to-face" on the contact page.
+//
+// Same deal as the custom select above: an enhancement over markup that
+// already works. The two follow-up fields are authored visible, so a visitor
+// without JS sees them and can fill them in. All this does is collapse them
+// until the box is ticked, which is presentation and nothing else.
+//
+// The checkbox has a hidden twin carrying "No". An unchecked checkbox posts
+// nothing at all, so without it the inbox couldn't tell "didn't want a call"
+// from "this field wasn't on the form". The twin is disabled while the box is
+// checked — a disabled control is dropped from the submission — so exactly one
+// value for that name goes out either way.
+{
+  const box = document.getElementById('f-meet');
+  const fields = document.getElementById('meetFields');
+  const fallback = document.getElementById('f-meet-no');
+
+  if (box) {
+    const sync = () => {
+      if (fields) fields.hidden = !box.checked;
+      if (fallback) fallback.disabled = box.checked;
+    };
+    sync();
+    box.addEventListener('change', sync);
+    // Restored from the back/forward cache, the checkbox comes back with the
+    // state the visitor left it in — re-read it rather than trusting the DOM
+    // we set on the way out.
+    window.addEventListener('pageshow', sync);
+  }
+}

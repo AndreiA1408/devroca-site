@@ -166,37 +166,6 @@ section{ position:relative; padding:100px 0; }
   background:rgba(245,194,67,0.12); color:var(--gold-2); margin-bottom:16px;
 }
 
-/* ---------- Service price tags ----------
-   The card's clip-path notches the top-right corner, so the price cannot be
-   absolutely positioned there — it would be cut off. Instead it shares a row
-   with the 01/02 badge and sits right-aligned inside the padding, clear of
-   the notch. Deliberately quieter than the service name: small, gold on a
-   low-alpha gold ground, so it reads as a reference figure rather than the
-   headline. */
-.svc-head{
-  display:flex; align-items:flex-start; justify-content:space-between;
-  gap:14px; margin-bottom:16px;
-}
-.svc-head .svc-num{ margin-bottom:0; flex-shrink:0; }
-.svc-prices{ display:flex; flex-direction:column; align-items:flex-end; gap:6px; }
-.svc-price{
-  font-size:12.5px; font-weight:600; white-space:nowrap;
-  color:var(--gold-2); background:rgba(245,194,67,0.09);
-  border:1px solid rgba(245,194,67,0.22);
-  padding:5px 11px; border-radius:999px;
-  font-variant-numeric:tabular-nums;
-}
-.svc-price .lbl{ color:var(--text-dim); font-weight:500; margin-right:5px; }
-.svc-price .per{ color:var(--text-dim); font-weight:500; }
-/* Services with no published range yet — same slot, no false precision. */
-.svc-price.tbd{
-  color:var(--text-dim); background:transparent; border-color:var(--line); font-weight:500;
-}
-@media (max-width: 560px){
-  .svc-head{ flex-direction:column; align-items:flex-start; }
-  .svc-prices{ align-items:flex-start; }
-}
-
 /* ---------- Process ---------- */
 .process{ display:grid; grid-template-columns:repeat(4,1fr); gap:24px; counter-reset:step; }
 .step{ position:relative; padding-top:20px; }
@@ -313,6 +282,45 @@ textarea{ min-height:120px; resize:vertical; }
 .sel-opt[data-active="true"]{ background:rgba(245,194,67,0.12); color:var(--paper); }
 .sel-opt[aria-selected="true"]{ color:var(--gold-2); font-weight:600; }
 .sel-opt[aria-selected="true"]::after{ content:'\2713'; font-size:12px; color:var(--gold-2); }
+
+/* ---------- Meeting request (contact form) ----------
+   A checkbox plus two follow-up fields. The fields are authored visible and
+   collapsed by main.js, so with JS off they are just part of the form — the
+   same arrangement the custom select uses, and for the same reason: nothing
+   here is load bearing for submission.
+
+   The box is a real checkbox with appearance stripped, not a styled span, so
+   it keeps its own keyboard behaviour and focus ring. The tick is painted as
+   a background image rather than a pseudo-element, which inputs don't render
+   reliably. */
+.meet{ display:grid; gap:18px; }
+.check{ display:flex; align-items:flex-start; gap:11px; }
+.check input[type="checkbox"]{
+  appearance:none; -webkit-appearance:none;
+  width:18px; height:18px; flex:0 0 18px; margin:1px 0 0; padding:0;
+  background-color:var(--ink-2); border:1px solid var(--line); border-radius:5px;
+  cursor:pointer; transition:background-color .2s, border-color .2s;
+}
+.check input[type="checkbox"]:hover{ border-color:var(--gold-4); }
+.check input[type="checkbox"]:checked{
+  background-color:var(--gold-2); border-color:var(--gold-3);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23141310' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round' d='M3.5 8.4l3 3 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:center; background-size:12px 12px;
+}
+/* The label is the click target for the box, so it gets the pointer too, and
+   it reads as a sentence rather than a field name — no bottom margin. */
+.check label{
+  margin-bottom:0; font-size:14px; line-height:1.45;
+  color:var(--paper-dim); cursor:pointer;
+}
+.check input[type="checkbox"]:checked + label{ color:var(--paper); }
+/* display:grid here is what [hidden] has to beat, hence the explicit rule. */
+.meet-fields{ display:grid; gap:18px; }
+.meet-fields[hidden]{ display:none; }
+/* The two questions are different lengths, so one label wraps to a second
+   line before the other does and the inputs beneath them stop lining up.
+   Bottom-align each input within its cell rather than trimming the labels. */
+.meet-fields .form-row > div{ display:flex; flex-direction:column; justify-content:space-between; }
 
 /* ---------- FAQ (accordion) ---------- */
 .faq-item{ border-top:1px solid var(--line); }
@@ -669,7 +677,6 @@ section{
 @media (max-width: 760px){
   .quote-doc{ padding:26px 22px; }
   .quote-doc ol{ grid-template-columns:1fr; }
-  .rate-group{ padding:24px 20px 8px; }
 }
 
 /* ============================================================
@@ -735,9 +742,6 @@ section{
   .svc-card::before, .teaser-card::before, .work-card::after,
   .svc-card::after, .teaser-card::after,
   .quote-doc::before, .quote-doc::after{ display:none; }
-  /* Pricing rows: rule and tint still appear, they just don't grow in. */
-  .rate-list li::before, .rate-list li::after,
-  .rate-name, .rate-val{ transition:none; }
   .svc-card:hover, .teaser-card:hover, .work-card:hover{ transform:none; }
   .tab-panel.active > *{ animation:none; }
   .mobile-menu a{ opacity:1; transform:none; transition:none; }
@@ -765,52 +769,3 @@ section{
 .tab-panel.active > *:nth-child(6){ --card-delay:300ms; }
 .tab-panel.active > *:nth-child(7){ --card-delay:360ms; }
 
-/* ---------- Rate tables (pricing page) ----------
-   Same panel treatment as .svc-card, including the corner notch, so the
-   pricing page reads as part of the same family as the service cards these
-   numbers are drawn from. */
-.rate-groups{ display:grid; gap:24px; max-width:880px; }
-.rate-group{
-  background:var(--ink-3); border:1px solid var(--line); padding:26px 26px 8px;
-  clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px));
-}
-.rate-group > h3{
-  font-size:11.5px; font-weight:700; letter-spacing:.16em; text-transform:uppercase;
-  color:var(--gold-2); margin-bottom:4px;
-}
-.rate-list{ list-style:none; }
-/* Rows read as a plain table at rest; hovering one gives it the same gold
-   left-rule the .step-out panels use, plus a faint tint bled past the
-   padding so the highlight reaches the panel edge. Resting layout is
-   untouched — both effects are pseudo-elements. */
-.rate-list li{
-  display:flex; align-items:baseline; justify-content:space-between; gap:24px;
-  padding:15px 0; border-top:1px solid var(--line);
-  position:relative; isolation:isolate;
-}
-.rate-list li::before{
-  content:''; position:absolute; left:-26px; top:0; bottom:0; width:2px;
-  background:linear-gradient(180deg, var(--gold-4), var(--gold-2), var(--gold-4));
-  transform:scaleY(0); transform-origin:center;
-  transition:transform .3s cubic-bezier(.22,.68,.32,1);
-}
-.rate-list li::after{
-  content:''; position:absolute; inset:0 -14px; z-index:-1;
-  background:rgba(245,194,67,0.05); opacity:0; transition:opacity .25s ease;
-}
-.rate-list li:hover::before{ transform:scaleY(1); }
-.rate-list li:hover::after{ opacity:1; }
-.rate-name, .rate-val{ transition:color .25s ease; }
-.rate-list li:hover .rate-val{ color:var(--gold-1); }
-.rate-name{ font-size:15px; color:var(--paper); font-weight:500; }
-.rate-note{ display:block; font-size:13px; color:var(--text-dim); margin-top:3px; font-weight:400; }
-.rate-val{
-  font-size:15.5px; font-weight:700; color:var(--gold-2);
-  white-space:nowrap; font-variant-numeric:tabular-nums;
-}
-.rate-val .per{ font-size:12.5px; color:var(--text-dim); font-weight:500; }
-.rate-val.tbd{ color:var(--text-dim); font-weight:500; font-size:14px; }
-.rate-foot{ margin-top:26px; font-size:13.5px; color:var(--text-dim); max-width:640px; }
-@media (max-width: 560px){
-  .rate-list li{ flex-direction:column; gap:6px; }
-}
