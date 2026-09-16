@@ -43,3 +43,4 @@ temp/
 # so the compiled bundle MUST be in the repo or the homepage gem will 404.
 # If a build step is ever added to the deploy, revisit this.
 # ---------------------------------------------------------------------------
+.env*
