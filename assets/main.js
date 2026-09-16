@@ -40,11 +40,22 @@ document.querySelectorAll('.tab').forEach(tab => {
   });
 });
 
-// FAQ accordion
+// FAQ accordion.
+//
+// The disclosure ARIA is written here rather than in the HTML, because it only
+// describes something true once this code runs. Without JS the answers are not
+// collapsed (see the .js gate in the stylesheet) and the button toggles
+// nothing — shipping aria-expanded in the markup would announce a collapsed
+// state that isn't real, and aria-controls would advertise a control that
+// does nothing. Setting both at init means the claim and the behaviour that
+// backs it arrive together, the same way the custom select below builds its
+// own ARIA.
 document.querySelectorAll('.faq-item').forEach(item => {
   const q = item.querySelector('.faq-q');
   const a = item.querySelector('.faq-a');
   if (!q || !a) return;
+  q.setAttribute('aria-expanded', 'false');
+  if (a.id) q.setAttribute('aria-controls', a.id);
   q.addEventListener('click', () => {
     const isOpen = item.classList.contains('open');
     const list = item.closest('.faq-list') || document;
