@@ -3,6 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Marks the document as JS-capable before the stylesheet is even fetched, so
+     the scroll-reveal rules can hide content only where JS will reveal it again.
+     Synchronous and ahead of the <link> on purpose: no flash of hidden content. -->
+<script>document.documentElement.classList.add('js')</script>
 <title>What We Build — Devroca</title>
 <meta name="description" content="Six common kinds of project — clinics, restaurants, retail, booking platforms, and more — and the Devroca services each one is usually built from.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
