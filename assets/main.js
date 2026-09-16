@@ -50,12 +50,48 @@ document.querySelectorAll('.tab').forEach(tab => {
 // does nothing. Setting both at init means the claim and the behaviour that
 // backs it arrive together, the same way the custom select below builds its
 // own ARIA.
+//
+// Collapsing with max-height only clips the box: the answer is still rendered,
+// so it stays in the accessibility tree and a screen reader reads all of them
+// whatever is open. `hidden` is what actually removes it — but a hidden
+// element has no box and cannot animate, so the two are sequenced around the
+// transition rather than toggled together: unhide before opening, and re-hide
+// only once the closing transition has finished. Sighted users see the same
+// max-height animation either way, because a closed answer is already zero
+// pixels tall before `hidden` is applied.
+const faqHideWhenClosed = (a) => {
+  if (a.hidden) return;                  // already out of the tree
+  if (a.faqCancelHide) a.faqCancelHide();
+  const item = a.closest('.faq-item');
+  const onEnd = (e) => {
+    if (e.target === a && e.propertyName === 'max-height') finish();
+  };
+  const finish = () => {
+    cancel();
+    // Reopened mid-collapse — the open path owns it now.
+    if (!item || !item.classList.contains('open')) a.hidden = true;
+  };
+  // transitionend is the signal, but it never fires for a transition that
+  // cannot run: a background tab freezes them, and reduced motion cuts them
+  // to near zero. The timer guarantees the answer still leaves the tree.
+  const timer = setTimeout(finish, 600);
+  const cancel = () => {
+    clearTimeout(timer);
+    a.removeEventListener('transitionend', onEnd);
+    a.faqCancelHide = null;
+  };
+  a.faqCancelHide = cancel;
+  a.addEventListener('transitionend', onEnd);
+};
+
 document.querySelectorAll('.faq-item').forEach(item => {
   const q = item.querySelector('.faq-q');
   const a = item.querySelector('.faq-a');
   if (!q || !a) return;
   q.setAttribute('aria-expanded', 'false');
   if (a.id) q.setAttribute('aria-controls', a.id);
+  // Starts closed, so it starts out of the accessibility tree as well.
+  a.hidden = true;
   q.addEventListener('click', () => {
     const isOpen = item.classList.contains('open');
     const list = item.closest('.faq-list') || document;
@@ -63,11 +99,17 @@ document.querySelectorAll('.faq-item').forEach(item => {
       i.classList.remove('open');
       const ia = i.querySelector('.faq-a');
       const iq = i.querySelector('.faq-q');
-      if (ia) ia.style.maxHeight = null;
+      if (ia) { ia.style.maxHeight = null; faqHideWhenClosed(ia); }
       if (iq) iq.setAttribute('aria-expanded', 'false');
     });
     if (!isOpen) {
       item.classList.add('open');
+      if (a.faqCancelHide) a.faqCancelHide();
+      a.hidden = false;
+      // Reading scrollHeight forces the layout that commits max-height:0 as
+      // the starting state now that the box exists. Without that flush the
+      // browser sees a single change out of display:none and skips straight
+      // to the end, losing the animation.
       a.style.maxHeight = a.scrollHeight + 'px';
       q.setAttribute('aria-expanded', 'true');
     }
