@@ -153,8 +153,14 @@ section{ position:relative; padding:100px 0; }
 }
 .tab.active{ border-color:var(--gold-3); color:var(--ink); background:linear-gradient(100deg,var(--gold-4),var(--gold-2)); }
 .tab-panels{ position:relative; }
-.tab-panel{ display:none; }
-.tab-panel.active{ display:grid; grid-template-columns:repeat(2, 1fr); gap:20px; }
+/* The grid is the panel's own layout, not something the "active" state confers,
+   so a visitor without JS gets all three panels laid out identically and every
+   service is reachable. Switching — hiding the panels that aren't current — is
+   the part JS adds, so that part is gated on .js. :where() contributes no
+   specificity, keeping these rules at exactly their original weight. */
+.tab-panel{ display:grid; grid-template-columns:repeat(2, 1fr); gap:20px; }
+:where(.js) .tab-panel{ display:none; }
+:where(.js) .tab-panel.active{ display:grid; }
 
 .svc-card{
   background:var(--ink-3); border:1px solid var(--line); padding:28px 26px;
@@ -341,7 +347,10 @@ textarea{ min-height:120px; resize:vertical; }
 }
 .faq-q .plus{ font-size:20px; color:var(--gold-3); transition:transform .3s ease; flex-shrink:0; }
 .faq-item.open .faq-q .plus{ transform:rotate(45deg); }
-.faq-a{ max-height:0; overflow:hidden; transition:max-height .35s ease; }
+/* Collapsed only where JS can open it again. main.js sets an inline
+   max-height to expand, and nothing without JS ever could — so without JS the
+   answers are simply not collapsed, and stay readable. */
+:where(.js) .faq-a{ max-height:0; overflow:hidden; transition:max-height .35s ease; }
 .faq-a p{ color:var(--text-dim); font-size:15px; padding-bottom:24px; max-width:700px; }
 
 /* ---------- Simple content blocks (about/story) ---------- */
@@ -378,7 +387,7 @@ footer{ border-top:1px solid var(--line); padding:44px 0; }
     min-width:44px; min-height:44px;
   }
   .page-hero h1{ font-size:34px; }
-  .tab-panel.active{ grid-template-columns:1fr; }
+  .tab-panel{ grid-template-columns:1fr; }
   .process{ grid-template-columns:1fr 1fr; row-gap:36px; }
   .why-grid{ grid-template-columns:1fr; }
   .work-grid{ grid-template-columns:1fr 1fr; }
@@ -488,7 +497,7 @@ nav.links a:hover::after, nav.links a.current::after{ transform:scaleX(1); }
 .tab{ transition:border-color .25s ease, color .25s ease, background .25s ease, transform .25s ease; }
 .tab:hover{ border-color:var(--gold-4); color:var(--paper); }
 .tab:active{ transform:scale(.97); }
-.tab-panel.active > *{
+:where(.js) .tab-panel.active > *{
   animation:panel-in .5s cubic-bezier(.22,.68,.32,1) both;
   animation-delay:var(--card-delay, 0ms);
 }
@@ -503,7 +512,7 @@ nav.links a:hover::after, nav.links a.current::after{ transform:scaleX(1); }
 .faq-a{ transition:max-height .4s cubic-bezier(.22,.68,.32,1); }
 /* The answer text slides down as the panel opens. Deliberately no opacity
    here: if a transition never runs, the text must still be readable. */
-.faq-a p{ transform:translateY(-8px); transition:transform .45s cubic-bezier(.22,.68,.32,1); }
+:where(.js) .faq-a p{ transform:translateY(-8px); transition:transform .45s cubic-bezier(.22,.68,.32,1); }
 .faq-item.open .faq-a p{ transform:none; }
 .faq-item{ transition:border-color .3s ease; }
 .faq-item.open{ border-top-color:rgba(245,194,67,0.35); }
