@@ -17,7 +17,7 @@
 <style>
   .big-steps{ display:grid; gap:2px; background:var(--line); border:1px solid var(--line); }
   .big-step{ background:var(--ink); padding:48px; display:grid; grid-template-columns:120px 1fr; gap:32px; }
-  .big-step .num{ font-size:44px; font-weight:800; color:var(--gold-3); line-height:1; }
+  .big-step .num{ font-size:44px; font-weight:800; color:var(--gold-ink-2); line-height:1; }
   .big-step h3{ font-size:24px; margin-bottom:12px; }
   .big-step p{ color:var(--text-dim); font-size:15.5px; margin-bottom:18px; max-width:640px; }
   .big-step ul{ list-style:none; display:grid; gap:8px; }
@@ -32,7 +32,7 @@
   .big-steps{ position:relative; }
   .big-steps::before{
     content:''; position:absolute; left:24px; top:70px; bottom:60px; width:2px; z-index:1;
-    background:linear-gradient(180deg, var(--gold-4), var(--gold-2) 45%, var(--gold-4) 85%, transparent);
+    background:var(--grad-step-line);
     transform:scaleY(var(--step-progress, 0)); transform-origin:top;
     transition:transform .15s linear;
   }
@@ -44,8 +44,8 @@
     transition:background-color .35s ease, border-color .35s ease, box-shadow .35s ease;
   }
   .big-step.lit .num::before{
-    background:var(--gold-2); border-color:var(--gold-2);
-    box-shadow:0 0 14px rgba(245,194,67,0.40);
+    background:var(--node-lit); border-color:var(--node-lit);
+    box-shadow:0 0 14px var(--glow-node);
   }
   @media (max-width: 700px){
     .big-step{ grid-template-columns:1fr; gap:14px; }
@@ -54,7 +54,7 @@
     /* Line arrives already drawn and every node already lit. */
     .big-steps::before{ transform:scaleY(1); transition:none; }
     .big-step .num::before{
-      background:var(--gold-2); border-color:var(--gold-2);
+      background:var(--node-lit); border-color:var(--node-lit);
       box-shadow:none; transition:none;
     }
   }
