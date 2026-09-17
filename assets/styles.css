@@ -714,6 +714,195 @@ body::after{
      they are near-white over black and need a bronze counterpart. */
   --tex-hero:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 400' preserveAspectRatio='none'%3E%3Cpolygon points='640,0 1070,0 1132,400 894,400' fill='%23F5C243' opacity='.020'/%3E%3Cg fill='%23FFF3C4'%3E%3Cpolygon points='635,0 645,0 903,400 893,400' opacity='.028'/%3E%3Cpolygon points='1065,0 1075,0 1137,400 1127,400' opacity='.020'/%3E%3C/g%3E%3C/svg%3E");
 }
+/* ============================================================
+   Light theme
+
+   Not an inversion. The dark page is warm black with cards lifting
+   *brighter* than the field; the light page is warm bone with cards
+   lifting brighter than the field too — same relationship, same
+   material, different lighting. Everything that makes the dark page
+   feel built — the grain, the faceted wedges, the sweeps, the pointer
+   glow, the seam fades — is restated here rather than dropped, because
+   a light theme that is only "the dark one with the lights on" reads
+   as an afterthought.
+
+   Two rules govern every value below.
+
+   1. Gold splits by job. On a surface that is meant to look like metal
+      (the primary button, the checkbox, the radio) gold stays gold. As
+      lettering or as a mark on paper it goes deep amber, because the
+      bright golds are 1.5:1 against bone and would be unreadable.
+   2. Effects darken instead of lightening. Over near-black, a 12% gold
+      wash lifts the surface and reads as light. Over near-white it does
+      nothing at all (a 1.02 shift). So every sweep, tint and glow below
+      is a *shadow* in gold, not a highlight.
+
+   Deliberate black in the light theme, for rhythm rather than for
+   contrast alone: the final CTA band becomes a full dark slab on every
+   page that has one, and the active tab becomes a near-black pill. Both
+   are noted at their rules. Headlines are near-black (#17150F), not a
+   soft grey.
+
+   Every text/background pair here was measured; the audit is in the
+   commit message.
+   ============================================================ */
+:root[data-theme="light"]{
+  /* Backgrounds: warm off-white, never stark. Cards are the brightest
+     of the three so they lift, exactly as --ink-3 does in the dark. */
+  --ink: #F7F4EE;
+  --ink-2: #EEE9DE;
+  --ink-3: #FFFDF7;
+
+  /* Text, dark-on-light. Warm near-black rather than pure black, to
+     stay in the same family as the gold. 16.6:1 on the page. */
+  --paper: #17150F;
+  --paper-dim: #3A352A;
+  --text-dim: #5A5346;
+  --text-dim-2: #6E6656;
+
+  /* Gold surfaces stay gold — the button must still read as metal.
+     --gold-1 is only ever a gradient stop, so it keeps its highlight. */
+  --gold-1: #FFF3C4;
+  --gold-2: #F0C33F;
+  --gold-3: #E0AE2E;
+  --gold-4: #AE7420;
+  --gold-5: #8A5A12;
+  --gold-6: #4A2F09;
+
+  /* Gold as lettering, and as an edge that has to be seen: both have to
+     go deep amber on a pale page. 7.4:1 and 6.2:1 respectively. */
+  --gold-ink: #6B4907;
+  --gold-ink-2: #7A5409;
+  --gold-edge: #AE7420;
+  /* Drawn marks — dots, nodes, bullets. 4.3:1, clear of the 3:1 bar
+     that non-text content has to meet. */
+  --gold-mark: #A06716;
+
+  --line: rgba(45,38,22,0.30);
+  --line-strong: rgba(45,38,22,0.42);
+  --header-bg: rgba(247,244,238,0.72);
+  --header-bg-scrolled: rgba(247,244,238,0.92);
+  /* Warm brown shadows; black would read as grime on a warm page. */
+  --shadow-1: rgba(60,48,20,0.18);
+  --shadow-2: rgba(60,48,20,0.30);
+
+  /* ---- Effect layer, restated as darkening ---- */
+  --tint-faint: rgba(138,90,18,0.07);
+  --tint-soft: rgba(138,90,18,0.13);
+  --tint-mid: rgba(138,90,18,0.15);
+
+  --edge-soft: rgba(174,116,32,0.45);
+  --edge-mid: rgba(174,116,32,0.55);
+  --edge-strong: rgba(174,116,32,0.62);
+
+  /* The sweep is the one effect that has to change sign outright: a
+     cream band over a cream card is invisible, so on paper the light
+     passes as a faint bronze shadow instead. Same geometry, same
+     timing — it reads as a facet catching the light either way. */
+  --sweep: rgba(138,90,18,0.10);
+  --cursor-glow: rgba(160,103,22,0.16);
+  --glow-soft: rgba(160,103,22,0.14);
+  /* A bloom cannot brighten paper, so the dot's halo becomes a tight
+     warm shadow — the dot still "lights up", it just does it by
+     gaining weight rather than by glowing. */
+  --glow-dot: rgba(110,72,12,0.45);
+  --glow-node: rgba(110,72,12,0.42);
+  --hero-bloom: rgba(160,103,22,0.09);
+
+  /* Gradients. Each dark one ends on --gold-1/--gold-2, which are
+     1.1:1 and 1.5:1 on bone — they would simply stop existing. Each
+     light one runs bronze-to-amber instead, keeping the same
+     dark-bright-dark shape that reads as a bevel. */
+  --grad-head: linear-gradient(100deg, var(--gold-6), var(--gold-4) 50%, var(--gold-5));
+  --grad-progress: linear-gradient(90deg, var(--gold-6), var(--gold-mark) 60%, var(--gold-4));
+  --grad-underline: linear-gradient(90deg, var(--gold-5), var(--gold-4));
+  --grad-shard: linear-gradient(140deg, var(--gold-3), var(--gold-4) 55%, var(--gold-6));
+  --grad-step-line: linear-gradient(180deg, var(--gold-5), var(--gold-mark) 45%, var(--gold-5) 85%, transparent);
+
+  /* Deliberate black, 1 of 2. A gold pill on bone is 1.5:1 against the
+     page — the selected tab would be the *least* visible control in the
+     row. Near-black with gold lettering is 16.6:1 against the page and
+     12.9:1 internally, and it gives the tab row the same punch the gold
+     pill has on the dark page. */
+  --tab-on-bg: #17150F;
+  --tab-on-fg: var(--gold-2);
+  --tab-on-edge: #17150F;
+
+  --node-lit: var(--gold-mark);
+  --glyph-ink: #8A5A12;
+  --glyph-opacity: 0.78;
+
+  /* Grey noise darkens bone faster than it lightens near-black, but the
+     page is also brighter, so the grain needs more of it to read as
+     material rather than as dirt. Tuned by eye at 1400px. */
+  --grain-opacity: 0.050;
+
+  color-scheme: light;
+}
+
+/* The seam fades hardcode the page colour at zero alpha, so they need
+   restating per theme or the fade would blend toward the dark page. */
+:root[data-theme="light"]{
+  --seam-fade:linear-gradient(180deg,
+    var(--ink) 0%, rgba(247,244,238,0) 14%,
+    rgba(247,244,238,0) 86%, var(--ink) 100%);
+  --seam-fade-divider:linear-gradient(180deg,
+    var(--ink-2) 0%, rgba(238,233,222,0) 14%,
+    rgba(247,244,238,0) 86%, var(--ink) 100%);
+  --seam-fade-bottom:linear-gradient(180deg,
+    rgba(247,244,238,0) 78%, var(--ink) 100%);
+  /* The faceted wash is gold-on-black in the dark theme, which vanishes
+     on a pale page. Same geometry, darkened and lifted in opacity so the
+     facets still read — measured to land at roughly the same visual
+     weight as the dark theme's wedges, not fainter. */
+  --tex-section:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 600' preserveAspectRatio='none'%3E%3Cg fill='%238A5A12'%3E%3Cpolygon points='0,0 470,0 180,600 0,600' opacity='.055'/%3E%3Cpolygon points='470,0 880,0 610,600 180,600' opacity='.026'/%3E%3Cpolygon points='880,0 1200,0 1200,600 610,600' opacity='.064'/%3E%3C/g%3E%3Cg fill='%234A2F09'%3E%3Cpolygon points='466,0 474,0 184,600 176,600' opacity='.070'/%3E%3Cpolygon points='876,0 884,0 614,600 606,600' opacity='.052'/%3E%3Cpolygon points='0,600 1200,170 1200,600' opacity='.030'/%3E%3C/g%3E%3C/svg%3E");
+  --tex-alt:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 600' preserveAspectRatio='none'%3E%3Cg fill='%238A5A12'%3E%3Cpolygon points='0,0 340,0 700,600 300,600' opacity='.048'/%3E%3Cpolygon points='340,0 770,0 1140,600 700,600' opacity='.024'/%3E%3Cpolygon points='770,0 1200,0 1200,600 1140,600' opacity='.058'/%3E%3C/g%3E%3Cg fill='%234A2F09'%3E%3Cpolygon points='336,0 344,0 704,600 696,600' opacity='.066'/%3E%3Cpolygon points='0,0 1200,0 0,430' opacity='.026'/%3E%3C/g%3E%3C/svg%3E");
+  /* The hero's own field, same treatment: the dark theme's near-white
+     diagonals become bronze ones. Without this the hero — the first
+     thing anyone sees — is the one flat area on the light page. */
+  --tex-hero:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 400' preserveAspectRatio='none'%3E%3Cpolygon points='640,0 1070,0 1132,400 894,400' fill='%238A5A12' opacity='.048'/%3E%3Cg fill='%234A2F09'%3E%3Cpolygon points='635,0 645,0 903,400 893,400' opacity='.070'/%3E%3Cpolygon points='1065,0 1075,0 1137,400 1127,400' opacity='.050'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* Deliberate black, 2 of 2 — the closing CTA band, on all six pages
+   that carry one.
+
+   On the dark page this band is a subtle lift (--ink-2 to --ink-3) and
+   the gold button supplies the punch. On a light page that same lift is
+   invisible, and the band — the last thing on the page, and the actual
+   ask — would be its weakest moment. So it inverts to a full dark slab:
+   the page ends on a deep, faceted block with gold on it, which is both
+   the rhythm break a long light page needs and the strongest possible
+   frame for the button.
+
+   The slab re-declares the dark theme's own text and line values rather
+   than inheriting the light ones, so everything inside it is back on a
+   dark footing: --paper 16.7:1, --text-dim 6.9:1, gold 12.9:1. */
+:root[data-theme="light"] .cta-band{
+  --paper: #F4F5F3;
+  --paper-dim: #E9E4D9;
+  --text-dim: #A79E8C;
+  --gold-ink: #FFD54B;
+  --gold-ink-2: #F5C243;
+  --line: rgba(233,228,217,0.14);
+  background:linear-gradient(135deg, #17150F, #241F16);
+  /* Stated separately from the shorthand, and kept after it, so the slab has
+     an opaque dark colour even if the gradient layer is not painted. Without
+     it the band's background-color is transparent, and the light page would
+     show through under white text. */
+  background-color:#17150F;
+  border-color:rgba(233,228,217,0.14);
+  color:var(--paper);
+  /* The wedges are the same artwork the dark sections use, so the slab
+     is faceted like the rest of the site rather than a plain rectangle. */
+  background-image:
+    linear-gradient(135deg, #17150F, #241F16),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 600' preserveAspectRatio='none'%3E%3Cg fill='%23F5C243'%3E%3Cpolygon points='0,0 470,0 180,600 0,600' opacity='.030'/%3E%3Cpolygon points='880,0 1200,0 1200,600 610,600' opacity='.034'/%3E%3C/g%3E%3Cg fill='%23FFF3C4'%3E%3Cpolygon points='466,0 474,0 184,600 176,600' opacity='.038'/%3E%3C/g%3E%3C/svg%3E");
+  background-size:100% 100%;
+  background-repeat:no-repeat;
+  box-shadow:0 26px 60px -34px rgba(40,30,8,0.55);
+}
+
+
 
 section{
   background-repeat:no-repeat;
