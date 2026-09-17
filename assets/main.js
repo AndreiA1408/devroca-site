@@ -633,27 +633,44 @@ if (!prefersReduced && window.matchMedia('(hover: hover)').matches) {
 }
 
 
-// Meeting request — "meet face-to-face" on the contact page.
+// Meeting request — the contact page's "I'd like to meet" block.
 //
 // Same deal as the custom select above: an enhancement over markup that
-// already works. The two follow-up fields are authored visible, so a visitor
-// without JS sees them and can fill them in. All this does is collapse them
-// until the box is ticked, which is presentation and nothing else.
+// already works. The fields are authored visible, so a visitor without JS
+// sees the meeting type and the days/times and can fill them in. All this
+// does is collapse them until the box is ticked.
 //
-// The checkbox has a hidden twin carrying "No". An unchecked checkbox posts
-// nothing at all, so without it the inbox couldn't tell "didn't want a call"
-// from "this field wasn't on the form". The twin is disabled while the box is
-// checked — a disabled control is dropped from the submission — so exactly one
-// value for that name goes out either way.
+// The checkbox has a hidden twin carrying "No". An unticked checkbox posts
+// nothing at all, so without it the inbox couldn't tell "didn't want a
+// meeting" from "this field wasn't on the form". The twin is disabled while
+// the box is ticked — a disabled control is dropped from the submission — so
+// exactly one value for that name goes out either way.
+//
+// The radio group gets no equivalent twin, on purpose. A twin would share the
+// group's name and post alongside whichever radio was chosen, so every
+// submission with a choice would carry two values for one field; suppressing
+// it would need JS, which is exactly what the twin exists to survive without.
+// It isn't needed anyway: "Meeting request: Yes" with no "Meeting type" line
+// already reads unambiguously as "wants to meet, no format preference", and
+// Preferred days/times always post, so the block's presence is never in doubt.
 {
   const box = document.getElementById('f-meet');
   const fields = document.getElementById('meetFields');
   const fallback = document.getElementById('f-meet-no');
+  const typeGroup = document.getElementById('meetTypeGroup');
 
   if (box) {
+    // True only once this runs: without JS the box collapses nothing, so the
+    // relationship is asserted here rather than shipped in the markup.
+    if (fields && fields.id) box.setAttribute('aria-controls', fields.id);
+
     const sync = () => {
       if (fields) fields.hidden = !box.checked;
       if (fallback) fallback.disabled = box.checked;
+      // Disabling the fieldset drops the radios from the submission while
+      // keeping the selection intact, so unticking can't post a meeting format
+      // next to "Meeting request: No", and reticking restores what was picked.
+      if (typeGroup) typeGroup.disabled = !box.checked;
     };
     sync();
     box.addEventListener('change', sync);

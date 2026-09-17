@@ -332,6 +332,41 @@ textarea{ min-height:120px; resize:vertical; }
 /* display:grid here is what [hidden] has to beat, hence the explicit rule. */
 .meet-fields{ display:grid; gap:18px; }
 .meet-fields[hidden]{ display:none; }
+/* Only worth animating where JS is what reveals it. Without JS the block is
+   simply present from the start and must not animate on load. :where() keeps
+   the zero-specificity gate used everywhere else in this file. */
+:where(.js) .meet-fields{ animation:meet-in .28s cubic-bezier(.22,.68,.32,1) both; }
+@keyframes meet-in{
+  from{ opacity:0; transform:translateY(-6px); }
+  to{ opacity:1; transform:none; }
+}
+
+/* Meeting type — native radios in a fieldset, so the grouping and the
+   legend-as-group-label come from HTML rather than bolted-on ARIA. Appearance
+   is stripped so they read as the checkbox above does; the dot is a radial
+   gradient rather than a pseudo-element, which inputs don't render reliably. */
+.choice{ border:0; padding:0; margin:0; min-inline-size:0; }
+.choice legend{
+  padding:0; font-size:13px; color:var(--text-dim); margin-bottom:9px;
+}
+.choice-opts{ display:flex; flex-wrap:wrap; gap:10px 22px; }
+.opt{ display:inline-flex; align-items:center; gap:9px; }
+.opt input[type="radio"]{
+  appearance:none; -webkit-appearance:none;
+  width:18px; height:18px; flex:0 0 18px; margin:0; padding:0;
+  background-color:var(--ink-2); border:1px solid var(--line); border-radius:50%;
+  cursor:pointer; transition:background-color .2s, border-color .2s;
+}
+.opt input[type="radio"]:hover{ border-color:var(--gold-4); }
+.opt input[type="radio"]:checked{
+  border-color:var(--gold-3); background-color:var(--gold-2);
+  background-image:radial-gradient(circle at center, var(--ink) 0 3.5px, transparent 3.5px);
+}
+.opt label{
+  margin-bottom:0; font-size:14px; line-height:1.45;
+  color:var(--paper-dim); cursor:pointer;
+}
+.opt input[type="radio"]:checked + label{ color:var(--paper); }
 /* The two questions are different lengths, so one label wraps to a second
    line before the other does and the inputs beneath them stop lining up.
    Bottom-align each input within its cell rather than trimming the labels. */
@@ -773,6 +808,8 @@ section{
      arrive already drawn. The shard burst is dropped entirely. */
   .sent-mark .ring, .sent-mark .tick{ animation:none; stroke-dashoffset:0; }
   .shard{ display:none; }
+  /* The meeting fields appear at once instead of sliding in. */
+  .meet-fields{ animation:none; }
   /* Custom select: it still opens and closes, it just does it at once. */
   .sel-btn::before{ display:none; }
   .sel-caret{ transition:none; }

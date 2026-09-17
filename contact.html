@@ -141,20 +141,41 @@
       </div>
 
       <!-- Meeting request.
-           The two follow-up fields are authored visible on purpose: without
-           JS they are simply part of the form, and main.js is what collapses
-           them behind the checkbox. Nothing here depends on JS to submit.
+           Everything in here is authored visible and ungated; main.js is what
+           collapses it behind the checkbox. Without JS the whole block is just
+           part of the form, so nothing here is load bearing for submission.
 
-           The hidden twin below carries "No" so the answer reaches the inbox
-           either way — an unchecked checkbox posts nothing at all. main.js
-           disables it while the box is checked, so exactly one value goes out. -->
+           The checkbox has a hidden twin carrying "No", disabled by JS while
+           the box is ticked, because an unticked checkbox posts nothing at all
+           and the inbox could not otherwise tell "no meeting wanted" from "the
+           field was not on the form".
+
+           The radio group deliberately has no such twin — see the note in
+           main.js where it is disabled. -->
       <div class="meet">
         <div class="check">
-          <input type="hidden" name="Face-to-face meeting" value="No" id="f-meet-no">
-          <input type="checkbox" id="f-meet" name="Face-to-face meeting" value="Yes" aria-controls="meetFields">
-          <label for="f-meet">I&rsquo;d like to meet face-to-face (video call) before sending a full request</label>
+          <input type="hidden" name="Meeting request" value="No" id="f-meet-no">
+          <input type="checkbox" id="f-meet" name="Meeting request" value="Yes">
+          <label for="f-meet">I&rsquo;d like to meet before sending a full request</label>
         </div>
         <div class="meet-fields" id="meetFields">
+          <fieldset class="choice" id="meetTypeGroup">
+            <legend>Meeting type</legend>
+            <div class="choice-opts">
+              <span class="opt">
+                <input type="radio" id="f-meet-person" name="Meeting type" value="In person">
+                <label for="f-meet-person">In person</label>
+              </span>
+              <span class="opt">
+                <input type="radio" id="f-meet-phone" name="Meeting type" value="Phone call">
+                <label for="f-meet-phone">Phone call</label>
+              </span>
+              <span class="opt">
+                <input type="radio" id="f-meet-video" name="Meeting type" value="Video call">
+                <label for="f-meet-video">Video call</label>
+              </span>
+            </div>
+          </fieldset>
           <div class="form-row">
             <div>
               <label for="f-days">Which days of the week work for you? (optional)</label>
