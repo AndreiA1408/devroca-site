@@ -680,3 +680,51 @@ if (!prefersReduced && window.matchMedia('(hover: hover)').matches) {
     window.addEventListener('pageshow', sync);
   }
 }
+
+
+// Theme toggle.
+//
+// The stored theme is applied by the inline script in each page's head, not
+// here, so it lands before first paint and there is no flash of the wrong
+// theme. This only handles the click.
+//
+// Dark is the default and the brand's identity, so a first-time visitor gets
+// dark regardless of prefers-color-scheme; only an explicit choice is stored.
+//
+// The gem is told, but only so it can repaint its halo: a gold glow lifts a
+// dark page and does nothing at all over bone, so the light theme swaps it
+// for a bronze aura. Its canvas stays transparent in both themes
+// (scene.background is null, clear alpha 0) and the page colour behind it is
+// what shows — see BUILD.md, which warns against giving it an opaque
+// background precisely because a tone-mapped background cannot match the CSS
+// behind it and reads as a box. The event is dispatched after data-theme is
+// written, because the gem reads the attribute rather than a payload.
+{
+  const btn = document.getElementById('themeBtn');
+  const root = document.documentElement;
+
+  if (btn) {
+    const label = (theme) =>
+      'Switch to ' + (theme === 'light' ? 'dark' : 'light') + ' theme';
+    btn.setAttribute('aria-label', label(root.getAttribute('data-theme') || 'dark'));
+
+    btn.addEventListener('click', () => {
+      const next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+
+      // Cross-fade only while the swap is in flight; a standing global
+      // transition would fight every hover rule on the site.
+      root.classList.add('theme-switching');
+      clearTimeout(btn.themeTimer);
+      btn.themeTimer = setTimeout(() => root.classList.remove('theme-switching'), 350);
+
+      if (next === 'light') root.setAttribute('data-theme', 'light');
+      else root.removeAttribute('data-theme');
+
+      btn.setAttribute('aria-label', label(next));
+      window.dispatchEvent(new CustomEvent('devroca:themechange'));
+      // Storage can throw when site data is blocked; the toggle still works
+      // for this page view, it just won't be remembered.
+      try { localStorage.setItem('theme', next); } catch (e) {}
+    });
+  }
+}

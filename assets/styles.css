@@ -903,6 +903,59 @@ body::after{
 }
 
 
+/* ---------- Theme toggle ----------
+   Hidden without JS: the button cannot do anything there, and a control
+   that does nothing is the thing we removed twice already this session. */
+.theme-btn{ display:none; }
+:where(.js) .theme-btn{
+  /* Grid rather than flex so both icons occupy the SAME cell: they cross-fade
+     in place instead of one replacing the other, and the button never changes
+     size mid-swap. */
+  display:grid; place-items:center;
+  width:40px; height:40px; padding:0; flex-shrink:0;
+  background:transparent; border:1.5px solid var(--line); border-radius:999px;
+  color:var(--text-dim); cursor:pointer; overflow:hidden;
+  transition:color .25s ease, border-color .25s ease, background .25s ease;
+}
+.theme-btn:hover{ border-color:var(--gold-4); color:var(--gold-ink); background:var(--tint-soft); }
+.theme-btn:active{ transform:scale(.93); }
+
+/* The icon shows the theme you would switch TO, and the label says so
+   outright so the direction is never guesswork for a screen reader.
+
+   The swap is a rotation through the button rather than a display flip: the
+   outgoing icon turns away and shrinks out, the incoming one turns in from
+   the other side. The overshoot in the timing function is what makes it feel
+   mechanical — like a dial landing — rather than like a fade. */
+.theme-btn svg{
+  grid-area:1 / 1;
+  width:17px; height:17px; display:block;
+  transition:opacity .3s ease, transform .45s cubic-bezier(.34,1.32,.5,1);
+}
+.theme-btn .icon-sun{ opacity:1; transform:none; }
+.theme-btn .icon-moon{ opacity:0; transform:rotate(-100deg) scale(.4); }
+:root[data-theme="light"] .theme-btn .icon-sun{ opacity:0; transform:rotate(100deg) scale(.4); }
+:root[data-theme="light"] .theme-btn .icon-moon{ opacity:1; transform:none; }
+
+.nav-end{ display:flex; align-items:center; gap:14px; }
+
+/* Cross-fade the repaint, but only while a toggle is in flight — a
+   permanent global transition would fight every hover rule on the site. */
+:root.theme-switching, :root.theme-switching *,
+:root.theme-switching *::before, :root.theme-switching *::after{
+  transition:background-color .3s ease, background-image .3s ease,
+             color .3s ease, border-color .3s ease, fill .3s ease, stroke .3s ease !important;
+}
+@media (prefers-reduced-motion: reduce){
+  :root.theme-switching, :root.theme-switching *,
+  :root.theme-switching *::before, :root.theme-switching *::after{ transition:none !important; }
+  /* The icon still changes — it has to, it is the control's only state — it
+     just arrives already turned, with no spin and no squash. */
+  .theme-btn svg{ transition:none; }
+  .theme-btn .icon-moon{ transform:none; }
+  :root[data-theme="light"] .theme-btn .icon-sun{ transform:none; }
+  .theme-btn:active{ transform:none; }
+}
 
 section{
   background-repeat:no-repeat;
