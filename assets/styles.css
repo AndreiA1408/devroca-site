@@ -780,6 +780,16 @@ body::after{
 
   --line: rgba(45,38,22,0.30);
   --line-strong: rgba(45,38,22,0.42);
+  /* These two carry a dependency on main.js worth stating, because the light
+     theme is the only place it bites. Over the page both are fine (nav text
+     6.9:1). Over the dark CTA slab the at-rest 0.72 header would put nav text
+     at 3.74:1 — under AA — while the scrolled 0.92 one holds 5.89:1.
+
+     That is safe today only because main.js adds .scrolled at y > 12, so the
+     0.72 state exists only in the top 12px of the page, where the thing
+     behind the header is always the page background and never the slab. If
+     that threshold grows, or a dark section is ever placed high enough to
+     sit under an unscrolled header, raise this alpha to 0.92 as well. */
   --header-bg: rgba(247,244,238,0.72);
   --header-bg-scrolled: rgba(247,244,238,0.92);
   /* Warm brown shadows; black would read as grime on a warm page. */
