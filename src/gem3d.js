@@ -123,24 +123,72 @@ function buildEnvironment(renderer) {
   return target.texture;
 }
 
-function buildGlow() {
+/* ---------------------------------------------------------------
+   The halo behind the stone — the one part of the gem that is
+   theme-dependent, and the only thing setTheme() below touches.
+
+   Over the dark page the halo is a gold light: it lifts the field
+   around the stone and the bloom reads as glow. Over the light page
+   that is physically impossible — nothing composited over bone can be
+   brighter than bone — so a gold halo at the same values washes out to
+   a faint cream smudge and the gem looks pasted on, flat, with no
+   depth behind it.
+
+   The light halo is therefore a bronze *aura* rather than a glow: the
+   same gradient geometry and the same falloff, darkening the page
+   instead of lightening it. It reads as warmth thrown onto the surface
+   the stone sits on, which is what gives the stone depth on paper, and
+   it carries the same weight as the dark theme's glow rather than less.
+
+   The gradient must still reach exactly zero well inside the sprite —
+   see resize(), where the sprite is fitted to the frustum. A halo still
+   carrying alpha at the sprite edge would be cut off square.
+--------------------------------------------------------------- */
+const GLOW = {
+  dark:  { r: 245, g: 194, b: 67 },
+  light: { r: 138, g:  90, b: 18 }
+};
+
+function paintGlow(canvas, theme) {
+  const { r, g, b } = GLOW[theme] || GLOW.dark;
+  const rgba = a => `rgba(${r},${g},${b},${a})`;
+  const ctx = canvas.getContext('2d');
+  const grad = ctx.createRadialGradient(256, 256, 0, 256, 256, 256);
+  // Light needs marginally less peak alpha: a dark wash over a pale page
+  // is a stronger visual event than a light wash over a dark one at the
+  // same number, so matching the numbers would over-shoot.
+  const peak = theme === 'light' ? 0.20 : 0.22;
+  grad.addColorStop(0,    rgba(peak));
+  grad.addColorStop(0.35, rgba(peak * 0.41));
+  grad.addColorStop(0.6,  rgba(peak * 0.09));
+  grad.addColorStop(0.85, rgba(0));
+  grad.addColorStop(1,    rgba(0));
+  ctx.clearRect(0, 0, 512, 512);
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, 512, 512);
+}
+
+function buildGlow(theme) {
   const c = document.createElement('canvas');
   c.width = c.height = 512;
-  const ctx = c.getContext('2d');
-  const g = ctx.createRadialGradient(256, 256, 0, 256, 256, 256);
-  g.addColorStop(0,    'rgba(245,194,67,0.22)');
-  g.addColorStop(0.35, 'rgba(245,194,67,0.09)');
-  g.addColorStop(0.6,  'rgba(245,194,67,0.02)');
-  g.addColorStop(0.85, 'rgba(245,194,67,0)');
-  g.addColorStop(1,    'rgba(245,194,67,0)');
-  ctx.fillStyle = g;
-  ctx.fillRect(0, 0, 512, 512);
+  paintGlow(c, theme);
   const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
     map: new THREE.CanvasTexture(c), transparent: true, depthWrite: false
   }));
   sprite.scale.set(4, 4, 1);
   sprite.position.z = -1.4;
+  // Repainting the source canvas is not enough — the texture has to be
+  // told, or the GPU copy keeps the old gradient.
+  sprite.setTheme = t => {
+    paintGlow(c, t);
+    sprite.material.map.needsUpdate = true;
+  };
   return sprite;
+}
+
+function readTheme() {
+  return document.documentElement.getAttribute('data-theme') === 'light'
+    ? 'light' : 'dark';
 }
 
 
@@ -257,13 +305,28 @@ function init(canvas) {
   renderer.toneMappingExposure = 1.0;
 
   const scene = new THREE.Scene();
-  // No scene.background: the canvas is transparent and the page's own
-  // background shows through. An opaque background here cannot be made to
-  // match, because everything drawn into the composer is tone mapped by
-  // OutputPass while the CSS behind the canvas is not.
+  /* scene.background stays null in BOTH themes, and the theme hook below
+     deliberately does not touch it.
+
+     This is the opposite of what it looks like it should be. Setting the
+     background to the page colour per theme is exactly the change that
+     produced the visible box this file already carries three guards
+     against, and it cannot be made to work: everything drawn into the
+     composer is tone mapped by OutputPass, so a background authored as the
+     page's #14130F leaves the canvas at rgb(9,6,3) against a page painted
+     rgb(20,19,15). The mismatch is worse in light mode, not better, because
+     ACES compresses the bright end hardest — bone #F7F4EE comes back off
+     the composer several steps darker than the CSS beside it, so the seam
+     that is faint on black would be obvious on paper.
+
+     A transparent canvas has no such problem, and needs no theme support at
+     all: the page's own background is what shows through, whatever it is,
+     because PremultiplyShader guarantees an untouched pixel is exactly
+     (0,0,0,0). The theme hook therefore only repaints the halo, which is
+     the one thing that genuinely has to change. See BUILD.md. */
   scene.background = null;
   renderer.setClearColor(0x000000, 0);
-  const glow = buildGlow();
+  const glow = buildGlow(readTheme());
   scene.add(glow);
 
   const envMap = buildEnvironment(renderer);
@@ -288,10 +351,23 @@ function init(canvas) {
   const gem = new THREE.Mesh(geo, mat);
   gem.rotation.x = FACE_ON;
 
-  const edges = new THREE.LineSegments(
-    new THREE.EdgesGeometry(geo, 1),
-    new THREE.LineBasicMaterial({ color: '#3A2408', transparent: true, opacity: 0.45 })
-  );
+  /* Facet edges. On the dark page these are a quiet seam between facets and
+     the silhouette comes free, because even the stone's darkest facet is far
+     brighter than the field behind it.
+
+     On the light page that is inverted and it is the *bright* facets that
+     have no contrast: measured against bone, the brightest facet lands at
+     1.02:1 — the glint and the page are the same value, so wherever the
+     stone catches the key light its outline stops existing. So in light mode
+     the edges take over the silhouette: darker, and opaque enough to draw the
+     shape on their own. It also puts the stone closer to the line-drawn logo
+     mark it is derived from, which is the right read on paper. */
+  const EDGE = {
+    dark:  { color: '#3A2408', opacity: 0.45 },
+    light: { color: '#2A1A04', opacity: 0.85 }
+  };
+  const edgeMat = new THREE.LineBasicMaterial({ transparent: true });
+  const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geo, 1), edgeMat);
   gem.add(edges);
 
   const pivot = new THREE.Group();
@@ -312,6 +388,24 @@ function init(canvas) {
   const cool = new THREE.DirectionalLight('#CFE3FF', 0.25);
   cool.position.set(-3, 1.5, 2);
   scene.add(cool);
+
+  /* Everything on the stone that depends on the page behind it, in one place.
+     Called once at startup and again on every theme change. */
+  function applyGemTheme(theme) {
+    glow.setTheme(theme);
+    edgeMat.color.set(EDGE[theme].color);
+    edgeMat.opacity = EDGE[theme].opacity;
+    /* Trimmed on the light page for the same reason the edges darken: the
+       env rig's narrow strips are what drive a facet to 255, and a facet at
+       255 on a bone page is invisible. This lowers the ceiling rather than
+       dulling the stone — the mid facets, which carry the colour, barely
+       move. BUILD.md warns against *raising* exposure, which this does not
+       do; clipping can only get better. */
+    mat.envMapIntensity = theme === 'light' ? 1.00 : 1.25;
+    renderer.toneMappingExposure = theme === 'light' ? 0.88 : 1.0;
+  }
+  applyGemTheme(readTheme());
+  themeTargets.push({ setTheme: applyGemTheme });
 
   const composer = new EffectComposer(renderer);
   composer.addPass(new RenderPass(scene, camera));
@@ -378,5 +472,33 @@ function init(canvas) {
   pose(0);
   frame();
 }
+
+/* ---------------------------------------------------------------
+   Theme hook.
+
+   Every gem on the page registers the objects that care about the theme
+   (currently just its halo — see the note in init() for why the scene
+   background is not one of them). Either entry point works:
+
+     window.devrocaGem.setTheme('light' | 'dark')
+     window.dispatchEvent(new CustomEvent('devroca:themechange'))
+
+   The event carries no payload and is not required to: the toggle has
+   already written data-theme onto <html> by the time it fires, so
+   readTheme() is the single source of truth and the two paths cannot
+   disagree. main.js uses the event.
+
+   Both are safe to call before the gem exists and on pages that have no
+   gem — the registry is simply empty.
+--------------------------------------------------------------- */
+const themeTargets = [];
+
+function applyTheme(theme) {
+  const t = theme === 'light' ? 'light' : 'dark';
+  themeTargets.forEach(o => o.setTheme(t));
+}
+
+window.addEventListener('devroca:themechange', () => applyTheme(readTheme()));
+window.devrocaGem = { setTheme: applyTheme };
 
 document.querySelectorAll('canvas[data-gem]').forEach(init);

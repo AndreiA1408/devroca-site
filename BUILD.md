@@ -34,6 +34,33 @@ overwritten on the next build.
 - **Exposure.** `toneMappingExposure` is deliberately held at 1.0 and the
   bloom threshold is high (0.92). Both guard against blown-out facets.
 
+## Theme
+
+The page has two themes, switched by `data-theme="light"` on `<html>` (see the
+palette block in `assets/styles.css`). The gem takes part in that, but only
+through `window.devrocaGem.setTheme()` / the `devroca:themechange` event, which
+repaint the halo, the facet edges and the exposure. **`scene.background` stays
+`null` in both themes and must not be made theme-aware** — the section below
+explains why an opaque background cannot match the page, and that argument gets
+*worse* in light mode, not better: ACES compresses the bright end hardest, so a
+background authored as the light page's `#F7F4EE` comes back off the composer
+several steps darker than the CSS beside it. A seam that is faint on black
+would be obvious on paper. The canvas is transparent, so it already shows
+whatever the page is painted, in any theme, for free.
+
+What genuinely does change with the theme:
+
+- **Halo.** Gold over the dark page (it lifts the field and reads as glow);
+  bronze over the light one. Nothing composited over bone can be brighter than
+  bone, so on paper the halo is an aura that darkens rather than a glow.
+- **Facet edges.** `#3A2408` at 0.45 in dark, `#2A1A04` at 0.85 in light.
+  Measured against bone, the stone's *brightest* facet is 1.02:1 — at a glint
+  the outline would otherwise stop existing, so on the light page the edges
+  carry the silhouette.
+- **Exposure / env intensity.** Trimmed to 0.88 / 1.00 in light, which lowers
+  the ceiling on clipped facets. This only ever reduces clipping, so it does
+  not conflict with the exposure warning above.
+
 ## Canvas transparency (do not revert to an opaque background)
 
 The hero canvas is transparent and the page's own background shows through.
