@@ -121,6 +121,17 @@
     <form id="contactForm" action="https://formsubmit.co/devroca2026@gmail.com" method="POST">
       <input type="hidden" name="_subject" value="New project inquiry from devroca.com">
       <input type="hidden" name="_template" value="table">
+      <!-- FormSubmit mails this back to whatever address the Email field holds.
+           It is a fixed string: FormSubmit has no merge-field syntax, so a
+           "Hi [Name]," would arrive with the brackets intact. Hence "Hi there".
+           The subject line is FormSubmit's own; there is no field to set it. -->
+      <input type="hidden" name="_autoresponse" value="Hi there,
+
+Thanks for reaching out to Devroca — this confirms your message came through.
+
+I'll get back to you within a day or two with next steps.
+
+— Andreescu Andrei-Vlad, Devroca">
       <div class="form-row">
         <div><label for="f-name">Name</label><input id="f-name" type="text" name="Name" required></div>
         <div><label for="f-email">Email</label><input id="f-email" type="email" name="Email" required></div>
