@@ -168,8 +168,12 @@
   </div>
 </section>
 
+<!-- The polygon is the top edge of the --ink-2 band below it, so it has to be
+     painted in --ink-2. It takes that through currentColor (set on
+     .facet-divider) rather than a literal: as a literal it stayed #1B1A17 in
+     light mode and rendered as a solid black stripe across the page. -->
 <div class="facet-divider">
-  <svg viewBox="0 0 1200 70" preserveAspectRatio="none" aria-hidden="true" focusable="false"><polygon points="0,70 0,30 400,60 800,10 1200,45 1200,70" fill="#1B1A17"/></svg>
+  <svg viewBox="0 0 1200 70" preserveAspectRatio="none" aria-hidden="true" focusable="false"><polygon points="0,70 0,30 400,60 800,10 1200,45 1200,70" fill="currentColor"/></svg>
 </div>
 
 <!-- SERVICES TEASER -->
