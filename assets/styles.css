@@ -298,6 +298,18 @@ section{ position:relative; padding:100px 0; }
   opacity:0; transition:opacity .35s ease;
 }
 .work-card:hover::before{ opacity:1; }
+/* The card is taller than its copy, and the copy is pinned to the bottom, so
+   the top half was simply empty. On the dark page that reads as negative
+   space; on a light one it reads as an unfinished card. The category mark
+   fills it — the same glyph work.html uses for the same category, so the two
+   pages agree. margin-bottom:auto is what pushes it to the top of the flex
+   column; position:relative keeps it above the corner glow, as h3/p do. */
+.work-card .work-glyph{
+  width:34px; height:34px; margin-bottom:auto; position:relative;
+  color:var(--glyph-ink); opacity:var(--glyph-opacity);
+  transition:opacity .3s ease, transform .35s cubic-bezier(.22,.68,.32,1);
+}
+.work-card:hover .work-glyph{ opacity:1; transform:scale(1.08); }
 .work-card h3{ font-size:17px; margin-bottom:8px; position:relative; }
 .work-card p{ font-size:13.5px; color:var(--text-dim); position:relative; }
 
@@ -595,10 +607,10 @@ nav.links a:hover::after, nav.links a.current::after{ transform:scaleX(1); }
   opacity:0; transition:opacity .35s ease;
 }
 .svc-card:hover::after, .teaser-card:hover::after, .quote-doc:hover::after{ opacity:1; }
-.svc-card{ transition:border-color .25s ease, transform .35s cubic-bezier(.22,.68,.32,1); }
-.teaser-card{ transition:border-color .25s ease, transform .35s cubic-bezier(.22,.68,.32,1); }
+.svc-card{ transition:border-color .25s ease, transform .35s cubic-bezier(.22,.68,.32,1), box-shadow .35s ease; }
+.teaser-card{ transition:border-color .25s ease, transform .35s cubic-bezier(.22,.68,.32,1), box-shadow .35s ease; }
 .svc-card:hover, .teaser-card:hover{ transform:translateY(-4px); }
-.work-card{ transition:transform .35s cubic-bezier(.22,.68,.32,1), border-color .25s ease; }
+.work-card{ transition:transform .35s cubic-bezier(.22,.68,.32,1), border-color .25s ease, box-shadow .35s ease; }
 .work-card:hover{ transform:translateY(-5px); border-color:var(--gold-4); }
 
 /* Process steps and why-items get a quieter version: the accent
@@ -812,13 +824,23 @@ body::after{
      cream band over a cream card is invisible, so on paper the light
      passes as a faint bronze shadow instead. Same geometry, same
      timing — it reads as a facet catching the light either way. */
-  --sweep: rgba(138,90,18,0.10);
-  --cursor-glow: rgba(160,103,22,0.16);
-  --glow-soft: rgba(160,103,22,0.14);
-  /* A bloom cannot brighten paper, so the dot's halo becomes a tight
-     warm shadow — the dot still "lights up", it just does it by
-     gaining weight rather than by glowing. */
-  --glow-dot: rgba(110,72,12,0.45);
+  /* Alphas here are not guesses and not copies of the dark ones: each was
+     solved so the effect moves the card surface by the same amount its dark
+     counterpart does. Measured as contrast against the card the effect lands
+     on — sweep 1.29 vs dark 1.29, corner glow 1.31 vs 1.31, pointer glow
+     1.35 vs 1.34. Carrying the dark alphas across unchanged left all three
+     visibly weaker than dark (1.15 / 1.19 / 1.23), which is exactly the
+     "looks like an afterthought" failure. */
+  --sweep: rgba(138,90,18,0.18);
+  --cursor-glow: rgba(160,103,22,0.23);
+  --glow-soft: rgba(160,103,22,0.21);
+  /* A bloom cannot brighten paper, so the dot's halo becomes a tight warm
+     shadow — the dot still "lights up", it just does it by gaining weight
+     rather than by glowing. This is the one effect that cannot reach parity:
+     a halo on bone can only darken toward its own colour, so matching dark's
+     4.71 would need a near-black smudge round an 8px dot. Deep brown at 0.62
+     gets it to ~4.4 and still reads as a bloom rather than a blot. */
+  --glow-dot: rgba(46,29,5,0.62);
   --glow-node: rgba(110,72,12,0.42);
   --hero-bloom: rgba(160,103,22,0.09);
 
@@ -913,6 +935,45 @@ body::after{
   background-size:100% 100%;
   background-repeat:no-repeat;
   box-shadow:0 26px 60px -34px rgba(40,30,8,0.55);
+}
+
+/* Elevation, light theme only.
+
+   On the dark page a card lifts by being *brighter* than the field, and a
+   shadow under it would be invisible against near-black — so there is none.
+   On a light page that lift is the weaker of the two signals available and
+   the shadow is the stronger one, which is why paper-coloured interfaces are
+   built out of shadows. Without it these cards read as outlines rather than
+   objects. Warm brown rather than black: neutral shadow on a warm page looks
+   like dirt.
+
+   Two layers on purpose — a tight one for the contact edge and a wide, soft
+   one for the cast — because a single mid shadow reads as a blur. */
+:root[data-theme="light"] .svc-card,
+:root[data-theme="light"] .teaser-card,
+:root[data-theme="light"] .work-card,
+:root[data-theme="light"] .quote-doc,
+:root[data-theme="light"] .cat-visual{
+  box-shadow:0 1px 2px -1px rgba(60,48,20,0.10),
+             0 14px 30px -20px rgba(60,48,20,0.30);
+}
+/* The cards that already translate on hover get a deeper cast to go with it,
+   so the rise reads as the card leaving the page rather than just sliding. */
+:root[data-theme="light"] .svc-card:hover,
+:root[data-theme="light"] .teaser-card:hover,
+:root[data-theme="light"] .work-card:hover{
+  box-shadow:0 2px 4px -2px rgba(60,48,20,0.12),
+             0 24px 44px -24px rgba(60,48,20,0.38);
+}
+@media (prefers-reduced-motion: reduce){
+  /* The cards do not move under reduced motion, so the deeper cast would be
+     a shadow with nothing casting it. */
+  :root[data-theme="light"] .svc-card:hover,
+  :root[data-theme="light"] .teaser-card:hover,
+  :root[data-theme="light"] .work-card:hover{
+    box-shadow:0 1px 2px -1px rgba(60,48,20,0.10),
+               0 14px 30px -20px rgba(60,48,20,0.30);
+  }
 }
 
 
@@ -1140,6 +1201,8 @@ section{
   .svc-card::after, .teaser-card::after,
   .quote-doc::before, .quote-doc::after{ display:none; }
   .svc-card:hover, .teaser-card:hover, .work-card:hover{ transform:none; }
+  .work-card:hover .work-glyph{ transform:none; }
+  .work-card .work-glyph{ transition:none; }
   .tab-panel.active > *{ animation:none; }
   .mobile-menu a{ opacity:1; transform:none; transition:none; }
   .faq-a p{ transform:none; transition:none; }

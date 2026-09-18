@@ -143,6 +143,13 @@
         </g>
       </g>
     </symbol>
+    <!-- The four category glyphs the work-teaser cards use, copied from
+         work.html so the same mark means the same thing on both pages.
+         Stroked with currentColor, so .work-card sets them per theme. -->
+    <symbol id="glyph-clinic" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.2 L20 6.4 V12.2 C20 16.6 16.6 19.9 12 21 C7.4 19.9 4 16.6 4 12.2 V6.4 Z"/><path d="M12 9.2 V15.2"/><path d="M9 12.2 H15"/></g></symbol>
+    <symbol id="glyph-hospitality" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16 A8 8 0 0 1 20 16"/><path d="M2.5 16 H21.5"/><path d="M12 8 V5.8"/></g></symbol>
+    <symbol id="glyph-retail" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5.2 8 H18.8 L17.8 20.8 H6.2 Z"/><path d="M9 8 V6.2 A3 3 0 0 1 15 6.2 V8"/></g></symbol>
+    <symbol id="glyph-booking" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6.2 H20 V20.5 H4 Z"/><path d="M4 10.4 H20"/><path d="M8.6 3.5 V7"/><path d="M15.4 3.5 V7"/><path d="M9 15 L11.2 17.2 L15.2 13.2"/></g></symbol>
   </defs>
 </svg>
 
@@ -266,10 +273,10 @@
       <a href="work.html" class="section-link">See what we build →</a>
     </div>
     <div class="work-grid">
-      <div class="work-card reveal"><h3>Clinics &amp; Healthcare</h3><p>Online booking, practitioner pages, Google reviews.</p></div>
-      <div class="work-card reveal"><h3>Restaurants &amp; Hospitality</h3><p>Menus, reservations, extra languages.</p></div>
-      <div class="work-card reveal"><h3>Retail &amp; E-commerce</h3><p>Catalog, checkout, and an order dashboard.</p></div>
-      <div class="work-card reveal"><h3>Service &amp; Booking Platforms</h3><p>Web apps where booking is the product.</p></div>
+      <div class="work-card reveal"><svg class="work-glyph" aria-hidden="true" focusable="false"><use href="#glyph-clinic"></use></svg><h3>Clinics &amp; Healthcare</h3><p>Online booking, practitioner pages, Google reviews.</p></div>
+      <div class="work-card reveal"><svg class="work-glyph" aria-hidden="true" focusable="false"><use href="#glyph-hospitality"></use></svg><h3>Restaurants &amp; Hospitality</h3><p>Menus, reservations, extra languages.</p></div>
+      <div class="work-card reveal"><svg class="work-glyph" aria-hidden="true" focusable="false"><use href="#glyph-retail"></use></svg><h3>Retail &amp; E-commerce</h3><p>Catalog, checkout, and an order dashboard.</p></div>
+      <div class="work-card reveal"><svg class="work-glyph" aria-hidden="true" focusable="false"><use href="#glyph-booking"></use></svg><h3>Service &amp; Booking Platforms</h3><p>Web apps where booking is the product.</p></div>
     </div>
   </div>
 </section>
