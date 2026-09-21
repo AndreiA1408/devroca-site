@@ -182,7 +182,8 @@ nav.links a:hover, nav.links a.current{ color:var(--paper); }
   visibility:hidden;
 }
 .mobile-menu.open{ transform:translateY(0); visibility:visible; }
-body.menu-open{ overflow:hidden; }
+/* top is set inline by main.js to the negative scroll offset */
+body.menu-open{ position:fixed; left:0; right:0; width:100%; overflow:hidden; }
 .mobile-menu a{ font-size:23px; font-weight:600; color:var(--paper); }
 .menu-close{ position:absolute; top:26px; right:28px; background:none; border:none; color:var(--paper); font-size:24px; cursor:pointer; }
 

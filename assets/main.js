@@ -4,9 +4,31 @@ const menuClose = document.getElementById('menuClose');
 const mobileMenu = document.getElementById('mobileMenu');
 
 if (menuBtn && mobileMenu) {
+  // overflow:hidden alone doesn't stop iOS Safari scrolling the page behind
+  // the menu, so the body is pinned with position:fixed instead, offset by
+  // the scroll position so nothing visibly moves. Pinning resets the
+  // document's scroll to 0, so it is put back by hand on close — with
+  // smooth scrolling suspended, or the page would glide down from the top.
+  let lockedY = 0;
+  const lockScroll = (lock) => {
+    const body = document.body;
+    if (lock === body.classList.contains('menu-open')) return;
+    if (lock) {
+      lockedY = window.scrollY;
+      body.style.top = -lockedY + 'px';
+      body.classList.add('menu-open');
+    } else {
+      body.classList.remove('menu-open');
+      body.style.top = '';
+      const root = document.documentElement;
+      root.style.scrollBehavior = 'auto';
+      window.scrollTo(0, lockedY);
+      root.style.scrollBehavior = '';
+    }
+  };
   const setMenu = (open) => {
     mobileMenu.classList.toggle('open', open);
-    document.body.classList.toggle('menu-open', open);
+    lockScroll(open);
     menuBtn.setAttribute('aria-expanded', String(open));
     // Return focus where the user can act on it, rather than leaving it
     // stranded on a control that just scrolled out of reach.
@@ -291,6 +313,9 @@ if (!prefersReduced && window.matchMedia('(hover: hover)').matches) {
   let queued = false;
   const onScroll = () => {
     queued = false;
+    // While the menu is open the body is pinned and scrollY reads 0; acting
+    // on that would drop the header state and reset the hero mid-slide.
+    if (document.body.classList.contains('menu-open')) return;
     const y = window.scrollY;
 
     if (header) header.classList.toggle('scrolled', y > 12);
