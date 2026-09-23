@@ -1231,9 +1231,132 @@ section{
 .btn[aria-disabled="true"]{ opacity:.65; cursor:default; }
 .btn[aria-disabled="true"]:hover{ transform:none; }
 
+/* ---------- Language switcher ----------
+   Built by assets/i18n.js, so like the theme toggle it only exists with JS.
+   Same 44px pill and hover treatment as .theme-btn next to it; the menu is
+   the custom select's list, anchored to the right edge of the header. */
+.lang{ position:relative; }
+.lang-btn{
+  height:44px; min-width:44px; padding:0 14px; border-radius:999px;
+  background:transparent; border:1.5px solid var(--line); color:var(--text-dim);
+  font-family:inherit; font-size:12.5px; font-weight:600; letter-spacing:.08em;
+  cursor:pointer;
+  transition:color .25s ease, border-color .25s ease, background .25s ease;
+}
+.lang-btn:hover, .lang[data-open="true"] .lang-btn{
+  border-color:var(--gold-4); color:var(--gold-ink); background:var(--tint-soft);
+}
+.lang-menu{
+  position:absolute; z-index:120; top:calc(100% + 8px); right:0; min-width:172px;
+  padding:5px; background:var(--ink-3); border:1px solid var(--gold-5); border-radius:8px;
+  box-shadow:0 18px 40px var(--shadow-1);
+  opacity:0; transform:translateY(-6px); pointer-events:none; visibility:hidden;
+  transition:opacity .2s ease, transform .3s cubic-bezier(.22,.68,.32,1), visibility 0s linear .3s;
+}
+.lang[data-open="true"] .lang-menu{
+  opacity:1; transform:none; pointer-events:auto; visibility:visible;
+  transition:opacity .2s ease, transform .3s cubic-bezier(.22,.68,.32,1), visibility 0s;
+}
+.lang-opt{
+  display:flex; align-items:center; gap:12px; width:100%; min-height:44px;
+  padding:10px 12px; border:0; border-radius:6px; background:transparent;
+  font-family:inherit; font-size:14.5px; color:var(--paper-dim); text-align:left;
+  cursor:pointer; transition:background-color .15s ease, color .15s ease;
+}
+.lang-opt:hover, .lang-opt:focus-visible{ background:var(--tint-mid); color:var(--paper); }
+.lang-opt[aria-current="true"]{ color:var(--gold-ink); font-weight:600; }
+.lang-code{ min-width:22px; font-size:11.5px; font-weight:600; letter-spacing:.08em; color:var(--text-dim-2); }
+.lang-opt[aria-current="true"] .lang-code{ color:var(--gold-ink); }
+
+/* Making room for it. The switcher takes ~60px of a header that was already
+   close to full between the 980px breakpoint and the max width, so in that
+   band only, the gap between nav links eases down instead of the links
+   wrapping onto two lines. At full width nothing changes.
+   Spanish labels run ~150px longer than English ("Por qué nosotros",
+   "Empieza un proyecto"), which leaves no room at any desktop width at the
+   usual 36px, so Spanish gets a tighter gap and hands over to the menu
+   button a little earlier. */
+nav.links a, .nav-cta .btn{ white-space:nowrap; }
+@media (min-width: 981px) and (max-width: 1180px){
+  nav.links{ gap:clamp(16px, 10vw - 82px, 36px); }
+}
+:root:lang(es) nav.links{ gap:20px; }
+@media (max-width: 1180px){
+  :root:lang(es) nav.links, :root:lang(es) .nav-cta{ display:none; }
+  :root:lang(es) .menu-btn{
+    display:inline-flex; align-items:center; justify-content:center;
+    min-width:44px; min-height:44px;
+  }
+}
+
+/* A non-English page is held hidden until its text is swapped in (the class
+   is set by the inline script in the head, cleared by i18n.js). */
+:root.i18n-pending body{ visibility:hidden; }
+/* Switching on a page already in view: the copy dips out for the swap and
+   comes back, instead of every line jumping at once. */
+main, footer, nav.links, .nav-cta{ transition:opacity .18s ease; }
+.lang-switching main, .lang-switching footer,
+.lang-switching nav.links, .lang-switching .nav-cta{ opacity:0; }
+
+/* ---------- Motion refinements ----------
+   The same movements as above, retimed. Anything that travels gets a longer,
+   decelerating curve so it never starts or stops abruptly; fades run a touch
+   ahead of the movement they accompany. Scoped to no-preference, so reduced
+   motion keeps exactly the rules it had. */
+@media (prefers-reduced-motion: no-preference){
+  :root{
+    --ease-glide:cubic-bezier(.22,.68,.32,1);
+    --ease-fade:cubic-bezier(.33,1,.68,1);
+    --ease-sheet:cubic-bezier(.7,0,.2,1);
+  }
+  .btn{ transition:transform .45s var(--ease-glide); }
+  .btn-primary::before{ transition:transform .9s var(--ease-glide); }
+  header{ transition:background .45s ease, border-color .45s ease, box-shadow .45s ease; }
+  nav.links a{ transition:color .3s ease; }
+  nav.links a::after{ transition:transform .45s var(--ease-glide); }
+  .mobile-menu{ transition:transform .6s var(--ease-sheet), visibility .6s; }
+  .mobile-menu a{ transition:opacity .5s var(--ease-fade), transform .65s var(--ease-glide); }
+
+  :where(.js) .reveal{
+    transition:opacity .9s var(--ease-fade), transform 1.05s var(--ease-glide);
+    transition-delay:var(--reveal-delay, 0ms);
+  }
+
+  .svc-card, .teaser-card{ transition:border-color .3s ease, transform .55s var(--ease-glide), box-shadow .55s ease; }
+  .work-card{ transition:transform .55s var(--ease-glide), border-color .3s ease, box-shadow .55s ease; }
+  .svc-card::before, .teaser-card::before, .work-card::after, .quote-doc::before{ transition:transform .95s var(--ease-glide); }
+  .svc-card::after, .teaser-card::after, .quote-doc::after{ transition:opacity .5s ease; }
+  .step::before{ transition:color .35s ease, transform .45s var(--ease-glide); }
+  .why-item{ transition:background .45s ease; }
+  .why-item h3 .dot{ transition:transform .6s var(--ease-glide), box-shadow .45s ease; }
+
+  .tab{ transition:border-color .3s ease, color .3s ease, background .3s ease, transform .3s var(--ease-glide); }
+  :where(.js) .tab-panel.active > *{ animation-duration:.7s; }
+
+  .faq-a{ transition:max-height .55s var(--ease-glide); }
+  :where(.js) .faq-a p{ transition:transform .6s var(--ease-glide); }
+  .faq-q .plus{ transition:transform .45s var(--ease-glide); }
+
+  .sel-caret{ transition:transform .4s var(--ease-glide); }
+  .sel-list{ transition:opacity .22s ease, transform .32s var(--ease-glide), visibility 0s linear .32s; }
+  .sel[data-open="true"] .sel-list{ transition:opacity .22s ease, transform .32s var(--ease-glide), visibility 0s; }
+
+  /* Interior page heroes arrive with a soft rise instead of appearing
+     outright. The container moves, not the h1/p inside it, because those
+     carry the scroll parallax as inline transforms. Held until a translated
+     page is ready, so the rise is never spent while the page is hidden. */
+  :root:not(.i18n-pending) .page-hero{ animation:hero-in .95s var(--ease-glide) both; }
+}
+@keyframes hero-in{
+  from{ opacity:0; transform:translateY(16px); }
+  to{ opacity:1; transform:none; }
+}
+
 /* ---------- Reduced motion ----------
    Anything above that moves is stripped back to a plain state. */
 @media (prefers-reduced-motion: reduce){
+  .lang-menu, .lang[data-open="true"] .lang-menu{ transition:none; transform:none; }
+  main, footer, nav.links, .nav-cta{ transition:none; }
   :where(.js) .reveal{ opacity:1; transform:none; transition:none; transition-delay:0ms !important; }
   .scroll-progress{ display:none; }
   .svc-card::before, .teaser-card::before, .work-card::after,

@@ -5,8 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- Marks the document as JS-capable before the stylesheet is even fetched, so
      the scroll-reveal rules can hide content only where JS will reveal it again.
-     Synchronous and ahead of the <link> on purpose: no flash of hidden content. -->
-<script>(function(){var d=document.documentElement;d.classList.add('js');try{if(localStorage.getItem('theme')==='light')d.setAttribute('data-theme','light');}catch(e){}})()</script>
+     Synchronous and ahead of the <link> on purpose: no flash of hidden content.
+     It also reads the stored language (or ?lang=), so a Romanian or Spanish
+     page is held hidden until assets/i18n.js has swapped the text in, and
+     English never flashes first. The timeout is the safety net if that
+     script never runs. -->
+<script>(function(){var d=document.documentElement,l;d.classList.add('js');try{if(localStorage.getItem('theme')==='light')d.setAttribute('data-theme','light');}catch(e){}try{l=(/[?&]lang=(en|ro|es)(?:&|$)/.exec(location.search)||[])[1]||localStorage.getItem('lang');}catch(e){}if(l==='ro'||l==='es'){d.lang=l;d.classList.add('i18n-pending');setTimeout(function(){d.classList.remove('i18n-pending');},3000);}})()</script>
 <title>Process — Devroca</title>
 <meta name="description" content="How a Devroca project actually goes, from discovery to launch to ongoing growth.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -34,14 +38,15 @@
     content:''; position:absolute; left:24px; top:70px; bottom:60px; width:2px; z-index:1;
     background:var(--grad-step-line);
     transform:scaleY(var(--step-progress, 0)); transform-origin:top;
-    transition:transform .15s linear;
+    /* Eases toward each new scroll position rather than stepping to it. */
+    transition:transform .35s cubic-bezier(.22,.68,.32,1);
   }
   .big-step .num{ position:relative; }
   .big-step .num::before{
     content:''; position:absolute; left:-32px; top:14px; width:12px; height:12px; z-index:2;
     border-radius:3px; transform:rotate(45deg);
     background:var(--ink); border:2px solid var(--gold-5);
-    transition:background-color .35s ease, border-color .35s ease, box-shadow .35s ease;
+    transition:background-color .45s ease, border-color .45s ease, box-shadow .5s ease;
   }
   .big-step.lit .num::before{
     background:var(--node-lit); border-color:var(--node-lit);
@@ -157,13 +162,13 @@
         <div class="num">01</div>
         <div>
           <h3>Discovery</h3>
-          <p>We talk through your business, your goals, and what "done" actually looks like for you — before anything gets designed or built.</p>
+          <p>We talk through your business, your goals, and what "done" actually looks like for you, before anything gets designed or built.</p>
           <ul>
             <li>A short call or written brief about your business and audience</li>
             <li>Clarifying which services actually fit</li>
-            <li>A clear, specific quote — not a vague estimate</li>
+            <li>A clear, specific quote instead of a vague estimate</li>
           </ul>
-          <div class="step-out"><b>You end up with:</b> a written scope — the specific services in your project — and one price quoted for that scope, set to be competitive for what it covers.</div>
+          <div class="step-out"><b>You end up with:</b> a written scope that lists the specific services in your project, plus one price quoted for that scope and set to be competitive for what it covers.</div>
           <span class="duration">TYPICALLY 1–3 DAYS</span>
         </div>
       </div>
@@ -199,13 +204,13 @@
         <div class="num">04</div>
         <div>
           <h3>Grow</h3>
-          <p>Ongoing maintenance, plus any add-ons you want, whenever you're ready for them — the relationship doesn't end at launch.</p>
+          <p>Ongoing maintenance, plus any add-ons you want, whenever you're ready for them. The relationship doesn't end at launch.</p>
           <ul>
             <li>Monthly maintenance and monitoring if you want it</li>
             <li>Add booking, multi-language, integrations, or anything else later</li>
             <li>No pressure, no long-term contract required</li>
           </ul>
-          <div class="step-out"><b>You end up with:</b> a maintained site and an open door — add-ons get quoted the same way, whenever you want them.</div>
+          <div class="step-out"><b>You end up with:</b> a maintained site and an open door. Add-ons get quoted the same way whenever you want them.</div>
           <span class="duration">ONGOING</span>
         </div>
       </div>
@@ -245,6 +250,9 @@
   </div>
 </footer>
 
+<script src="assets/i18n/ro.js" defer></script>
+<script src="assets/i18n/es.js" defer></script>
+<script src="assets/i18n.js" defer></script>
 <script src="assets/main.js" defer></script>
 </body>
 </html>

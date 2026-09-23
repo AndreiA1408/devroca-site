@@ -5,8 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- Marks the document as JS-capable before the stylesheet is even fetched, so
      the scroll-reveal rules can hide content only where JS will reveal it again.
-     Synchronous and ahead of the <link> on purpose: no flash of hidden content. -->
-<script>(function(){var d=document.documentElement;d.classList.add('js');try{if(localStorage.getItem('theme')==='light')d.setAttribute('data-theme','light');}catch(e){}})()</script>
+     Synchronous and ahead of the <link> on purpose: no flash of hidden content.
+     It also reads the stored language (or ?lang=), so a Romanian or Spanish
+     page is held hidden until assets/i18n.js has swapped the text in, and
+     English never flashes first. The timeout is the safety net if that
+     script never runs. -->
+<script>(function(){var d=document.documentElement,l;d.classList.add('js');try{if(localStorage.getItem('theme')==='light')d.setAttribute('data-theme','light');}catch(e){}try{l=(/[?&]lang=(en|ro|es)(?:&|$)/.exec(location.search)||[])[1]||localStorage.getItem('lang');}catch(e){}if(l==='ro'||l==='es'){d.lang=l;d.classList.add('i18n-pending');setTimeout(function(){d.classList.remove('i18n-pending');},3000);}})()</script>
 <title>Contact — Devroca</title>
 <meta name="description" content="Get in touch with Devroca to start a web or app development project.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -101,7 +105,7 @@
 <div class="page-hero wrap" style="padding-bottom:20px;">
   <div class="breadcrumb"><a href="index.html">Home</a> / Contact</div>
   <h1>Let's build <em>something.</em></h1>
-  <p>Tell me a bit about your project — I'll get back to you within a day or two with next steps.</p>
+  <p>Tell me a bit about your project and I'll get back to you within a day or two with next steps.</p>
 </div>
 
 <section style="padding-top:20px;">
@@ -109,18 +113,18 @@
     <div class="contact-info reveal">
       <div class="contact-line"><span class="ic" aria-hidden="true">✉</span> <a href="mailto:devroca2026@gmail.com">devroca2026@gmail.com</a></div>
       <div class="contact-line"><span class="ic" aria-hidden="true">☎</span> <a href="tel:+40727806421">+40 727 806 421</a></div>
-      <div class="contact-line"><span class="ic" aria-hidden="true">◆</span> Bucharest, Romania — working internationally</div>
+      <div class="contact-line"><span class="ic" aria-hidden="true">◆</span> Bucharest, Romania, working internationally</div>
       <div class="assure">
         <span class="eyebrow">WHAT HAPPENS NEXT</span>
         <ol>
-          <li><strong>It goes to one inbox.</strong> Straight to Andrei — the same person who would scope and build the project, not an account manager passing it along.</li>
+          <li><strong>It goes to one inbox.</strong> Straight to Andrei, the same person who would scope and build the project, not an account manager passing it along.</li>
           <li><strong>A reply within a day or two.</strong> Usually a couple of questions back, or a starting point to react to.</li>
           <li><strong>Then a scoped, custom quote.</strong> Discovery typically runs 1&ndash;3 days, the price is built around your actual scope, and the number is agreed in writing before anything gets built.</li>
         </ol>
       </div>
       <div style="margin-top:32px; padding-top:26px; border-top:1px solid var(--line);">
         <span class="eyebrow">BEFORE YOU WRITE</span>
-        <p style="color:var(--text-dim); font-size:14.5px; max-width:340px;">Not sure what you need yet? That's fine — describe the business and the problem, and a starting point (or a quick question back) is usually enough to get moving.</p>
+        <p style="color:var(--text-dim); font-size:14.5px; max-width:340px;">Not sure what you need yet? That's fine. Describe the business and the problem, and a starting point (or a quick question back) is usually enough to get moving.</p>
       </div>
     </div>
     <div class="reveal" id="formCol">
@@ -133,11 +137,11 @@
            The subject line is FormSubmit's own; there is no field to set it. -->
       <input type="hidden" name="_autoresponse" value="Hi there,
 
-Thanks for reaching out to Devroca — this confirms your message came through.
+Thanks for reaching out to Devroca. This confirms your message came through.
 
 I'll get back to you within a day or two with next steps.
 
-— Andreescu Andrei-Vlad, Devroca">
+Andreescu Andrei-Vlad, Devroca">
       <div class="form-row">
         <div><label for="f-name">Name</label><input id="f-name" type="text" name="Name" autocomplete="name" required></div>
         <div><label for="f-email">Email</label><input id="f-email" type="email" name="email" autocomplete="email" inputmode="email" required></div>
@@ -149,11 +153,11 @@ I'll get back to you within a day or two with next steps.
       <div>
         <label for="f-type">Project type</label>
         <select id="f-type" name="Project type">
-          <option>New website</option>
-          <option>Web app</option>
-          <option>Existing site — maintenance</option>
-          <option>Something else / custom request</option>
-          <option>Not sure yet</option>
+          <option value="New website">New website</option>
+          <option value="Web app">Web app</option>
+          <option value="Existing site (maintenance)">Existing site (maintenance)</option>
+          <option value="Something else / custom request">Something else / custom request</option>
+          <option value="Not sure yet">Not sure yet</option>
         </select>
       </div>
 
@@ -223,7 +227,7 @@ I'll get back to you within a day or two with next steps.
         </svg>
       </div>
       <h2>Message sent.</h2>
-      <p>It's in Andrei's inbox — you'll get a reply within a day or two. If it's urgent, <a href="tel:+40727806421" style="color:var(--gold-3);">+40 727 806 421</a> works too.</p>
+      <p>It's in Andrei's inbox, and you'll get a reply within a day or two. If it's urgent, <a href="tel:+40727806421" style="color:var(--gold-3);">+40 727 806 421</a> works too.</p>
     </div>
     </div>
   </div>
@@ -249,6 +253,9 @@ I'll get back to you within a day or two with next steps.
   </div>
 </footer>
 
+<script src="assets/i18n/ro.js" defer></script>
+<script src="assets/i18n/es.js" defer></script>
+<script src="assets/i18n.js" defer></script>
 <script src="assets/main.js" defer></script>
 </body>
 </html>

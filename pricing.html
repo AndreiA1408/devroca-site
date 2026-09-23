@@ -5,8 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- Marks the document as JS-capable before the stylesheet is even fetched, so
      the scroll-reveal rules can hide content only where JS will reveal it again.
-     Synchronous and ahead of the <link> on purpose: no flash of hidden content. -->
-<script>(function(){var d=document.documentElement;d.classList.add('js');try{if(localStorage.getItem('theme')==='light')d.setAttribute('data-theme','light');}catch(e){}})()</script>
+     Synchronous and ahead of the <link> on purpose: no flash of hidden content.
+     It also reads the stored language (or ?lang=), so a Romanian or Spanish
+     page is held hidden until assets/i18n.js has swapped the text in, and
+     English never flashes first. The timeout is the safety net if that
+     script never runs. -->
+<script>(function(){var d=document.documentElement,l;d.classList.add('js');try{if(localStorage.getItem('theme')==='light')d.setAttribute('data-theme','light');}catch(e){}try{l=(/[?&]lang=(en|ro|es)(?:&|$)/.exec(location.search)||[])[1]||localStorage.getItem('lang');}catch(e){}if(l==='ro'||l==='es'){d.lang=l;d.classList.add('i18n-pending');setTimeout(function(){d.classList.remove('i18n-pending');},3000);}})()</script>
 <title>Pricing — Devroca</title>
 <meta name="description" content="How Devroca prices work: no price list. Your project is scoped first, discussed, then quoted as one number in writing before any work starts.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -187,7 +191,7 @@
       <p>Written before work starts, and specific enough that you can tell exactly what you are and aren't buying.</p>
       <ol>
         <li><strong>The service line items</strong>Which of the 15 services are in scope, named individually.</li>
-        <li><strong>The numbers behind them</strong>Page count, number of languages, which functionality &mdash; scope stated in figures, not adjectives.</li>
+        <li><strong>The numbers behind them</strong>Page count, number of languages, which functionality. The scope is stated in figures, not adjectives.</li>
         <li><strong>The quoted price</strong>One total for that scope, plus any monthly amounts listed separately.</li>
         <li><strong>What isn't included</strong>Anything discussed but left out, written down, so a later addition is an obvious separate quote.</li>
       </ol>
@@ -222,19 +226,19 @@
       </div>
       <div class="faq-item">
         <button class="faq-q" id="faqq-5">Can I get just one service instead of a whole build?<span class="plus" aria-hidden="true">+</span></button>
-        <div class="faq-a" id="faq-5" role="region" aria-labelledby="faqq-5"><p>Yes &mdash; a single service is a normal request. A speed and security audit, or a booking system added to a site you already have, gets scoped and quoted the same way a full build does.</p></div>
+        <div class="faq-a" id="faq-5" role="region" aria-labelledby="faqq-5"><p>Yes. A single service is a normal request. A speed and security audit, or a booking system added to a site you already have, gets scoped and quoted the same way a full build does.</p></div>
       </div>
       <div class="faq-item">
         <button class="faq-q" id="faqq-6">Can I add more later?<span class="plus" aria-hidden="true">+</span></button>
-        <div class="faq-a" id="faq-6" role="region" aria-labelledby="faqq-6"><p>Yes. Anything from the services list can be added after launch &mdash; it's scoped and quoted on its own before work on it starts, so nothing gets built and invoiced as a surprise.</p></div>
+        <div class="faq-a" id="faq-6" role="region" aria-labelledby="faqq-6"><p>Yes. Anything from the services list can be added after launch. It's scoped and quoted on its own before work on it starts, so nothing gets built and invoiced as a surprise.</p></div>
       </div>
       <div class="faq-item">
         <button class="faq-q" id="faqq-7">Can the price change once work has started?<span class="plus" aria-hidden="true">+</span></button>
-        <div class="faq-a" id="faq-7" role="region" aria-labelledby="faqq-7"><p>Not for the agreed scope &mdash; once that number is agreed, it doesn't move. It only changes if you ask for something outside it, and then only after the addition is quoted and you've approved it.</p></div>
+        <div class="faq-a" id="faq-7" role="region" aria-labelledby="faqq-7"><p>Not for the agreed scope. Once that number is agreed, it doesn't move. It only changes if you ask for something outside it, and then only after the addition is quoted and you've approved it.</p></div>
       </div>
       <div class="faq-item">
         <button class="faq-q" id="faqq-8">Are there long-term contracts?<span class="plus" aria-hidden="true">+</span></button>
-        <div class="faq-a" id="faq-8" role="region" aria-labelledby="faqq-8"><p>No. Maintenance and other recurring services are billed monthly with no lock-in &mdash; you can pause or stop whenever it makes sense for your business.</p></div>
+        <div class="faq-a" id="faq-8" role="region" aria-labelledby="faqq-8"><p>No. Maintenance and other recurring services are billed monthly with no lock-in, so you can pause or stop whenever it makes sense for your business.</p></div>
       </div>
     </div>
   </div>
@@ -272,6 +276,9 @@
   </div>
 </footer>
 
+<script src="assets/i18n/ro.js" defer></script>
+<script src="assets/i18n/es.js" defer></script>
+<script src="assets/i18n.js" defer></script>
 <script src="assets/main.js" defer></script>
 </body>
 </html>
