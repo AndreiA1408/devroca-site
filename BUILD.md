@@ -72,3 +72,22 @@ So `RGB <= A` holds for every pixel and an untouched pixel is exactly
 `(0,0,0,0)`. That invariant is what stops Safari and Chrome disagreeing about
 the canvas (the old visible-box bug). Anything new drawn into this canvas must
 follow the same contract.
+
+## Languages (EN / RO / ES)
+
+English is authored in the HTML; Romanian and Spanish live in
+`assets/i18n/ro.js` and `assets/i18n/es.js` as `[English, translation]` pairs,
+and `assets/i18n.js` swaps them in at load and builds the header switcher. The
+choice is kept in `localStorage` (`lang`), and `?lang=ro` / `?lang=es` in a URL
+selects and stores it too. No build step.
+
+- **Editing English copy means updating its key.** The dictionaries are keyed
+  by the English text (whitespace-collapsed `textContent`), so a changed
+  sentence falls back to English until both files have the new key. Curly (’)
+  and straight (') apostrophes are different keys.
+- **A "string" is any element with its own letters in a direct text node**;
+  its children belong to it, so a translation repeats the child markup
+  (`<strong>`, `<em>`, links). Text written from JS goes through
+  `devrocaI18n.t()` (see `main.js`).
+- Form values posted to the inbox stay English (`value` attributes on the
+  project-type options); only the visible labels are translated.

@@ -5,8 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- Marks the document as JS-capable before the stylesheet is even fetched, so
      the scroll-reveal rules can hide content only where JS will reveal it again.
-     Synchronous and ahead of the <link> on purpose: no flash of hidden content. -->
-<script>(function(){var d=document.documentElement;d.classList.add('js');try{if(localStorage.getItem('theme')==='light')d.setAttribute('data-theme','light');}catch(e){}})()</script>
+     Synchronous and ahead of the <link> on purpose: no flash of hidden content.
+     It also reads the stored language (or ?lang=), so a Romanian or Spanish
+     page is held hidden until assets/i18n.js has swapped the text in, and
+     English never flashes first. The timeout is the safety net if that
+     script never runs. -->
+<script>(function(){var d=document.documentElement,l;d.classList.add('js');try{if(localStorage.getItem('theme')==='light')d.setAttribute('data-theme','light');}catch(e){}try{l=(/[?&]lang=(en|ro|es)(?:&|$)/.exec(location.search)||[])[1]||localStorage.getItem('lang');}catch(e){}if(l==='ro'||l==='es'){d.lang=l;d.classList.add('i18n-pending');setTimeout(function(){d.classList.remove('i18n-pending');},3000);}})()</script>
 <title>Why Devroca — About</title>
 <meta name="description" content="Devroca is a founder-led web &amp; app development studio based in Bucharest, Romania, working with businesses internationally.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -101,7 +105,7 @@
 <div class="page-hero wrap">
   <div class="breadcrumb"><a href="index.html">Home</a> / Why Us</div>
   <h1>Founder-led, <em style="white-space:nowrap;">full-stack.</em></h1>
-  <p>Devroca is run as a direct, single point of contact — the person who scopes your project is the same person who builds it.</p>
+  <p>Devroca is run as a direct, single point of contact: the person who scopes your project is the same person who builds it.</p>
 </div>
 
 <section style="padding-top:0;">
@@ -109,7 +113,7 @@
     <div class="reveal">
       <span class="eyebrow">THE FOUNDER</span>
       <h2 style="font-size:28px; margin-bottom:18px;">Andrei-Vlad Andreescu</h2>
-      <p style="color:var(--text-dim); font-size:15.5px; margin-bottom:18px;">Devroca is built and run by Andrei-Vlad Andreescu, a Telecommunications Engineering graduate of Politehnica Bucharest (FILS — Faculty of Engineering in Foreign Languages), based in Bucharest, Romania.</p>
+      <p style="color:var(--text-dim); font-size:15.5px; margin-bottom:18px;">Devroca is built and run by Andrei-Vlad Andreescu, a Telecommunications Engineering graduate of Politehnica Bucharest (FILS, the Faculty of Engineering in Foreign Languages), based in Bucharest, Romania.</p>
       <p style="color:var(--text-dim); font-size:15.5px;">The engineering background shapes how projects are run: clear scope before work starts, no vague deliverables, and a preference for building things properly the first time rather than patching them later.</p>
       <div class="stat-row">
         <div><span class="num" data-count="15">15</span><span class="lbl">Services &amp; add-ons offered</span></div>
@@ -139,10 +143,10 @@
   </div>
   <div class="wrap" style="padding:0;">
     <div class="why-grid reveal">
-      <div class="why-item"><h3><span class="dot"></span>One partner, start to finish</h3><p>No juggling separate people for design, development, technical SEO, and hosting — the person who scopes your project is the same person who builds it.</p></div>
-      <div class="why-item"><h3><span class="dot"></span>Web + app expertise</h3><p>Whether you need a website or a full web application with logins and dashboards, it&rsquo;s one person behind both — direct, consistent attention rather than a rotating team.</p></div>
+      <div class="why-item"><h3><span class="dot"></span>One partner, start to finish</h3><p>No juggling separate people for design, development, technical SEO, and hosting. The person who scopes your project is the same person who builds it.</p></div>
+      <div class="why-item"><h3><span class="dot"></span>Web + app expertise</h3><p>Whether you need a website or a full web application with logins and dashboards, it&rsquo;s one person behind both, so you get direct, consistent attention rather than a rotating team.</p></div>
       <div class="why-item"><h3><span class="dot"></span>Built to grow with you</h3><p>Start simple, then add booking, multi-language, monitoring, or anything else from the menu whenever you&rsquo;re ready.</p></div>
-      <div class="why-item"><h3><span class="dot"></span>International, remote-friendly</h3><p>Based in Bucharest, Romania, working with businesses anywhere — distance has never been a problem.</p></div>
+      <div class="why-item"><h3><span class="dot"></span>International, remote-friendly</h3><p>Based in Bucharest, Romania, working with businesses anywhere. Distance has never been a problem.</p></div>
     </div>
   </div>
 </section>
@@ -179,6 +183,9 @@
   </div>
 </footer>
 
+<script src="assets/i18n/ro.js" defer></script>
+<script src="assets/i18n/es.js" defer></script>
+<script src="assets/i18n.js" defer></script>
 <script src="assets/main.js" defer></script>
 </body>
 </html>

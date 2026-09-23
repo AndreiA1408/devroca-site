@@ -5,10 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- Marks the document as JS-capable before the stylesheet is even fetched, so
      the scroll-reveal rules can hide content only where JS will reveal it again.
-     Synchronous and ahead of the <link> on purpose: no flash of hidden content. -->
-<script>(function(){var d=document.documentElement;d.classList.add('js');try{if(localStorage.getItem('theme')==='light')d.setAttribute('data-theme','light');}catch(e){}})()</script>
+     Synchronous and ahead of the <link> on purpose: no flash of hidden content.
+     It also reads the stored language (or ?lang=), so a Romanian or Spanish
+     page is held hidden until assets/i18n.js has swapped the text in, and
+     English never flashes first. The timeout is the safety net if that
+     script never runs. -->
+<script>(function(){var d=document.documentElement,l;d.classList.add('js');try{if(localStorage.getItem('theme')==='light')d.setAttribute('data-theme','light');}catch(e){}try{l=(/[?&]lang=(en|ro|es)(?:&|$)/.exec(location.search)||[])[1]||localStorage.getItem('lang');}catch(e){}if(l==='ro'||l==='es'){d.lang=l;d.classList.add('i18n-pending');setTimeout(function(){d.classList.remove('i18n-pending');},3000);}})()</script>
 <title>What We Build — Devroca</title>
-<meta name="description" content="Eleven common kinds of project — clinics, restaurants, retail, property listings, logistics, industrial B2B and more — and the Devroca services each one is usually built from.">
+<meta name="description" content="Clinics, restaurants, retail, property listings, logistics, industrial B2B and more: eleven common kinds of project and the Devroca services each one is usually built from.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -168,7 +172,7 @@
   <div class="breadcrumb"><a href="index.html">Home</a> / What We Build</div>
   <h1>Built for <em>your kind of business.</em></h1>
   <p>Eleven common kinds of project, and the services each one is usually built from. These are examples of what fits, not a portfolio of past clients.</p>
-  <div class="step-out" style="font-size:15.5px; max-width:640px; margin-top:26px;">I work with <b>small businesses and large companies, in any industry</b> — and because it&rsquo;s one person behind every project, you get direct, consistent attention rather than a rotating team or an account manager relaying messages.</div>
+  <div class="step-out" style="font-size:15.5px; max-width:640px; margin-top:26px;">I work with <b>small businesses and large companies, in any industry</b>. Because it&rsquo;s one person behind every project, you get direct, consistent attention rather than a rotating team or an account manager relaying messages.</div>
 </div>
 
 <section style="padding-top:0;">
@@ -204,7 +208,7 @@
       <div class="cat-item">
         <div>
           <h3>Retail &amp; E-commerce</h3>
-          <p>A product catalog, and a checkout that handles failed payments, refunds, and receipts &mdash; not just the happy path.</p>
+          <p>A product catalog, and a checkout that handles failed payments, refunds, and receipts as well as the happy path.</p>
           <ul>
             <li>Catalog with categories and filtering</li>
             <li>Checkout wired to Stripe, PayPal, or a local processor</li>
@@ -217,7 +221,7 @@
       <div class="cat-item">
         <div>
           <h3>Service &amp; Booking Platforms</h3>
-          <p>Scheduling-first web apps for businesses whose whole model runs on appointments &mdash; where booking is the product, not one feature of a site.</p>
+          <p>Scheduling-first web apps for businesses whose whole model runs on appointments. Here, booking is the product, not one feature of a site.</p>
           <ul>
             <li>Calendar &amp; availability logic</li>
             <li>Automated confirmations</li>
@@ -258,7 +262,7 @@
           <h3>Real Estate &amp; Property Listings</h3>
           <p>A searchable list of properties your team keeps current themselves, rather than sending every price change to a developer.</p>
           <ul>
-            <li>Listings with real filters &mdash; location, price, type &mdash; built as a web app</li>
+            <li>Listings with real filters (location, price, type), built as a web app</li>
             <li>Viewings booked from the listing itself, with automated confirmations</li>
             <li>Enquiries routed to the right agent and captured in your own list</li>
             <li>Photo-heavy listing pages tuned so they still load fast on a phone</li>
@@ -270,7 +274,7 @@
       <div class="cat-item">
         <div>
           <h3>Education &amp; Training Providers</h3>
-          <p>Course and programme pages with enrolment handled on the site &mdash; not a full learning platform with hosted lessons and student logins.</p>
+          <p>Course and programme pages with enrolment handled on the site. This isn't a full learning platform with hosted lessons and student logins.</p>
           <ul>
             <li>Course pages with dates, prices, and what is actually covered</li>
             <li>Enrolment taken as a booking, with payment at the point of signup</li>
@@ -355,6 +359,9 @@
   </div>
 </footer>
 
+<script src="assets/i18n/ro.js" defer></script>
+<script src="assets/i18n/es.js" defer></script>
+<script src="assets/i18n.js" defer></script>
 <script src="assets/main.js" defer></script>
 </body>
 </html>

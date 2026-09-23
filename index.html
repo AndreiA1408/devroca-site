@@ -5,10 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- Marks the document as JS-capable before the stylesheet is even fetched, so
      the scroll-reveal rules can hide content only where JS will reveal it again.
-     Synchronous and ahead of the <link> on purpose: no flash of hidden content. -->
-<script>(function(){var d=document.documentElement;d.classList.add('js');try{if(localStorage.getItem('theme')==='light')d.setAttribute('data-theme','light');}catch(e){}})()</script>
+     Synchronous and ahead of the <link> on purpose: no flash of hidden content.
+     It also reads the stored language (or ?lang=), so a Romanian or Spanish
+     page is held hidden until assets/i18n.js has swapped the text in, and
+     English never flashes first. The timeout is the safety net if that
+     script never runs. -->
+<script>(function(){var d=document.documentElement,l;d.classList.add('js');try{if(localStorage.getItem('theme')==='light')d.setAttribute('data-theme','light');}catch(e){}try{l=(/[?&]lang=(en|ro|es)(?:&|$)/.exec(location.search)||[])[1]||localStorage.getItem('lang');}catch(e){}if(l==='ro'||l==='es'){d.lang=l;d.classList.add('i18n-pending');setTimeout(function(){d.classList.remove('i18n-pending');},3000);}})()</script>
 <title>Devroca — Web &amp; App Development, Built to Last</title>
-<meta name="description" content="Devroca is a web &amp; app development studio: custom websites, web apps, maintenance, and technical add-ons — one partner, everything you need.">
+<meta name="description" content="Devroca is a web &amp; app development studio for custom websites, web apps, maintenance, and technical add-ons. One partner for everything you need.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -50,9 +54,19 @@
   .teaser-card{
     background:var(--ink-3); border:1px solid var(--line); padding:26px;
     clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
-    transition:border-color .25s ease, transform .25s ease;
+    transition:border-color .3s ease, transform .55s cubic-bezier(.22,.68,.32,1), box-shadow .55s ease;
   }
   .teaser-card:hover{ border-color:var(--gold-4); transform:translateY(-3px); }
+  /* Hero entrance: the copy eases up line by line on load rather than being
+     there at once. Held while a translated page is still hidden, so it plays
+     for the text the visitor actually reads. */
+  @media (prefers-reduced-motion: no-preference){
+    :root:not(.i18n-pending) .hero-copy > *{ animation:hero-in 1s cubic-bezier(.22,.68,.32,1) both; }
+    .hero-copy > :nth-child(2){ animation-delay:.08s; }
+    .hero-copy > :nth-child(3){ animation-delay:.16s; }
+    .hero-copy > :nth-child(4){ animation-delay:.24s; }
+    .hero-copy > :nth-child(5){ animation-delay:.32s; }
+  }
   .teaser-card h3{ font-size:16.5px; margin-bottom:8px; }
   .teaser-card p{ font-size:13.5px; color:var(--text-dim); }
   .section-link{ font-size:14.5px; font-weight:600; color:var(--gold-ink-2); display:inline-flex; align-items:center; gap:6px; margin-top:8px; padding:3px 0; }
@@ -173,7 +187,7 @@
   <div class="hero-copy">
     <span class="eyebrow">WEB &amp; APP DEVELOPMENT STUDIO</span>
     <h1>Websites and apps,<br><em>built to last.</em></h1>
-    <p>Devroca is a web &amp; app development studio — we design, build, and maintain the site or web app your business runs on, with a menu of technical add-ons whenever you're ready for them.</p>
+    <p>Devroca is a web &amp; app development studio. We design, build, and maintain the site or web app your business runs on, and there's a menu of technical add-ons for whenever you're ready.</p>
     <div class="hero-actions">
       <a href="contact.html" class="btn btn-primary">Start a Project</a>
       <a href="services.html" class="btn btn-ghost">Explore Services</a>
@@ -202,7 +216,7 @@
       <div class="section-head" style="margin-bottom:0;">
         <span class="eyebrow">SERVICES</span>
         <h2>One partner, everything you need.</h2>
-        <p>15 services across three categories — start with a core build, add the rest whenever you&rsquo;re ready.</p>
+        <p>15 services across three categories. Start with a core build and add the rest whenever you&rsquo;re ready.</p>
       </div>
       <a href="services.html" class="section-link">See all services →</a>
     </div>
@@ -221,13 +235,13 @@
       <div class="section-head" style="margin-bottom:0;">
         <span class="eyebrow">PRICING</span>
         <h2>One custom quote, built around your project.</h2>
-        <p>Nothing is sold off a shelf, so nothing has a shelf price. We scope what you actually need, then price that scope — one number, agreed in writing before any work starts.</p>
+        <p>Nothing is sold off a shelf, so nothing has a shelf price. We scope what you actually need, then price that scope as one number, agreed in writing before any work starts.</p>
       </div>
       <a href="pricing.html" class="section-link">How pricing works →</a>
     </div>
     <div class="teaser-grid">
       <div class="teaser-card reveal"><h3>Scoped first</h3><p>A short conversation turns your project into a specific list of services.</p></div>
-      <div class="teaser-card reveal"><h3>Priced once</h3><p>One number for that scope, in writing — not an hourly estimate that drifts.</p></div>
+      <div class="teaser-card reveal"><h3>Priced once</h3><p>You get one written number for that scope instead of an hourly estimate that drifts.</p></div>
       <div class="teaser-card reveal"><h3>Nothing padded</h3><p>You pay for the services you picked, not for a bundle sized for someone else.</p></div>
     </div>
   </div>
@@ -240,7 +254,7 @@
       <div class="section-head" style="margin-bottom:0;">
         <span class="eyebrow">PROCESS</span>
         <h2>How a project actually goes.</h2>
-        <p>No black box — here's what happens after you reach out.</p>
+        <p>No black box. Here's what happens after you reach out.</p>
       </div>
       <a href="process.html" class="section-link">See the full process →</a>
     </div>
@@ -299,7 +313,7 @@
     <div class="cta-band reveal">
       <div>
         <h2>Let's build something.</h2>
-        <p>Tell me about your project — I'll get back to you within a day or two.</p>
+        <p>Tell me about your project and I'll get back to you within a day or two.</p>
       </div>
       <a href="contact.html" class="btn btn-primary">Start a Project</a>
     </div>
@@ -326,6 +340,9 @@
   </div>
 </footer>
 
+<script src="assets/i18n/ro.js" defer></script>
+<script src="assets/i18n/es.js" defer></script>
+<script src="assets/i18n.js" defer></script>
 <script src="assets/main.js" defer></script>
 <script src="gem3d.bundle.js" defer></script>
 </body>
