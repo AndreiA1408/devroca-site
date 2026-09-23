@@ -22,6 +22,7 @@ const CAM_DIST = 10;
 const STONE_FILL = 0.43;      // stone radius as a share of the stage's short side
 const POINTER_RADIUS = 0.62;  // in stone radii
 const REDUCED_FPS = 20;       // reduced motion keeps only a gentle shimmer
+const LOGO_ROLL = -9 * Math.PI / 180; // same lean as the SVG mark
 
 export function createParticleHero(canvas, theme) {
   const stage = document.querySelector('[data-gem-stage]') || canvas;
@@ -91,13 +92,13 @@ export function createParticleHero(canvas, theme) {
   const gemPoints = new THREE.Points(gemGeo, gemMat);
   gemPoints.frustumCulled = false; // particles leave the stone's bounds on purpose
 
-  /* Two nested groups, so the spin is always about the stone's own axis
-     while that axis is tilted toward the viewer: the table stays in view
-     and the stone turns like it would on a slow turntable, never tumbles. */
-  const spin = new THREE.Group();
-  spin.add(gemPoints);
+  /* Rest pose. The stone's own axis is +Y, so a quarter turn about X lays
+     the table square to the camera and the rosette reads face-on, like the
+     logo. All the motion lives on the parent group, which turns about
+     *world* axes, so the rosette never rolls out of upright. */
+  gemPoints.rotation.x = Math.PI / 2;
   const stone = new THREE.Group();
-  stone.add(spin);
+  stone.add(gemPoints);
   scene.add(stone);
 
   const glowMat = new THREE.ShaderMaterial({
@@ -224,11 +225,14 @@ export function createParticleHero(canvas, theme) {
       home.y + (Math.sin(t * 0.42) * 0.04 + Math.sin(t * 0.17) * 0.03) * r - scrollY * 0.3 * worldPerPx,
       -p * 3.2
     );
-    // Speed varies between ~0.05 and ~0.17 rad/s but never reverses.
-    spin.rotation.y = t * 0.11 + Math.sin(t * 0.053) * 0.9 + Math.sin(t * 0.021 + 1.3) * 0.6;
-    stone.rotation.x = 0.36 + Math.sin(t * 0.13) * 0.07 + Math.sin(t * 0.047) * 0.05 - lean.y * 0.16;
-    stone.rotation.y = lean.x * 0.28;
-    stone.rotation.z = Math.sin(t * 0.09) * 0.06 + Math.sin(t * 0.031) * 0.04;
+    /* A flat rosette spun through a full turn would spend part of every
+       cycle edge-on or showing its back. It turns in long, uneven swings
+       instead (about 30 degrees either side at most) and always comes back to the
+       face-on logo view. Euler order XYZ applies Z first, so the logo's
+       -9 degree lean is set on the stone before it turns and nods. */
+    stone.rotation.z = LOGO_ROLL + Math.sin(t * 0.09) * 0.035 + Math.sin(t * 0.031) * 0.025;
+    stone.rotation.y = 0.06 + Math.sin(t * 0.13) * 0.3 + Math.sin(t * 0.051 + 0.7) * 0.18 + lean.x * 0.28;
+    stone.rotation.x = 0.05 + Math.sin(t * 0.11) * 0.11 + Math.sin(t * 0.043) * 0.06 - lean.y * 0.16;
   }
 
   /* ---- loop --------------------------------------------------- */

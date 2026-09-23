@@ -1,8 +1,11 @@
 /* ---------------------------------------------------------------
    The stone, as a particle cloud.
 
-   A brilliant-style cut is described as ordinary triangles (table,
-   crown, girdle, pavilion, culet), and particles are then *sampled*
+   The cut is the hexagonal rosette of the Devroca logo mark: a
+   pointy-top hexagon girdle, a table hexagon turned 30 degrees inside
+   it, and the twelve crown triangles between them, with a shallow
+   hexagonal pavilion behind. It is described as ordinary triangles,
+   and particles are then *sampled*
    from it — nothing here is ever rendered as a mesh. Every particle
    carries the flat normal of the facet it came from, which is what
    lets the shader light whole facets together as the stone turns:
@@ -19,18 +22,24 @@
    draw range thins the stone evenly rather than deleting a region.
 --------------------------------------------------------------- */
 
-const N = 8;                 // eight-fold symmetry
+/* The stone's own axis is +Y: table up, culet down. hero.js lays that
+   axis toward the camera, so the rosette reads face-on like the logo.
+   ORIENT turns every ring so the girdle sits pointy-top on screen and
+   the table pointy-side — the 30-degree alternation the SVG mark uses.
+   Proportions are the previous solid gem's, so the silhouette is the
+   one the site already had. */
+const N = 6;
+const ORIENT = Math.PI / 6;
 const R_GIRDLE = 1;
-const Y_GIRDLE = 0.035;      // half-height of the girdle band
-const R_TABLE = 0.56;
-const Y_TABLE = 0.36;
-const R_PAVILION = 0.5;      // pavilion break ring
-const Y_PAVILION = -0.5;
-const Y_CULET = -1.02;
-// Re-centres the stone's bounding box on the origin, so it floats and
-// turns about its visual middle rather than about the girdle.
+const Y_GIRDLE = 0.09;       // half-height of the girdle band
+const R_TABLE = 0.46;
+const Y_TABLE = 0.34;
+const R_CULET = 0.16;
+const Y_CULET = -0.46;
+// Re-centres the stone's depth on the origin, so it floats and turns
+// about its visual middle rather than about the girdle.
 const Y_SHIFT = (Y_TABLE + Y_CULET) / -2;
-const INSIDE = [0, -0.25, 0]; // any interior point; the cut is convex
+const INSIDE = [0, -0.05, 0]; // any interior point; the cut is convex
 
 // Share of the particle budget per population.
 const MIX = { surface: 0.62, edge: 0.24, core: 0.07, halo: 0.07 };
@@ -44,44 +53,40 @@ const cross = (a, b) => [
 ];
 const norm = a => { const l = Math.hypot(a[0], a[1], a[2]) || 1; return [a[0] / l, a[1] / l, a[2] / l]; };
 
-function ring(count, radius, y) {
+function ring(count, radius, y, phase) {
   const pts = [];
   for (let i = 0; i < count; i++) {
-    const t = (i / count) * Math.PI * 2;
+    const t = (i / count) * Math.PI * 2 + phase;
     pts.push([Math.cos(t) * radius, y, Math.sin(t) * radius]);
   }
   return pts;
 }
 
-/* Table and pavilion rings have N vertices; the girdle has 2N, with
-   G[2i] sitting directly outside T[i] and P[i]. */
+/* All rings have N vertices. The table and culet rings are offset half
+   a step, so T[i] and C[i] sit between girdle vertices i and i+1. */
 function buildFacets() {
-  const T = ring(N, R_TABLE, Y_TABLE);
-  const G = ring(2 * N, R_GIRDLE, Y_GIRDLE);
-  const L = ring(2 * N, R_GIRDLE, -Y_GIRDLE);
-  const P = ring(N, R_PAVILION, Y_PAVILION);
+  const G = ring(N, R_GIRDLE, Y_GIRDLE, ORIENT);
+  const L = ring(N, R_GIRDLE, -Y_GIRDLE, ORIENT);
+  const T = ring(N, R_TABLE, Y_TABLE, ORIENT + Math.PI / N);
+  const C = ring(N, R_CULET, Y_CULET, ORIENT + Math.PI / N);
   const tableMid = [0, Y_TABLE, 0];
-  const culet = [0, Y_CULET, 0];
-  const t = i => T[(i + N) % N];
-  const g = j => G[(j + 2 * N) % (2 * N)];
-  const l = j => L[(j + 2 * N) % (2 * N)];
-  const p = i => P[(i + N) % N];
+  const culetTip = [0, Y_CULET, 0];
+  const at = (r, i) => r[(i + N) % N];
 
   const tris = [];
   const tri = (a, b, c) => tris.push([a, b, c]);
   for (let i = 0; i < N; i++) {
-    tri(tableMid, t(i), t(i + 1));                 // table
-    tri(t(i), t(i + 1), g(2 * i + 1));             // star
-    tri(t(i), g(2 * i - 1), g(2 * i));             // upper girdle
-    tri(t(i), g(2 * i), g(2 * i + 1));
-    tri(l(2 * i - 1), l(2 * i), p(i));             // lower girdle
-    tri(l(2 * i), l(2 * i + 1), p(i));
-    tri(l(2 * i + 1), p(i + 1), p(i));
-    tri(p(i), p(i + 1), culet);                    // pavilion main
-  }
-  for (let j = 0; j < 2 * N; j++) {                // girdle band
-    tri(g(j), g(j + 1), l(j + 1));
-    tri(g(j), l(j + 1), l(j));
+    // Girdle band: a closed wall between the crown and pavilion rings.
+    tri(at(G, i), at(G, i + 1), at(L, i + 1));
+    tri(at(G, i), at(L, i + 1), at(L, i));
+    // Crown: the logo's twelve triangles, girdle up to the table ring.
+    tri(at(G, i), at(T, i), at(G, i + 1));
+    tri(at(G, i), at(T, i - 1), at(T, i));
+    tri(tableMid, at(T, i + 1), at(T, i));          // table
+    // Pavilion: girdle down to the culet ring, then the culet.
+    tri(at(L, i + 1), at(C, i), at(L, i));
+    tri(at(L, i), at(C, i), at(C, i - 1));
+    tri(culetTip, at(C, i), at(C, i + 1));
   }
 
   return tris.map(([a, b, c]) => {

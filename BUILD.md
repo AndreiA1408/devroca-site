@@ -18,7 +18,7 @@ overwritten on the next build.
 
 ## How the hero works
 
-The gem is a particle system, not a mesh: a brilliant-cut stone is described
+The gem is a particle system, not a mesh: the logo's hexagonal rosette cut is described
 as triangles in `src/particles/gemGeometry.js`, particles are sampled from it
 once at startup, and everything after that — breathing, drift, the
 formation/dissolution cycle, cursor displacement, facet lighting — happens in
@@ -41,6 +41,11 @@ a handful of uniforms. Module map is at the top of `src/gem3d.js`.
   hidden (IntersectionObserver + visibilitychange).
 - **Reduced motion.** Formed, still stone: no drift, dissolution, cursor
   displacement or camera movement; only a brightness shimmer, at 20fps.
+- **Rest pose.** The stone lies face-on like the logo mark, with the mark's
+  -9 degree lean, and turns in uneven swings of about 30 degrees rather than
+  a full spin (a flat rosette edge-on stops reading as the logo). The swing
+  lives in `pose()` in `src/particles/hero.js`; widening it past ~0.5 rad
+  flattens the stone into a lozenge for long stretches.
 - **Lifecycle timings** (formed → loosen → fragment → drift → reform) are in
   `src/particles/lifecycle.js`; how far the stone breaks up at a given value
   is `key`/`frag` in the gem vertex shader.
