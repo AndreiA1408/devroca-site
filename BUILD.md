@@ -39,6 +39,14 @@ a handful of uniforms. Module map is at the top of `src/gem3d.js`.
   sample of the stone.
 - **Pausing.** The loop stops while the hero is off screen or the tab is
   hidden (IntersectionObserver + visibilitychange).
+- **Entrance.** Once per load the stone assembles in ~1.1s: its own particles
+  whirl as a ring of dust around the stage (0–0.3s), are pulled in on an
+  accelerating curve (0.3–1.1s), then it pops: a 107% scale overshoot, a
+  flash across the facets, a glow flare and a burst of sparks, all settled
+  by ~1.6s. Timings are the constants at the top of
+  `src/particles/lifecycle.js`; the spark counts are per tier in
+  `quality.js` (none on phones or low-end devices). On a translated page
+  it waits until the page is shown. After it, the usual cycle runs.
 - **Reduced motion.** Formed, still stone: no drift, dissolution, cursor
   displacement or camera movement; only a brightness shimmer, at 20fps.
 - **Rest pose.** The stone lies face-on like the logo mark, with the mark's
