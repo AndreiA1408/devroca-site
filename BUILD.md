@@ -5,108 +5,65 @@ folder. The only build step is the hero gemstone.
 
 ## Gemstone
 
-Source lives in `src/gem3d.js` and is bundled with esbuild into
+Source lives in `src/gem3d.js` + `src/particles/` and is bundled with esbuild into
 `gem3d.bundle.js`, which `index.html` loads as a plain script.
 
 ```
 npm install     # once
-npm run build   # after any edit to src/gem3d.js
+npm run build   # after any edit under src/
 ```
 
 `gem3d.bundle.js` is generated. Never edit it by hand — it will be
 overwritten on the next build.
 
-## Notes for future edits
+## How the hero works
 
-- **Rest pose.** The stone's own axis is +Y (table up, culet down). The mesh
-  is turned a fixed quarter-turn about X so the table faces the camera; all
-  the animated tilt lives on the parent `pivot` group, which rotates about
-  *world* axes. Keeping the sway on the pivot is what stops the rosette from
-  rolling out of upright. If you need to change how it sits, change
-  `TILT_X` / `TILT_Y` / `SWAY_X` / `SWAY_Y`, not `FACE_ON`.
-- **Girdle band.** `BAND_HALF` sets the half-height of the wall between the
-  crown and pavilion rings. The mesh is closed regardless, but a very small
-  value makes the band alias away at grazing angles.
-- **Highlights.** Per-facet reflections come from the PMREM environment built
-  in `buildEnvironment()`, not from the direct lights. The direct lights are
-  low-intensity shaping only. If facets look flat, adjust the env panels;
-  raising light intensities instead is what causes facets to clip to white.
-- **Exposure.** `toneMappingExposure` is deliberately held at 1.0 and the
-  bloom threshold is high (0.92). Both guard against blown-out facets.
+The gem is a particle system, not a mesh: a brilliant-cut stone is described
+as triangles in `src/particles/gemGeometry.js`, particles are sampled from it
+once at startup, and everything after that — breathing, drift, the
+formation/dissolution cycle, cursor displacement, facet lighting — happens in
+the vertex shaders (`src/particles/shaders.js`). Per frame the CPU writes only
+a handful of uniforms. Module map is at the top of `src/gem3d.js`.
+
+- **Layout is CSS's job.** The canvas is full-bleed behind the whole hero
+  (`.hero-space` in `index.html`). The stone centres and sizes itself on the
+  empty `[data-gem-stage]` box, so to move or resize the stone per breakpoint,
+  change that box's CSS — not the script.
+- **The canvas never takes events.** `pointer-events:none` + `aria-hidden`;
+  the cursor is read from `window`. Keep it that way or the hero CTAs stop
+  being clickable.
+- **Particle budget** is per tier in `src/particles/quality.js` (desktop 24k,
+  tablet 15k, phone 11k stone particles; ×0.65 on low-core / low-memory
+  devices). A frame monitor steps down pixel ratio, then draw range, if the
+  page can't hold ~45fps. Buffers are shuffled so any draw range is an even
+  sample of the stone.
+- **Pausing.** The loop stops while the hero is off screen or the tab is
+  hidden (IntersectionObserver + visibilitychange).
+- **Reduced motion.** Formed, still stone: no drift, dissolution, cursor
+  displacement or camera movement; only a brightness shimmer, at 20fps.
+- **Lifecycle timings** (formed → loosen → fragment → drift → reform) are in
+  `src/particles/lifecycle.js`; how far the stone breaks up at a given value
+  is `key`/`frag` in the gem vertex shader.
 
 ## Theme
 
-The page has two themes, switched by `data-theme="light"` on `<html>` (see the
-palette block in `assets/styles.css`). The gem takes part in that, but only
-through `window.devrocaGem.setTheme()` / the `devroca:themechange` event, which
-repaint the halo, the facet edges and the exposure. **`scene.background` stays
-`null` in both themes and must not be made theme-aware** — the section below
-explains why an opaque background cannot match the page, and that argument gets
-*worse* in light mode, not better: ACES compresses the bright end hardest, so a
-background authored as the light page's `#F7F4EE` comes back off the composer
-several steps darker than the CSS beside it. A seam that is faint on black
-would be obvious on paper. The canvas is transparent, so it already shows
-whatever the page is painted, in any theme, for free.
+`window.devrocaGem.setTheme()` / the `devroca:themechange` event (fired by
+`main.js`) switch palettes in `src/particles/theme.js`. Dark: the particles
+are light, blended additively. Light: nothing can be brighter than bone, so
+the same brightness model drives *ink* instead — bronze particles blended as
+premultiplied "over", glints darkest.
 
-What genuinely does change with the theme:
+## Canvas compositing (premultiplied, transparent — keep it)
 
-- **Halo.** Gold over the dark page (it lifts the field and reads as glow);
-  bronze over the light one. Nothing composited over bone can be brighter than
-  bone, so on paper the halo is an aura that darkens rather than a glow.
-- **Facet edges.** `#3A2408` at 0.45 in dark, `#2A1A04` at 0.85 in light.
-  Measured against bone, the stone's *brightest* facet is 1.02:1 — at a glint
-  the outline would otherwise stop existing, so on the light page the edges
-  carry the silhouette.
-- **Exposure / env intensity.** Trimmed to 0.88 / 1.00 in light, which lowers
-  the ceiling on clipped facets. This only ever reduces clipping, so it does
-  not conflict with the exposure warning above.
+There is no `scene.background`; the page shows through the canvas. The canvas
+hands the page premultiplied pixels (`premultipliedAlpha` default `true`), and
+every shader writes a valid premultiplied colour itself:
 
-## Canvas transparency (do not revert to an opaque background)
+- dark, additive (`ONE, ONE`): alpha is written as the brightest channel, so
+  accumulated RGB can never exceed accumulated alpha;
+- light, "over" (`ONE, ONE_MINUS_SRC_ALPHA`): RGB is colour × alpha.
 
-The hero canvas is transparent and the page's own background shows through.
-There is deliberately no `scene.background`.
-
-An opaque `scene.background` cannot be made to match the page: everything
-drawn through the composer is tone mapped by `OutputPass`, so a background set
-to `#14130F` leaves the canvas as `rgb(9,6,3)` against a page painted
-`rgb(20,19,15)` — a visible dark rectangle.
-
-Transparency requires one fix. `UnrealBloomPass` composites with
-`AdditiveBlending`, whose alpha factors are `SrcAlpha`/`One`, so it adds the
-bloom's alpha into the scene's and empty pixels drift toward opaque — the
-canvas renders as a dark box. `makeBloomAlphaSafe()` replaces that blend:
-RGB is added exactly as before (`src.rgb * src.a`, so bloom brightness and the
-no-blown-facets guarantee are unchanged), while alpha grows only by the glow's
-luminance.
-
-## Canvas compositing (premultiplied — do not switch back)
-
-The canvas hands the page **premultiplied** pixels. `premultipliedAlpha` is
-left at its default (`true`) and the final `PremultiplyShader` pass does the
-`rgb * a` multiply itself, in float, after `OutputPass` has tone mapped and
-sRGB-encoded.
-
-This used to be `premultipliedAlpha: false`, which asks the *browser* to
-un-premultiply instead. That attribute is optional, is not feature-detectable,
-and is not implemented consistently between engines — and it mattered a great
-deal here, because additive bloom leaves the composer buffer full of
-"super-luminous" pixels. Measured on the old build: RGB exceeded alpha on 25.8%
-of the canvas by up to 127/255, and ~10.5k pixels carried color at alpha 0.
-How much of that color survived was entirely up to the browser's rounding and
-color management of the divide, so Safari and Chrome did not agree — which is
-what produced a visible box around the canvas in Safari, and a flatter, less
-vibrant glint there.
-
-Doing the multiply ourselves makes the pixel handed to the compositor
-unambiguous. Two invariants now hold at every aspect ratio (verified 0.88,
-1.21 and 4.5): `RGB <= A` for every pixel, and an untouched pixel is exactly
-`(0,0,0,0)`, so the canvas cannot tint the page it sits on. The composited
-result is unchanged from what Chrome rendered before.
-
-If you ever add a pass, it must go **before** `PremultiplyShader` — that one
-has to stay last, and it has to run after `OutputPass`, which encodes RGB but
-leaves alpha alone.
-
-The glow sprite is sized to the camera frustum in `resize()` so its gradient
-reaches zero inside the canvas; a halo still bright at the boundary would be
-cut off square and read as a faint rectangle.
+So `RGB <= A` holds for every pixel and an untouched pixel is exactly
+`(0,0,0,0)`. That invariant is what stops Safari and Chrome disagreeing about
+the canvas (the old visible-box bug). Anything new drawn into this canvas must
+follow the same contract.
