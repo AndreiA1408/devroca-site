@@ -3,6 +3,7 @@
 
    The tier is chosen once, from the viewport and the pointer: desktop
    gets the full stone, tablets about 60% of it, phones under half.
+   Phones and low-end devices skip the entrance's spark burst.
    Smaller stones get slightly larger particles ('grain') so a thinner
    budget still reads as a surface rather than as scattered points.
    Devices that report few cores or little memory drop a further step.
@@ -13,9 +14,9 @@
    even sample — see gemGeometry.js). It only ever steps down.
 --------------------------------------------------------------- */
 const TIERS = {
-  desktop: { gem: 24000, field: 4200, dpr: 1.75, grain: 1 },
-  tablet:  { gem: 15000, field: 2600, dpr: 1.5,  grain: 1.12 },
-  mobile:  { gem: 11000, field: 1400, dpr: 1.5,  grain: 1.3 }
+  desktop: { gem: 24000, field: 4200, sparks: 1600, dpr: 1.75, grain: 1 },
+  tablet:  { gem: 15000, field: 2600, sparks: 900,  dpr: 1.5,  grain: 1.12 },
+  mobile:  { gem: 11000, field: 1400, sparks: 0,    dpr: 1.5,  grain: 1.3 }
 };
 
 export function pickQuality() {
@@ -29,6 +30,7 @@ export function pickQuality() {
     t.gem = Math.round(t.gem * 0.65);
     t.field = Math.round(t.field * 0.65);
     t.dpr = Math.min(t.dpr, 1.25);
+    t.sparks = 0; // the entrance keeps its assembly and pop, just no burst
   }
   t.dpr = Math.min(window.devicePixelRatio || 1, t.dpr);
   return t;
