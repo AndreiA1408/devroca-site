@@ -13,6 +13,18 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<meta name="theme-color" content="#14130F">
+<link rel="canonical" href="https://devroca.com/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Devroca">
+<meta property="og:title" content="Devroca — Web &amp; App Development, Built to Last">
+<meta property="og:description" content="Devroca is a web &amp; app development studio: custom websites, web apps, maintenance, and technical add-ons — one partner, everything you need.">
+<meta property="og:url" content="https://devroca.com/">
+<meta property="og:image" content="https://devroca.com/assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="stylesheet" href="assets/styles.css">
 <style>
   .hero{
@@ -46,6 +58,8 @@
      The gem reads this box and centres and sizes the stone on it, so the
      composition is set here, per breakpoint, not in the script. */
   .hero-gem-stage{ height:600px; }
+  /* Set by the gem script when there is no WebGL: nothing to hold a place for. */
+  .hero.no-gem .hero-gem-stage{ display:none; }
   .teaser-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
   .teaser-card{
     background:var(--ink-3); border:1px solid var(--line); padding:26px;
@@ -73,6 +87,19 @@
     .hero-gem-stage{ height:280px; }
     .hero-actions{ margin-bottom:38px; }
     .hero-badges{ gap:18px 22px; }
+  }
+  /* A phone on its side. Stacked, the stone alone fills the first screen and
+     the headline starts below the fold, so short landscape screens get the
+     desktop composition back — copy left, stone right — at a smaller scale.
+     After the 600px block on purpose: 568px-wide phones match both. */
+  @media (max-width: 980px) and (orientation: landscape) and (max-height: 540px){
+    /* Top-aligned: the copy column is taller than the screen, and centring
+       against it would drop the stone below the fold. */
+    .hero{ grid-template-columns:1.15fr 0.85fr; gap:20px; padding-top:100px; padding-bottom:48px; align-items:start; }
+    .hero-gem-stage{ order:0; height:min(250px, calc(100svh - 120px)); }
+    .hero-copy h1{ font-size:30px; margin-bottom:14px; }
+    .hero-copy p{ font-size:15px; margin-bottom:22px; }
+    .hero-actions{ margin-bottom:24px; }
   }
 </style>
 </head>
@@ -172,7 +199,7 @@
   </div>
   <div class="hero-copy">
     <span class="eyebrow">WEB &amp; APP DEVELOPMENT STUDIO</span>
-    <h1>Websites and apps,<br><em>built to last.</em></h1>
+    <h1>Websites <span style="white-space:nowrap;">and apps,</span><br><em>built to last.</em></h1>
     <p>Devroca is a web &amp; app development studio — we design, build, and maintain the site or web app your business runs on, with a menu of technical add-ons whenever you're ready for them.</p>
     <div class="hero-actions">
       <a href="contact.html" class="btn btn-primary">Start a Project</a>

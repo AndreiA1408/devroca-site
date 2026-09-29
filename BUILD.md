@@ -39,6 +39,9 @@ a handful of uniforms. Module map is at the top of `src/gem3d.js`.
   sample of the stone.
 - **Pausing.** The loop stops while the hero is off screen or the tab is
   hidden (IntersectionObserver + visibilitychange).
+- **No WebGL 2.** Probed on the canvas before three.js is touched; on failure
+  the canvas is hidden and `.hero` gets `.no-gem`, which collapses the stage
+  box so no empty block is left above the headline on phones.
 - **Reduced motion.** Formed, still stone: no drift, dissolution, cursor
   displacement or camera movement; only a brightness shimmer, at 20fps.
 - **Rest pose.** The stone lies face-on like the logo mark, with the mark's

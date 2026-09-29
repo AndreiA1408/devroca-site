@@ -13,6 +13,18 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<meta name="theme-color" content="#14130F">
+<link rel="canonical" href="https://devroca.com/work">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Devroca">
+<meta property="og:title" content="What We Build — Devroca">
+<meta property="og:description" content="Eleven common kinds of project — clinics, restaurants, retail, property listings, logistics, industrial B2B and more — and the Devroca services each one is usually built from.">
+<meta property="og:url" content="https://devroca.com/work">
+<meta property="og:image" content="https://devroca.com/assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="stylesheet" href="assets/styles.css">
 <style>
   .cat-list{ display:grid; gap:2px; background:var(--line); border:1px solid var(--line); }
@@ -59,9 +71,17 @@
     transition:color .2s ease, text-decoration-color .2s ease;
   }
   .cat-item .step-out a:hover{ color:var(--gold-ink-2); text-decoration-color:var(--gold-ink-2); }
+  /* These links sit three to five in a row and wrap onto each other, so each
+     needs a 24px target (WCAG 2.5.8) that doesn't overlap the line above or
+     below: 3px of padding each way on a 26.6px line. Inline padding grows the
+     hit area without moving the text. */
+  .cat-item .step-out{ line-height:1.9; }
+  .cat-item .step-out a{ padding:3px 0; }
   @media (max-width:820px){
     .cat-item{ grid-template-columns:1fr; }
-    .cat-item .cat-visual{ order:-1; }
+    /* Stacked, a 16:10 tile runs the full column width — ~680x420 on a tablet
+       around a 64px glyph. A fixed band keeps the tile without the void. */
+    .cat-item .cat-visual{ order:-1; aspect-ratio:auto; height:140px; }
   }
   @media (prefers-reduced-motion: reduce){
     .cat-visual::before{ display:none; }

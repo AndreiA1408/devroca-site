@@ -48,7 +48,11 @@ export function createLifecycle() {
     const target = phase.to(peak);
     value = from + (target - from) * ease(elapsed / dur);
     // While adrift, the break-up breathes a little rather than holding.
-    if (phase.name === 'drift') value += Math.sin(elapsed * 1.3) * 0.04;
+    // Enveloped to zero at both ends of the phase, so the hand-off to reform
+    // (which starts from the bare target) doesn't jump.
+    if (phase.name === 'drift') {
+      value += Math.sin(elapsed * 1.3) * 0.04 * Math.sin(Math.PI * Math.min(elapsed / dur, 1));
+    }
     if (elapsed >= dur) { from = target; enter(i + 1); }
   }
 

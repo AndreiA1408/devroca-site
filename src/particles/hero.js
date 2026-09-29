@@ -30,17 +30,35 @@ export function createParticleHero(canvas, theme) {
   const reduceQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
   const quality = pickQuality();
 
+  // No WebGL: the hero simply shows its copy. The stage box only exists to
+  // hold the stone's place, so it is collapsed too — on phones it sits above
+  // the headline and would otherwise leave an empty block there.
+  const noGem = () => {
+    canvas.hidden = true;
+    hero.classList.add('no-gem');
+    return null;
+  };
+
+  // Probed first, on the real canvas, so a device without WebGL 2 takes the
+  // fallback quietly instead of three.js logging errors to the console on the
+  // way to throwing. The context is handed to the renderer, so these
+  // attributes are the renderer's attributes.
+  const context = canvas.getContext('webgl2', {
+    alpha: true, antialias: false, depth: false, stencil: false,
+    powerPreference: 'default'
+    // premultipliedAlpha stays at its default (true): the fragment
+    // shader writes premultiplied colour itself. See BUILD.md.
+  });
+  if (!context) return noGem();
+
   let renderer;
   try {
     renderer = new THREE.WebGLRenderer({
-      canvas, alpha: true, antialias: false, depth: false, stencil: false,
+      canvas, context, alpha: true, antialias: false, depth: false, stencil: false,
       powerPreference: 'default'
-      // premultipliedAlpha stays at its default (true): the fragment
-      // shader writes premultiplied colour itself. See BUILD.md.
     });
   } catch (e) {
-    canvas.hidden = true; // no WebGL: the hero simply shows its copy
-    return null;
+    return noGem();
   }
   renderer.setClearColor(0x000000, 0);
 
@@ -222,7 +240,7 @@ export function createParticleHero(canvas, theme) {
     stone.scale.setScalar(r);
     stone.position.set(
       home.x + Math.sin(t * 0.19) * r * 0.035,
-      home.y + (Math.sin(t * 0.42) * 0.04 + Math.sin(t * 0.17) * 0.03) * r - scrollY * 0.3 * worldPerPx,
+      home.y + (Math.sin(t * 0.42) * 0.04 + Math.sin(t * 0.17) * 0.03) * r - (reduced ? 0 : scrollY * 0.3 * worldPerPx),
       -p * 3.2
     );
     /* A flat rosette spun through a full turn would spend part of every
@@ -240,7 +258,9 @@ export function createParticleHero(canvas, theme) {
   let heroVisible = true, pageVisible = !document.hidden;
 
   const monitor = createFrameMonitor([
-    () => { pixelRatio = Math.max(1, pixelRatio * 0.75); layout(); },
+    // Never below 1 — but a ratio already under 1 (a zoomed-out 1x screen)
+    // must not be raised to it by a step that is meant to lower it.
+    () => { pixelRatio = Math.max(Math.min(1, pixelRatio), pixelRatio * 0.75); layout(); },
     () => {
       gemGeo.setDrawRange(0, Math.round(gemData.count * 0.65));
       fieldGeo.setDrawRange(0, Math.round(fieldData.count * 0.65));
@@ -270,8 +290,10 @@ export function createParticleHero(canvas, theme) {
     // The stone leans toward the cursor, and the camera drifts slightly
     // with it — enough parallax to feel the depth, not enough to notice.
     const k = 1 - Math.exp(-dt * 2.2);
-    lean.x += ((pt.active ? pt.ndcX : 0) - lean.x) * k;
-    lean.y += ((pt.active ? pt.ndcY : 0) - lean.y) * k;
+    // Reduced motion: no response to the cursor at all (BUILD.md).
+    const follow = pt.active && !reduced;
+    lean.x += ((follow ? pt.ndcX : 0) - lean.x) * k;
+    lean.y += ((follow ? pt.ndcY : 0) - lean.y) * k;
     const drift = reduced ? 0 : 1;
     camera.position.set(
       (lean.x * 0.45 + Math.sin(t * 0.07) * 0.18) * drift,

@@ -26,13 +26,26 @@ if (menuBtn && mobileMenu) {
       root.style.scrollBehavior = '';
     }
   };
-  const setMenu = (open) => {
+  // The menu covers the whole page, so while it is open it is a modal
+  // dialog: everything else goes inert, which keeps Tab inside the menu and
+  // screen readers out of the page hidden behind it. Declared here rather
+  // than in the markup, like the FAQ and select ARIA below — without JS the
+  // menu never opens, so there is no dialog to announce.
+  mobileMenu.setAttribute('role', 'dialog');
+  mobileMenu.setAttribute('aria-modal', 'true');
+  mobileMenu.setAttribute('aria-label', 'Menu');
+  const behindMenu = () => Array.from(document.body.children)
+    .filter(el => el !== mobileMenu && el.tagName !== 'SCRIPT');
+
+  const setMenu = (open, { restoreFocus = true } = {}) => {
     mobileMenu.classList.toggle('open', open);
     lockScroll(open);
+    behindMenu().forEach(el => { el.inert = open; });
     menuBtn.setAttribute('aria-expanded', String(open));
     // Return focus where the user can act on it, rather than leaving it
     // stranded on a control that just scrolled out of reach.
-    (open ? (menuClose || mobileMenu) : menuBtn).focus();
+    if (open) (menuClose || mobileMenu).focus();
+    else if (restoreFocus) menuBtn.focus();
   };
   menuBtn.addEventListener('click', () => setMenu(true));
   if (menuClose) menuClose.addEventListener('click', () => setMenu(false));
@@ -41,6 +54,17 @@ if (menuBtn && mobileMenu) {
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape' && mobileMenu.classList.contains('open')) setMenu(false);
   });
+  // Widened past the breakpoint (a tablet rotated, a window dragged) the
+  // menu button disappears, and an open menu would keep the page pinned
+  // with nothing on screen to close it from.
+  const narrow = window.matchMedia('(max-width: 980px)');
+  const onBreakpoint = () => {
+    if (!narrow.matches && mobileMenu.classList.contains('open')) {
+      setMenu(false, { restoreFocus: false });
+    }
+  };
+  if (narrow.addEventListener) narrow.addEventListener('change', onBreakpoint);
+  else if (narrow.addListener) narrow.addListener(onBreakpoint);
 }
 
 // Tabs (services page)
@@ -54,11 +78,36 @@ document.querySelectorAll('.tab').forEach(tab => {
     tabs.querySelectorAll('.tab').forEach(t => {
       t.classList.remove('active');
       t.setAttribute('aria-selected', 'false');
+      t.tabIndex = -1;
     });
     group.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
     tab.classList.add('active');
     tab.setAttribute('aria-selected', 'true');
+    tab.tabIndex = 0;
     panel.classList.add('active');
+  });
+});
+// role="tablist" promises the keyboard model that goes with it: one Tab stop
+// for the whole row (the selected tab), arrows to move between tabs, Home and
+// End to jump. Selection follows focus, as the tabs are cheap to switch.
+document.querySelectorAll('.tabs').forEach(list => {
+  const tabs = Array.from(list.querySelectorAll('.tab'));
+  if (!tabs.length) return;
+  tabs.forEach(t => { t.tabIndex = t.classList.contains('active') ? 0 : -1; });
+  list.addEventListener('keydown', e => {
+    const i = tabs.indexOf(document.activeElement);
+    if (i < 0) return;
+    let n;
+    switch (e.key) {
+      case 'ArrowRight': n = (i + 1) % tabs.length; break;
+      case 'ArrowLeft':  n = (i - 1 + tabs.length) % tabs.length; break;
+      case 'Home':       n = 0; break;
+      case 'End':        n = tabs.length - 1; break;
+      default: return;
+    }
+    e.preventDefault();
+    tabs[n].focus();
+    tabs[n].click();
   });
 });
 
@@ -176,11 +225,15 @@ if (!prefersReduced) {
 if (!('IntersectionObserver' in window) || prefersReduced) {
   revealables.forEach(el => el.classList.add('visible'));
 } else {
+  // Triggered by position, not by a share of the element: a ratio threshold
+  // can never be met by an element many screens tall (work.html's list is
+  // ~9000px on a phone), which then stays invisible. Anything that rises past
+  // the bottom 12% of the viewport reveals, whatever its height.
   const obs = new IntersectionObserver((entries) => {
     entries.forEach(en => {
       if (en.isIntersecting) { en.target.classList.add('visible'); obs.unobserve(en.target); }
     });
-  }, { threshold: 0.15 });
+  }, { threshold: 0, rootMargin: '0px 0px -12% 0px' });
   revealables.forEach(el => obs.observe(el));
   // Safety net: if anything above still has not been revealed, show it.
   window.addEventListener('load', () => {
@@ -295,7 +348,10 @@ if (!prefersReduced && window.matchMedia('(hover: hover)').matches) {
     ? [
         [hero.querySelector('.breadcrumb'), 0.05],
         [hero.querySelector('h1'), 0.11],
-        [hero.querySelector('p'), 0.17]
+        [hero.querySelector('p'), 0.17],
+        // A callout under the intro (work.html) has to move with it, a touch
+        // faster, or the sliding paragraph runs over it.
+        [hero.querySelector(':scope > .step-out'), 0.2]
       ].filter(([el]) => el)
     : [];
 
@@ -426,16 +482,27 @@ if (!prefersReduced && window.matchMedia('(hover: hover)').matches) {
 
     // ---- Outbound: point the service back here, and acknowledge the click ----
 
-    form.addEventListener('submit', () => {
-      const next = document.createElement('input');
-      next.type = 'hidden';
-      next.name = '_next';
-      next.value = location.origin + location.pathname + '?sent=true';
-      form.appendChild(next);
-
+    form.addEventListener('submit', (e) => {
       // The POST and redirect take a moment with no other feedback, which is
       // where double submissions come from. aria-disabled only, never the
-      // disabled property, which would drop the button from the submission.
+      // disabled property, which would drop the button from the submission —
+      // so it is this check, not the attribute, that stops the second send.
+      if (btn && btn.getAttribute('aria-disabled') === 'true') {
+        e.preventDefault();
+        return;
+      }
+
+      // Reused, not re-added: a resubmit after a back/forward-cache restore
+      // would otherwise post two _next fields.
+      let next = form.querySelector('input[name="_next"]');
+      if (!next) {
+        next = document.createElement('input');
+        next.type = 'hidden';
+        next.name = '_next';
+        form.appendChild(next);
+      }
+      next.value = location.origin + location.pathname + '?sent=true';
+
       if (btn) {
         btn.textContent = 'Sending…';
         btn.setAttribute('aria-disabled', 'true');
@@ -556,6 +623,9 @@ if (!prefersReduced && window.matchMedia('(hover: hover)').matches) {
       btn.setAttribute('aria-expanded', String(next));
       if (next) {
         setActive(selected);
+        // The list always drops downward; near the bottom of a phone screen
+        // that puts options below the fold. Bring the whole list into view.
+        list.scrollIntoView({ block: 'nearest' });
       } else {
         btn.removeAttribute('aria-activedescendant');
         items.forEach((li) => delete li.dataset.active);
@@ -572,8 +642,6 @@ if (!prefersReduced && window.matchMedia('(hover: hover)').matches) {
         if (k === 'ArrowDown' || k === 'ArrowUp' || k === 'Enter' || k === ' ' || k === 'Spacebar') {
           e.preventDefault();
           setOpen(true);
-          if (k === 'ArrowDown') setActive(selected);
-          if (k === 'ArrowUp') setActive(selected);
         }
         return;
       }
@@ -605,6 +673,13 @@ if (!prefersReduced && window.matchMedia('(hover: hover)').matches) {
       }
     });
 
+    // A button activates on Space *keyup*. Firefox does that even when the
+    // keydown was prevented, and the click would toggle straight back what
+    // the keydown handler above just did.
+    btn.addEventListener('keyup', (e) => {
+      if (e.key === ' ' || e.key === 'Spacebar') e.preventDefault();
+    });
+
     items.forEach((li, i) => {
       li.addEventListener('mouseenter', () => { if (open) setActive(i); });
       // mousedown, not click: this beats the document handler below and
@@ -616,8 +691,12 @@ if (!prefersReduced && window.matchMedia('(hover: hover)').matches) {
       });
     });
 
+    // The label is outside the wrapper but is forwarded to the trigger as a
+    // click, which toggles — closing here first would reopen it straight away.
     document.addEventListener('mousedown', (e) => {
-      if (open && !wrap.contains(e.target)) setOpen(false, { focusBtn: false });
+      if (open && !wrap.contains(e.target) && !(label && label.contains(e.target))) {
+        setOpen(false, { focusBtn: false });
+      }
     });
     // A click on something else that takes focus should close it too.
     document.addEventListener('focusin', (e) => {
@@ -683,6 +762,7 @@ if (!prefersReduced && window.matchMedia('(hover: hover)').matches) {
   const fields = document.getElementById('meetFields');
   const fallback = document.getElementById('f-meet-no');
   const typeGroup = document.getElementById('meetTypeGroup');
+  const freeText = ['f-days', 'f-times'].map(id => document.getElementById(id)).filter(Boolean);
 
   if (box) {
     // True only once this runs: without JS the box collapses nothing, so the
@@ -696,6 +776,8 @@ if (!prefersReduced && window.matchMedia('(hover: hover)').matches) {
       // keeping the selection intact, so unticking can't post a meeting format
       // next to "Meeting request: No", and reticking restores what was picked.
       if (typeGroup) typeGroup.disabled = !box.checked;
+      // Same for anything typed into days/times before unticking.
+      freeText.forEach(f => { f.disabled = !box.checked; });
     };
     sync();
     box.addEventListener('change', sync);
@@ -728,6 +810,18 @@ if (!prefersReduced && window.matchMedia('(hover: hover)').matches) {
   const btn = document.getElementById('themeBtn');
   const root = document.documentElement;
 
+  // The browser chrome (address bar on mobile) follows the page colour. The
+  // meta ships dark, the default; a stored light choice is applied here.
+  // Literal values, not a computed read: mid-toggle the background is still
+  // cross-fading and would be caught halfway.
+  const themeColor = document.querySelector('meta[name="theme-color"]');
+  const syncThemeColor = () => {
+    if (themeColor) {
+      themeColor.content = root.getAttribute('data-theme') === 'light' ? '#F7F4EE' : '#14130F';
+    }
+  };
+  syncThemeColor();
+
   if (btn) {
     const label = (theme) =>
       'Switch to ' + (theme === 'light' ? 'dark' : 'light') + ' theme';
@@ -746,6 +840,7 @@ if (!prefersReduced && window.matchMedia('(hover: hover)').matches) {
       else root.removeAttribute('data-theme');
 
       btn.setAttribute('aria-label', label(next));
+      syncThemeColor();
       window.dispatchEvent(new CustomEvent('devroca:themechange'));
       // Storage can throw when site data is blocked; the toggle still works
       // for this page view, it just won't be remembered.
