@@ -97,6 +97,8 @@ uniform float uMotion;      // 1 = full motion, 0 = reduced motion
 uniform float uDissolve;    // lifecycle fragmentation, 0..1
 uniform float uRelease;     // strength of spontaneous small releases
 uniform float uFormation;   // intro assembly, 0 -> 1
+uniform float uIntroTime;   // seconds since the entrance began
+uniform float uPop;         // the pop's flash, 0..1, only just after assembly
 uniform float uScroll;      // hero scroll-out, 0..1
 uniform float uSize;        // world units
 uniform float uViewScale;   // px per world unit at depth 1
@@ -165,11 +167,14 @@ void main(){
   rel = smoothstep(0.52, 0.86, rel) * uRelease;
 
   float scroll = smoothstep(key * 0.65, key * 0.65 + 0.35, uScroll);
-  float intro = 1.0 - smoothstep(aSeed.y * 0.5, aSeed.y * 0.5 + 0.5, uFormation);
+  // Linear per particle, not smoothed: uFormation already accelerates, so
+  // every particle is still at speed when it lands. The small stagger lets
+  // the arrivals ripple across the stone in the last few frames.
+  float intro = 1.0 - clamp((uFormation - aSeed.y * 0.2) / 0.8, 0.0, 1.0);
   float loose = max(max(frag, rel * 0.6), scroll);
 
   vec3 drift = vec3(0.0);
-  if (loose + intro > 0.001) {
+  if (loose > 0.001) {
     vec3 q = position * 0.7 + aSeed.z * 5.0 + t * 0.035;
     vec3 flow = vec3(snoise(q), snoise(q + 17.3), snoise(q - 23.1));
     vec3 dir = normalize(wN * 0.8 + flow + vec3(0.0, 0.2, 0.0));
@@ -178,9 +183,29 @@ void main(){
     vec3 wander = vec3(sin(t * 0.21 + ph), sin(t * 0.17 + aSeed.y * 6.2832), cos(t * 0.19 + aSeed.z * 6.2832));
     drift += (dir * (0.35 + aSeed.w * 1.25) + wander * 0.22) * loose;
     drift += vec3(0.0, 0.9, -1.2) * scroll * (0.4 + aSeed.w);
-    drift += normalize(flow + wN * 0.5) * (2.2 + aSeed.w * 3.2) * intro;
   }
   world.xyz += drift * m;
+
+  /* ---- Entrance -------------------------------------------------
+     While 'intro' is up, each particle sits out in a loose ring around
+     the stone (pushed out from the centre in the logo's plane, roughed
+     up by fast noise) and the whole ring whirls about the stone's
+     centre. As intro falls the push, the noise and the whirl all go to
+     zero together, so the dust spirals in and lands on its facet.
+     Scaled by the stone's own radius, so it fits every breakpoint. */
+  if (intro > 0.001) {
+    vec3 c = modelMatrix[3].xyz;
+    float r = length(modelMatrix[0].xyz);
+    vec3 rel0 = world.xyz - c;
+    vec2 radial = normalize(rel0.xy + vec2(1e-4, 0.0));
+    vec3 q = position * 0.9 + aSeed.z * 5.0;
+    vec3 jit = vec3(snoise(q + uIntroTime * 1.6), snoise(q + 17.3 - uIntroTime * 1.4), snoise(q - 23.1 + uIntroTime * 1.2));
+    vec3 sw = rel0 + vec3(radial * (0.28 + aSeed.w * 0.95), (aSeed.z - 0.5) * 0.5) * r + jit * 0.2 * r;
+    float ang = (0.9 + aSeed.y * 1.6) * (uIntroTime * 3.2 + 0.6) * intro;
+    float cw = cos(ang), sw2 = sin(ang);
+    sw.xy = mat2(cw, -sw2, sw2, cw) * sw.xy;
+    world.xyz = mix(world.xyz, c + sw, intro * m);
+  }
 
   float infl;
   world.xyz += pointerPush(world.xyz, aSeed.x * 0.8, 0.19, infl) * m;
@@ -206,8 +231,12 @@ void main(){
   b = b * (1.0 + 0.45 * isEdge) + 0.22 * isEdge * mix(0.45, 1.0, front);
   b = mix(b, 0.24 + 0.1 * sin(t * 0.7 + aSeed.z * 30.0), isCore);
   b = mix(b, 0.2 + 0.2 * aSeed.z, isHalo);
+  // Swarming dust burns a little brighter than the formed surface; the
+  // pop floods every facet at once.
+  b += intro * 0.45 + uPop * 0.6;
 
   float glint = clamp((spec * 1.1 + spec2 * 0.35) * isShell + infl * 0.3, 0.0, 0.9);
+  glint = max(glint, uPop * (0.3 + 0.3 * isShell));
   vec3 col = mix(uColDeep, uColBody, smoothstep(0.0, 0.42, b));
   col = mix(col, uColLit, smoothstep(0.36, 0.95, b));
   col = mix(col, uColGlint, glint);
@@ -216,13 +245,15 @@ void main(){
   float twinkle = 0.78 + 0.22 * sin(t * (0.7 + aSeed.y * 2.3) + aSeed.z * 40.0);
   float a = uAlpha * clamp(b, 0.0, 1.5) * twinkle;
   a *= 1.0 - loose * 0.4;
-  a *= 1.0 - intro * 0.65;
+  a *= 1.0 + intro * 0.3;
+  a *= 1.0 + uPop * 0.6;
   a *= 1.0 - uScroll * 0.75;
   a *= 1.0 + infl * 0.5;
 
   float size = uSize * (0.55 + aSeed.w * 0.9);
   size *= mix(1.0, 1.12, isEdge) * mix(1.0, 0.85, isCore) * mix(1.0, 0.8, isHalo);
-  size *= 1.0 + loose * 0.3 + infl * 0.35;
+  size *= 1.0 + loose * 0.3 + infl * 0.35 + uPop * 0.2;
+  size *= 1.0 - intro * 0.15; // dust is finer than the stone it becomes
   float px = size * uViewScale / -mv.z;
   // Sub-pixel points are drawn at one pixel, so trade the missing area
   // for alpha rather than let them read brighter than they should.
@@ -295,6 +326,48 @@ void main(){
   gl_PointSize = clamp(px, 1.0, 40.0) * uPixelRatio;
 
   vColor = mix(uColDim, uColBright, aSeed.x * aSeed.x + infl * 0.4);
+  vAlpha = a * edgeFade(gl_Position);
+}
+`;
+
+/* Sparks thrown off by the pop. Each one leaves the stone's edge along
+   its own direction (mostly in the logo's plane), decelerating hard, and
+   fades out over half a second to a second. 'position' is the unit
+   direction; the object is placed on the stone's centre and scaled to
+   its radius every frame, so the burst matches the stone at any size.
+   Drawn once per page load; the CPU hides the system when it is done. */
+export const sparkVertex = /* glsl */`
+uniform float uSince;       // seconds since the pop, < 0 before it
+uniform float uSize;
+uniform float uViewScale;
+uniform float uPixelRatio;
+uniform float uAlpha;
+uniform vec3 uColHot;
+uniform vec3 uColCool;
+
+attribute vec4 aSeed;
+
+varying vec3 vColor;
+varying float vAlpha;
+
+${EDGE_FADE}
+
+void main(){
+  float since = max(uSince, 0.0);
+  float life = 0.5 + aSeed.x * 0.55;
+  float t = clamp(since / life, 0.0, 1.0);
+  float travel = (1.0 - exp(-since * (3.5 + aSeed.y * 2.5))) * (0.5 + aSeed.z * 1.3);
+  vec3 p = normalize(position) * (0.82 + travel);
+
+  vec4 mv = modelViewMatrix * vec4(p, 1.0);
+  gl_Position = projectionMatrix * mv;
+
+  float fade = (1.0 - t) * (1.0 - t);
+  vColor = mix(uColHot, uColCool, smoothstep(0.0, 0.7, t));
+  float size = uSize * (0.6 + aSeed.w * 0.9) * (1.0 - 0.45 * t);
+  float px = size * uViewScale / -mv.z;
+  float a = uAlpha * fade * step(0.0, uSince) * clamp(px * px, 0.08, 1.0);
+  gl_PointSize = clamp(px, 1.0, 32.0) * uPixelRatio;
   vAlpha = a * edgeFade(gl_Position);
 }
 `;

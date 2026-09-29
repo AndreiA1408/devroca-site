@@ -39,6 +39,14 @@ a handful of uniforms. Module map is at the top of `src/gem3d.js`.
   sample of the stone.
 - **Pausing.** The loop stops while the hero is off screen or the tab is
   hidden (IntersectionObserver + visibilitychange).
+- **Entrance.** Once per load the stone assembles in ~1.1s: its own particles
+  whirl as a ring of dust around the stage (0–0.3s), are pulled in on an
+  accelerating curve (0.3–1.1s), then it pops: a 107% scale overshoot, a
+  flash across the facets, a glow flare and a burst of sparks, all settled
+  by ~1.6s. Timings are the constants at the top of
+  `src/particles/lifecycle.js`; the spark counts are per tier in
+  `quality.js` (none on phones or low-end devices). On a translated page
+  it waits until the page is shown. After it, the usual cycle runs.
 - **No WebGL 2.** Probed on the canvas before three.js is touched; on failure
   the canvas is hidden and `.hero` gets `.no-gem`, which collapses the stage
   box so no empty block is left above the headline on phones.
@@ -75,3 +83,22 @@ So `RGB <= A` holds for every pixel and an untouched pixel is exactly
 `(0,0,0,0)`. That invariant is what stops Safari and Chrome disagreeing about
 the canvas (the old visible-box bug). Anything new drawn into this canvas must
 follow the same contract.
+
+## Languages (EN / RO / ES)
+
+English is authored in the HTML; Romanian and Spanish live in
+`assets/i18n/ro.js` and `assets/i18n/es.js` as `[English, translation]` pairs,
+and `assets/i18n.js` swaps them in at load and builds the header switcher. The
+choice is kept in `localStorage` (`lang`), and `?lang=ro` / `?lang=es` in a URL
+selects and stores it too. No build step.
+
+- **Editing English copy means updating its key.** The dictionaries are keyed
+  by the English text (whitespace-collapsed `textContent`), so a changed
+  sentence falls back to English until both files have the new key. Curly (’)
+  and straight (') apostrophes are different keys.
+- **A "string" is any element with its own letters in a direct text node**;
+  its children belong to it, so a translation repeats the child markup
+  (`<strong>`, `<em>`, links). Text written from JS goes through
+  `devrocaI18n.t()` (see `main.js`).
+- Form values posted to the inbox stay English (`value` attributes on the
+  project-type options); only the visible labels are translated.

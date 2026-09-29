@@ -1,3 +1,7 @@
+// Strings this file writes itself go through the translator in assets/i18n.js
+// (loaded first), falling back to the English if it is missing.
+const t = (en) => (window.devrocaI18n ? window.devrocaI18n.t(en) : en);
+
 // Mobile menu
 const menuBtn = document.getElementById('menuBtn');
 const menuClose = document.getElementById('menuClose');
@@ -33,7 +37,10 @@ if (menuBtn && mobileMenu) {
   // menu never opens, so there is no dialog to announce.
   mobileMenu.setAttribute('role', 'dialog');
   mobileMenu.setAttribute('aria-modal', 'true');
-  mobileMenu.setAttribute('aria-label', 'Menu');
+  mobileMenu.setAttribute('aria-label', t('Menu'));
+  // Set after i18n.js collected the page's labels, so it re-translates itself.
+  window.addEventListener('devroca:langchange', () =>
+    mobileMenu.setAttribute('aria-label', t('Menu')));
   const behindMenu = () => Array.from(document.body.children)
     .filter(el => el !== mobileMenu && el.tagName !== 'SCRIPT');
 
@@ -279,12 +286,13 @@ if (counters.length) {
     const suffix = el.dataset.countSuffix || '';
     if (!isFinite(target)) return;
     if (prefersReduced) { el.textContent = target + suffix; return; }
-    const duration = 1100;
+    const duration = 1400;
     const start = performance.now();
     const tick = (now) => {
       const t = Math.min((now - start) / duration, 1);
-      // Ease out cubic — fast off the line, settles onto the final value.
-      const eased = 1 - Math.pow(1 - t, 3);
+      // Ease out quart: fast off the line, then a long, soft landing on the
+      // final value instead of ticking into it.
+      const eased = 1 - Math.pow(1 - t, 4);
       el.textContent = Math.round(target * eased) + suffix;
       if (t < 1) requestAnimationFrame(tick);
     };
@@ -504,7 +512,7 @@ if (!prefersReduced && window.matchMedia('(hover: hover)').matches) {
       next.value = location.origin + location.pathname + '?sent=true';
 
       if (btn) {
-        btn.textContent = 'Sending…';
+        btn.textContent = t('Sending…');
         btn.setAttribute('aria-disabled', 'true');
       }
     });
@@ -513,7 +521,7 @@ if (!prefersReduced && window.matchMedia('(hover: hover)').matches) {
     // was left — mid-send. Put the button back.
     window.addEventListener('pageshow', (e) => {
       if (e.persisted && btn) {
-        btn.textContent = 'Send Message';
+        btn.textContent = t('Send Message');
         btn.removeAttribute('aria-disabled');
       }
     });
@@ -549,7 +557,7 @@ if (!prefersReduced && window.matchMedia('(hover: hover)').matches) {
       label.setAttribute('for', btnId);
     }
 
-    const options = Array.from(native.options).map((o) => o.text);
+    let options = Array.from(native.options).map((o) => o.text);
 
     const wrap = document.createElement('div');
     wrap.className = 'sel';
@@ -727,6 +735,15 @@ if (!prefersReduced && window.matchMedia('(hover: hover)').matches) {
 
     commit(selected);
 
+    // The language switcher rewrites the native options' text in place; the
+    // visible list is a copy of it, so re-read it. Values are untouched —
+    // they carry the English, so the inbox reads the same in any language.
+    window.addEventListener('devroca:langchange', () => {
+      options = Array.from(native.options).map((o) => o.text);
+      items.forEach((li, i) => { li.textContent = options[i]; });
+      valSpan.textContent = options[selected];
+    });
+
     // Back/forward cache can restore the native value behind our back.
     window.addEventListener('pageshow', () => {
       if (native.selectedIndex !== selected && native.selectedIndex >= 0) {
@@ -824,7 +841,7 @@ if (!prefersReduced && window.matchMedia('(hover: hover)').matches) {
 
   if (btn) {
     const label = (theme) =>
-      'Switch to ' + (theme === 'light' ? 'dark' : 'light') + ' theme';
+      t(theme === 'light' ? 'Switch to dark theme' : 'Switch to light theme');
     btn.setAttribute('aria-label', label(root.getAttribute('data-theme') || 'dark'));
 
     btn.addEventListener('click', () => {
@@ -845,6 +862,10 @@ if (!prefersReduced && window.matchMedia('(hover: hover)').matches) {
       // Storage can throw when site data is blocked; the toggle still works
       // for this page view, it just won't be remembered.
       try { localStorage.setItem('theme', next); } catch (e) {}
+    });
+
+    window.addEventListener('devroca:langchange', () => {
+      btn.setAttribute('aria-label', label(root.getAttribute('data-theme') || 'dark'));
     });
   }
 }
