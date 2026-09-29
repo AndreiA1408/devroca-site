@@ -30,6 +30,7 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="stylesheet" href="assets/styles.css">
+<link rel="stylesheet" href="assets/home.css">
 <style>
   .hero{
     position:relative; padding-top:170px; padding-bottom:120px;
@@ -64,13 +65,6 @@
   .hero-gem-stage{ height:600px; }
   /* Set by the gem script when there is no WebGL: nothing to hold a place for. */
   .hero.no-gem .hero-gem-stage{ display:none; }
-  .teaser-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
-  .teaser-card{
-    background:var(--ink-3); border:1px solid var(--line); padding:26px;
-    clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
-    transition:border-color .3s ease, transform .55s cubic-bezier(.22,.68,.32,1), box-shadow .55s ease;
-  }
-  .teaser-card:hover{ border-color:var(--gold-4); transform:translateY(-3px); }
   /* Hero entrance: the copy eases up line by line on load rather than being
      there at once. Held while a translated page is still hidden, so it plays
      for the text the visitor actually reads. */
@@ -81,20 +75,12 @@
     .hero-copy > :nth-child(4){ animation-delay:.24s; }
     .hero-copy > :nth-child(5){ animation-delay:.32s; }
   }
-  .teaser-card h3{ font-size:16.5px; margin-bottom:8px; }
-  .teaser-card p{ font-size:13.5px; color:var(--text-dim); }
-  .section-link{ font-size:14.5px; font-weight:600; color:var(--gold-ink-2); display:inline-flex; align-items:center; gap:6px; margin-top:8px; padding:3px 0; }
-  .section-foot{ display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:20px; margin-bottom:44px; }
   @media (max-width: 980px){
     .hero{ grid-template-columns:1fr; padding-top:140px; }
     .hero-gem-stage{ order:-1; height:340px; }
     .hero-copy h1{ font-size:40px; }
-    .teaser-grid{ grid-template-columns:1fr 1fr; }
   }
   @media (max-width: 600px){
-    /* two columns could not shrink past their content width and pushed
-       the page wider than the viewport */
-    .teaser-grid{ grid-template-columns:1fr; }
     .hero{ padding-top:120px; padding-bottom:70px; }
     .hero-copy h1{ font-size:33px; }
     .hero-copy p{ font-size:16.5px; margin-bottom:30px; }
@@ -236,115 +222,120 @@
   <svg viewBox="0 0 1200 70" preserveAspectRatio="none" aria-hidden="true" focusable="false"><polygon points="0,70 0,30 400,60 800,10 1200,45 1200,70" fill="currentColor"/></svg>
 </div>
 
-<!-- SERVICES TEASER -->
-<section class="alt-bg">
-  <div class="wrap">
-    <div class="section-foot reveal">
-      <div class="section-head" style="margin-bottom:0;">
-        <span class="eyebrow">SERVICES</span>
-        <h2>One partner, everything you need.</h2>
-        <p>15 services across three categories. Start with a core build and add the rest whenever you&rsquo;re ready.</p>
-      </div>
-      <a href="services.html" class="section-link">See all services →</a>
-    </div>
-    <div class="teaser-grid">
-      <div class="teaser-card reveal"><h3>Core Services</h3><p>Website &amp; web app builds, plus ongoing maintenance and support.</p></div>
-      <div class="teaser-card reveal"><h3>Technical Add-ons</h3><p>Booking, payments, performance, chatbots, multi-language, technical SEO, analytics, audits.</p></div>
-      <div class="teaser-card reveal"><h3>Ongoing &amp; Support</h3><p>Content updates and round-the-clock uptime monitoring.</p></div>
-    </div>
-  </div>
-</section>
-
-<!-- PRICING TEASER -->
-<section>
-  <div class="wrap">
-    <div class="section-foot reveal">
-      <div class="section-head" style="margin-bottom:0;">
-        <span class="eyebrow">PRICING</span>
-        <h2>One custom quote, built around your project.</h2>
-        <p>Nothing is sold off a shelf, so nothing has a shelf price. We scope what you actually need, then price that scope as one number, agreed in writing before any work starts.</p>
-      </div>
-      <a href="pricing.html" class="section-link">How pricing works →</a>
-    </div>
-    <div class="teaser-grid">
-      <div class="teaser-card reveal"><h3>Scoped first</h3><p>A short conversation turns your project into a specific list of services.</p></div>
-      <div class="teaser-card reveal"><h3>Priced once</h3><p>You get one written number for that scope instead of an hourly estimate that drifts.</p></div>
-      <div class="teaser-card reveal"><h3>Nothing padded</h3><p>You pay for the services you picked, not for a bundle sized for someone else.</p></div>
-    </div>
-  </div>
-</section>
-
-<!-- PROCESS TEASER -->
-<section class="alt-bg">
-  <div class="wrap">
-    <div class="section-foot reveal">
-      <div class="section-head" style="margin-bottom:0;">
-        <span class="eyebrow">PROCESS</span>
-        <h2>How a project actually goes.</h2>
-        <p>No black box. Here's what happens after you reach out.</p>
-      </div>
-      <a href="process.html" class="section-link">See the full process →</a>
-    </div>
-    <div class="process">
-      <div class="step reveal"><h3>Discovery</h3><p>We talk through your business, goals, and what "done" looks like.</p></div>
-      <div class="step reveal"><h3>Design &amp; Build</h3><p>Your site or app takes shape, with regular check-ins.</p></div>
-      <div class="step reveal"><h3>Launch</h3><p>We ship it, test it, and make sure everything works.</p></div>
-      <div class="step reveal"><h3>Grow</h3><p>Maintenance, plus any add-ons, whenever you're ready.</p></div>
-    </div>
-  </div>
-</section>
-
-<!-- WHY US -->
-<section>
-  <div class="wrap">
-    <div class="section-foot reveal">
-      <div class="section-head" style="margin-bottom:0;">
-        <span class="eyebrow">WHY DEVROCA</span>
-        <h2>What working together looks like.</h2>
-      </div>
-      <a href="about.html" class="section-link">More about Devroca →</a>
-    </div>
-  </div>
-  <div class="wrap" style="padding:0;">
-    <div class="why-grid reveal">
-      <div class="why-item"><h3><span class="dot"></span>One partner, start to finish</h3><p>No juggling separate people for design, development, technical SEO, and hosting.</p></div>
-      <div class="why-item"><h3><span class="dot"></span>Web + app expertise</h3><p>Whether you need a website or a full web application, it&rsquo;s one person behind both.</p></div>
-      <div class="why-item"><h3><span class="dot"></span>Built to grow with you</h3><p>Start simple, add booking, multi-language, or monitoring whenever you&rsquo;re ready.</p></div>
-      <div class="why-item"><h3><span class="dot"></span>International, remote-friendly</h3><p>Based in Bucharest, Romania, working with businesses anywhere.</p></div>
-    </div>
-  </div>
-</section>
-
-<!-- WORK TEASER -->
-<section class="alt-bg">
-  <div class="wrap">
-    <div class="section-foot reveal">
-      <div class="section-head" style="margin-bottom:0;">
-        <span class="eyebrow">WHAT WE BUILD</span>
-        <h2>Built for your kind of business.</h2>
-      </div>
-      <a href="work.html" class="section-link">See what we build →</a>
-    </div>
-    <div class="work-grid">
-      <div class="work-card reveal"><svg class="work-glyph" aria-hidden="true" focusable="false"><use href="#glyph-clinic"></use></svg><h3>Clinics &amp; Healthcare</h3><p>Online booking, practitioner pages, Google reviews.</p></div>
-      <div class="work-card reveal"><svg class="work-glyph" aria-hidden="true" focusable="false"><use href="#glyph-hospitality"></use></svg><h3>Restaurants &amp; Hospitality</h3><p>Menus, reservations, extra languages.</p></div>
-      <div class="work-card reveal"><svg class="work-glyph" aria-hidden="true" focusable="false"><use href="#glyph-retail"></use></svg><h3>Retail &amp; E-commerce</h3><p>Catalog, checkout, and an order dashboard.</p></div>
-      <div class="work-card reveal"><svg class="work-glyph" aria-hidden="true" focusable="false"><use href="#glyph-booking"></use></svg><h3>Service &amp; Booking Platforms</h3><p>Web apps where booking is the product.</p></div>
-    </div>
-  </div>
-</section>
-
-<!-- CTA BAND -->
-<section>
-  <div class="wrap">
-    <div class="cta-band reveal">
+<!-- 01 SERVICES — an editorial index; each row opens its tab on services.html -->
+<section class="h-sec h-alt">
+  <div class="h-wrap">
+    <div class="h-head">
       <div>
-        <h2>Let's build something.</h2>
-        <p>Tell me about your project and I'll get back to you within a day or two.</p>
+        <div class="h-label reveal"><span class="h-num">01</span><span class="eyebrow">SERVICES</span></div>
+        <h2 class="h-title reveal h-mask">One partner, everything you need.</h2>
       </div>
-      <a href="contact.html" class="btn btn-primary">Start a Project</a>
+      <div class="h-head-aside reveal">
+        <p>15 services across three categories. Start with a core build and add the rest whenever you&rsquo;re ready.</p>
+        <a href="services.html" class="section-link h-link">See all services →</a>
+      </div>
+    </div>
+    <div class="h-svc-list">
+      <a class="h-svc reveal" href="services.html#panel-core"><span class="h-svc-num">01</span><h3>Core Services</h3><p>Website &amp; web app builds, plus ongoing maintenance and support.</p><span class="h-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M7 17 17 7M9 7h8v8"/></svg></span></a>
+      <a class="h-svc reveal" href="services.html#panel-technical"><span class="h-svc-num">02</span><h3>Technical Add-ons</h3><p>Booking, payments, performance, chatbots, multi-language, technical SEO, analytics, audits.</p><span class="h-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M7 17 17 7M9 7h8v8"/></svg></span></a>
+      <a class="h-svc reveal" href="services.html#panel-content"><span class="h-svc-num">03</span><h3>Ongoing &amp; Support</h3><p>Content updates and round-the-clock uptime monitoring.</p><span class="h-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M7 17 17 7M9 7h8v8"/></svg></span></a>
     </div>
   </div>
+</section>
+
+<!-- 02 PRICING — one statement -->
+<section class="h-sec h-panel">
+  <div class="h-wrap">
+    <div class="h-label reveal"><span class="h-num">02</span><span class="eyebrow">PRICING</span></div>
+    <h2 class="h-statement reveal h-mask">One custom quote, built around your project.</h2>
+    <div class="h-pricing-body">
+      <div class="h-pricing-intro reveal">
+        <p>Nothing is sold off a shelf, so nothing has a shelf price. We scope what you actually need, then price that scope as one number, agreed in writing before any work starts.</p>
+        <a href="pricing.html" class="section-link h-link">How pricing works →</a>
+      </div>
+      <ol class="h-principles">
+        <li class="reveal"><span class="h-idx">01</span><div><h3>Scoped first</h3><p>A short conversation turns your project into a specific list of services.</p></div></li>
+        <li class="reveal"><span class="h-idx">02</span><div><h3>Priced once</h3><p>You get one written number for that scope instead of an hourly estimate that drifts.</p></div></li>
+        <li class="reveal"><span class="h-idx">03</span><div><h3>Nothing padded</h3><p>You pay for the services you picked, not for a bundle sized for someone else.</p></div></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- 03 PROCESS — the line is drawn as the steps are read (assets/home.js) -->
+<section class="h-sec h-alt h-panel">
+  <div class="h-wrap">
+    <div class="h-head">
+      <div>
+        <div class="h-label reveal"><span class="h-num">03</span><span class="eyebrow">PROCESS</span></div>
+        <h2 class="h-title reveal h-mask">How a project actually goes.</h2>
+      </div>
+      <div class="h-head-aside reveal">
+        <p>No black box. Here's what happens after you reach out.</p>
+        <a href="process.html" class="section-link h-link">See the full process →</a>
+      </div>
+    </div>
+    <div class="h-timeline reveal" data-timeline>
+      <div class="h-track" aria-hidden="true"><span class="h-track-fill"></span></div>
+      <ol class="h-steps">
+        <li class="h-step is-on"><span class="h-node" aria-hidden="true"></span><span class="h-idx">01</span><h3>Discovery</h3><p>We talk through your business, goals, and what "done" looks like.</p></li>
+        <li class="h-step is-on"><span class="h-node" aria-hidden="true"></span><span class="h-idx">02</span><h3>Design &amp; Build</h3><p>Your site or app takes shape, with regular check-ins.</p></li>
+        <li class="h-step is-on"><span class="h-node" aria-hidden="true"></span><span class="h-idx">03</span><h3>Launch</h3><p>We ship it, test it, and make sure everything works.</p></li>
+        <li class="h-step is-on"><span class="h-node" aria-hidden="true"></span><span class="h-idx">04</span><h3>Grow</h3><p>Maintenance, plus any add-ons, whenever you're ready.</p></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- 04 WHY DEVROCA — a held statement, one reason in focus at a time -->
+<section class="h-sec h-panel">
+  <div class="h-wrap h-why-grid">
+    <div class="h-why-lead">
+      <div class="h-label reveal"><span class="h-num">04</span><span class="eyebrow">WHY DEVROCA</span></div>
+      <h2 class="h-title reveal h-mask">What working together looks like.</h2>
+      <a href="about.html" class="section-link h-link reveal">More about Devroca →</a>
+    </div>
+    <ol class="h-reasons" data-reasons>
+      <li class="h-reason reveal"><span class="h-idx">01</span><div><h3><span class="dot"></span>One partner, start to finish</h3><p>No juggling separate people for design, development, technical SEO, and hosting.</p></div></li>
+      <li class="h-reason reveal"><span class="h-idx">02</span><div><h3><span class="dot"></span>Web + app expertise</h3><p>Whether you need a website or a full web application, it&rsquo;s one person behind both.</p></div></li>
+      <li class="h-reason reveal"><span class="h-idx">03</span><div><h3><span class="dot"></span>Built to grow with you</h3><p>Start simple, add booking, multi-language, or monitoring whenever you&rsquo;re ready.</p></div></li>
+      <li class="h-reason reveal"><span class="h-idx">04</span><div><h3><span class="dot"></span>International, remote-friendly</h3><p>Based in Bucharest, Romania, working with businesses anywhere.</p></div></li>
+    </ol>
+  </div>
+</section>
+
+<!-- 05 WHAT WE BUILD — one category on stage (desktop), cards below -->
+<section class="h-sec h-alt h-panel">
+  <div class="h-wrap">
+    <div class="h-head">
+      <div>
+        <div class="h-label reveal"><span class="h-num">05</span><span class="eyebrow">WHAT WE BUILD</span></div>
+        <h2 class="h-title reveal h-mask">Built for your kind of business.</h2>
+      </div>
+      <div class="h-head-aside reveal">
+        <a href="work.html" class="section-link h-link">See what we build →</a>
+      </div>
+    </div>
+    <div class="h-cats reveal" data-cats>
+      <div class="h-cat-stage" aria-hidden="true"></div>
+      <div class="h-cat"><span class="h-idx">01</span><h3>Clinics &amp; Healthcare</h3><svg class="h-cat-glyph" aria-hidden="true" focusable="false"><use href="#glyph-clinic"></use></svg><p>Online booking, practitioner pages, Google reviews.</p></div>
+      <div class="h-cat"><span class="h-idx">02</span><h3>Restaurants &amp; Hospitality</h3><svg class="h-cat-glyph" aria-hidden="true" focusable="false"><use href="#glyph-hospitality"></use></svg><p>Menus, reservations, extra languages.</p></div>
+      <div class="h-cat"><span class="h-idx">03</span><h3>Retail &amp; E-commerce</h3><svg class="h-cat-glyph" aria-hidden="true" focusable="false"><use href="#glyph-retail"></use></svg><p>Catalog, checkout, and an order dashboard.</p></div>
+      <div class="h-cat"><span class="h-idx">04</span><h3>Service &amp; Booking Platforms</h3><svg class="h-cat-glyph" aria-hidden="true" focusable="false"><use href="#glyph-booking"></use></svg><p>Web apps where booking is the product.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 06 CLOSING PANEL -->
+<section class="h-sec h-panel h-cta">
+  <div class="h-wrap">
+    <h2 class="h-cta-title reveal h-mask">Let's build something.</h2>
+    <div class="h-cta-foot reveal">
+      <p>Tell me about your project and I'll get back to you within a day or two.</p>
+      <a href="contact.html" class="btn h-btn-ink">Start a Project</a>
+    </div>
+  </div>
+  <div class="h-wordmark reveal" aria-hidden="true">devroca</div>
 </section>
 
 </main>
@@ -371,6 +362,7 @@
 <script src="assets/i18n/es.js" defer></script>
 <script src="assets/i18n.js" defer></script>
 <script src="assets/main.js" defer></script>
+<script src="assets/home.js" defer></script>
 <script src="gem3d.bundle.js" defer></script>
 </body>
 </html>

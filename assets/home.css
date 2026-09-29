@@ -1,0 +1,408 @@
+/* ============================================================
+   Homepage, below the hero.
+
+   Loaded by index.html only, and every class here is h- prefixed, so
+   nothing on another page can match it. The hero keeps its own inline
+   styles in index.html and is not touched from here.
+
+   The page after the hero reads as one sequence rather than a stack of
+   boxes: each section after the first is a panel with rounded top
+   corners that rises over the one before it, the sections are indexed
+   01–06 like chapters, and each one is composed for what it says —
+   services as an editorial index, pricing as a single statement,
+   process as a line that is drawn as you read it, reasons with one in
+   focus at a time, categories with one on stage, and a closing panel in
+   the brand's gold.
+
+   Colour: tokens only (styles.css), so both themes follow for free.
+   Motion: transform/opacity/clip-path, gated on .js like every other
+   reveal on the site, and flattened under prefers-reduced-motion.
+   ============================================================ */
+
+.h-wrap{ max-width:1320px; margin:0 auto; padding:0 clamp(22px, 4.2vw, 60px); }
+
+/* ---------- Section shells ---------- */
+section.h-sec{
+  padding:clamp(96px, 11vw, 160px) 0;
+  background-color:var(--ink);
+  background-image:var(--tex-section);
+  background-size:100% 100%;
+}
+section.h-sec.h-alt{
+  background-color:var(--ink-2);
+  background-image:var(--tex-alt);
+}
+/* First section after the hero: the angled divider is its top edge, so the
+   wash fades in from the divider's colour rather than starting on a seam. */
+.facet-divider + section.h-sec.h-alt{
+  background-image:linear-gradient(180deg, var(--ink-2) 0%, rgba(0,0,0,0) 16%), var(--tex-alt);
+}
+/* The rise. The negative margin tucks each panel under the rounded corners
+   of the one it covers; later sections paint over earlier ones already
+   (every section is position:relative), so no z-index is needed. */
+.h-panel{
+  margin-top:-44px;
+  border-radius:44px 44px 0 0;
+  border-top:1px solid var(--line);
+  box-shadow:0 -34px 60px -44px var(--shadow-2);
+}
+
+/* ---------- Chapter label: ◆ 01  SERVICES ---------- */
+.h-label{ display:flex; align-items:center; gap:12px; margin-bottom:26px; }
+.h-label::before{
+  content:''; width:7px; height:7px; flex-shrink:0;
+  background:var(--gold-mark); transform:rotate(45deg);
+}
+.h-num, .h-idx{
+  font-size:12.5px; font-weight:600; letter-spacing:.14em;
+  font-variant-numeric:tabular-nums; color:var(--gold-ink-2);
+}
+.h-label .eyebrow{ margin:0; font-size:12.5px; letter-spacing:.16em; color:var(--text-dim); }
+
+/* ---------- Type ---------- */
+.h-title{
+  font-size:clamp(38px, 5.2vw, 78px); font-weight:500;
+  line-height:1.02; letter-spacing:-0.035em; max-width:14ch;
+}
+.h-head{
+  display:grid; grid-template-columns:minmax(0, 1.4fr) minmax(0, .6fr);
+  gap:36px 64px; align-items:end; margin-bottom:clamp(56px, 7vw, 100px);
+}
+.h-head-aside p{ font-size:17px; color:var(--text-dim); margin-bottom:26px; max-width:400px; }
+
+/* The existing section links, as pills. The arrow is part of the copy. */
+.h-link{
+  display:inline-flex; align-items:center; min-height:48px; padding:0 24px;
+  border:1px solid var(--line-strong); border-radius:999px;
+  font-size:14.5px; font-weight:600; color:var(--paper);
+  transition:border-color .25s ease, background-color .25s ease, color .25s ease;
+}
+.h-link:hover{ border-color:var(--gold-edge); background:var(--tint-soft); color:var(--gold-ink); }
+
+/* Masked reveal for the big statements: the line is wiped up into view
+   rather than faded, so large type arrives with some weight. Rides on the
+   shared .reveal observer in main.js. */
+:where(.js) .reveal.h-mask{
+  opacity:1; clip-path:inset(0 0 100% 0); transform:translateY(0.35em);
+  transition:clip-path 1s cubic-bezier(.22,.68,.32,1), transform 1s cubic-bezier(.22,.68,.32,1);
+  transition-delay:var(--reveal-delay, 0ms);
+}
+:where(.js) .reveal.h-mask.visible{ clip-path:inset(-20% -4% -20% -4%); transform:none; }
+
+/* ============================================================
+   01 Services — an editorial index
+   ============================================================ */
+.h-svc-list{ border-bottom:1px solid var(--line-strong); }
+.h-svc{
+  position:relative; display:grid; align-items:center;
+  grid-template-columns:72px minmax(0, 1.3fr) minmax(0, .7fr) 56px;
+  gap:20px 40px; padding:clamp(28px, 3.4vw, 46px) 0;
+  border-top:1px solid var(--line-strong); color:var(--paper);
+}
+.h-svc > *{ transition:opacity .35s ease; }
+.h-svc-num{ font-size:13px; letter-spacing:.12em; color:var(--text-dim-2); font-variant-numeric:tabular-nums; }
+.h-svc h3{
+  font-size:clamp(30px, 4.1vw, 58px); font-weight:500; line-height:1.05; letter-spacing:-.03em;
+  transition:transform .55s cubic-bezier(.22,.68,.32,1), color .3s ease, opacity .35s ease;
+}
+.h-svc p{ font-size:15.5px; color:var(--text-dim); max-width:430px; }
+/* A gold rule draws across the top of the row being pointed at. */
+.h-svc::before{
+  content:''; position:absolute; left:0; right:0; top:-1px; height:1px;
+  background:var(--grad-underline); transform:scaleX(0); transform-origin:0 50%;
+  transition:transform .7s cubic-bezier(.22,.68,.32,1);
+}
+.h-arrow{
+  width:52px; height:52px; border-radius:50%; justify-self:end;
+  display:grid; place-items:center; border:1px solid var(--line-strong); color:var(--paper);
+  transition:background-color .3s ease, border-color .3s ease, color .3s ease, opacity .35s ease;
+}
+.h-arrow svg{
+  width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.8;
+  stroke-linecap:round; stroke-linejoin:round;
+  transition:transform .45s cubic-bezier(.22,.68,.32,1);
+}
+.h-svc:hover::before, .h-svc:focus-visible::before{ transform:scaleX(1); }
+.h-svc:hover h3, .h-svc:focus-visible h3{ transform:translateX(14px); color:var(--gold-ink); }
+.h-svc:hover .h-arrow, .h-svc:focus-visible .h-arrow{
+  background:var(--gold-2); border-color:var(--gold-edge); color:var(--on-gold);
+}
+.h-svc:hover .h-arrow svg, .h-svc:focus-visible .h-arrow svg{ transform:rotate(45deg); }
+.h-svc:focus-visible{ outline-offset:6px; }
+/* The row under the pointer takes the page; the others step back. Mouse
+   only — on touch there is no hover to release it again. */
+@media (hover:hover) and (pointer:fine){
+  .h-svc-list:hover .h-svc:not(:hover) > *{ opacity:.38; }
+}
+
+/* ============================================================
+   02 Pricing — one statement
+   ============================================================ */
+.h-statement{
+  font-size:clamp(42px, 7vw, 116px); font-weight:500;
+  line-height:.98; letter-spacing:-.045em; max-width:15ch;
+  margin-bottom:clamp(56px, 7vw, 104px);
+}
+/* "One custom quote" is the point of the section; the first line carries it. */
+.h-statement::first-line{ color:var(--gold-ink); }
+.h-pricing-body{
+  display:grid; grid-template-columns:minmax(0, .8fr) minmax(0, 1.2fr);
+  gap:48px clamp(48px, 7vw, 120px); align-items:start;
+}
+.h-pricing-intro p{ font-size:18px; color:var(--text-dim); margin-bottom:30px; max-width:440px; }
+.h-principles{ list-style:none; display:grid; }
+.h-principles li{
+  position:relative; display:grid; grid-template-columns:64px minmax(0, 1fr);
+  gap:8px 20px; padding:30px 0 34px;
+}
+.h-principles li:last-child{ padding-bottom:0; }
+/* Each principle's rule draws in as it arrives. */
+.h-principles li::before{
+  content:''; position:absolute; left:0; right:0; top:0; height:1px;
+  background:var(--line-strong); transform-origin:0 50%;
+}
+:where(.js) .h-principles li.reveal::before{
+  transform:scaleX(0); transition:transform 1.1s cubic-bezier(.22,.68,.32,1) calc(var(--reveal-delay, 0ms) + 150ms);
+}
+:where(.js) .h-principles li.reveal.visible::before{ transform:scaleX(1); }
+.h-principles .h-idx{ padding-top:9px; }
+.h-principles h3{ font-size:clamp(24px, 2.5vw, 34px); font-weight:500; letter-spacing:-.02em; margin-bottom:8px; }
+.h-principles p{ font-size:15.5px; color:var(--text-dim); max-width:460px; }
+
+/* ============================================================
+   03 Process — a line drawn as you read
+   ============================================================ */
+.h-timeline{ position:relative; }
+.h-track{
+  position:absolute; left:0; right:0; top:7px; height:1px;
+  background:var(--line-strong); pointer-events:none;
+}
+/* --p is written by home.js from scroll position; 1 without it, so the
+   line is simply complete when nothing drives it. */
+.h-track-fill{
+  position:absolute; inset:0; background:var(--grad-underline);
+  transform:scaleX(var(--p, 1)); transform-origin:0 50%;
+}
+.h-steps{ list-style:none; display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:40px; }
+.h-step{ position:relative; padding-top:44px; }
+.h-node{
+  position:absolute; left:0; top:0; width:15px; height:15px;
+  border:1.5px solid var(--line-strong); background:var(--ink-2);
+  transform:rotate(45deg);
+  transition:background-color .4s ease, border-color .4s ease, box-shadow .4s ease;
+}
+.h-step .h-idx{ display:block; margin-bottom:14px; }
+.h-step h3{ font-size:clamp(26px, 2.7vw, 40px); font-weight:500; letter-spacing:-.025em; line-height:1.1; margin-bottom:12px; }
+.h-step p{ font-size:15px; color:var(--text-dim); max-width:260px; }
+.h-step h3, .h-step p, .h-step .h-idx{ transition:opacity .5s ease, color .4s ease; }
+.h-step.is-on .h-node{ background:var(--gold-mark); border-color:var(--gold-edge); box-shadow:0 0 16px var(--glow-node); }
+/* Steps not reached yet wait in the background. Only while home.js is
+   driving it (.is-live), so without JS every step simply reads as lit. */
+.h-timeline.is-live .h-step:not(.is-on) :is(h3, p, .h-idx){ opacity:.34; }
+
+/* ============================================================
+   04 Why Devroca — a statement with one reason in focus
+   ============================================================ */
+.h-why-grid{
+  display:grid; grid-template-columns:minmax(0, .95fr) minmax(0, 1.05fr);
+  gap:48px clamp(48px, 7vw, 120px); align-items:start;
+}
+.h-why-lead{ position:sticky; top:136px; }
+.h-why-lead .h-title{ margin-bottom:34px; }
+.h-reasons{ list-style:none; border-bottom:1px solid var(--line); }
+.h-reason{
+  position:relative; display:grid; grid-template-columns:64px minmax(0, 1fr);
+  gap:10px 20px; padding:clamp(30px, 3.4vw, 44px) 0; border-top:1px solid var(--line);
+}
+/* The reason in focus gets a gold edge that grows down its left side. */
+.h-reason::before{
+  content:''; position:absolute; left:-28px; top:-1px; bottom:0; width:2px;
+  background:var(--grad-step-line); transform:scaleY(0); transform-origin:50% 0;
+  transition:transform .6s cubic-bezier(.22,.68,.32,1);
+}
+.h-reason .h-idx{ padding-top:10px; }
+.h-reason h3{
+  display:flex; align-items:center; gap:14px;
+  font-size:clamp(24px, 2.6vw, 36px); font-weight:500; letter-spacing:-.02em; line-height:1.15;
+  margin-bottom:10px; transition:color .4s ease;
+}
+.h-reason h3 .dot{
+  width:9px; height:9px; flex-shrink:0; background:var(--gold-mark); transform:rotate(45deg);
+  transition:box-shadow .4s ease, transform .5s cubic-bezier(.22,.68,.32,1);
+}
+.h-reason p{ font-size:15.5px; color:var(--text-dim); max-width:460px; }
+.h-reasons.is-live .h-reason:not(.is-active) h3{ color:var(--text-dim); }
+.h-reasons.is-live .h-reason:not(.is-active) .h-idx{ color:var(--text-dim-2); }
+.h-reason.is-active::before{ transform:scaleY(1); }
+.h-reason.is-active h3 .dot{ box-shadow:0 0 14px var(--glow-dot); transform:rotate(135deg) scale(1.15); }
+
+/* ============================================================
+   05 What We Build — one category on stage
+   ============================================================ */
+.h-cats{
+  position:relative; display:grid;
+  grid-template-columns:56% minmax(0, 1fr); column-gap:clamp(40px, 5vw, 72px);
+  border-bottom:1px solid var(--line);
+}
+.h-cat{
+  grid-column:1; display:grid; grid-template-columns:64px minmax(0, 1fr); align-items:baseline;
+  gap:0 20px; padding:clamp(26px, 3vw, 38px) 0; border-top:1px solid var(--line); cursor:default;
+}
+.h-cat h3{
+  font-size:clamp(28px, 3.5vw, 52px); font-weight:500; letter-spacing:-.03em; line-height:1.08;
+  color:var(--text-dim-2);
+  transition:color .35s ease, transform .55s cubic-bezier(.22,.68,.32,1);
+}
+.h-cat .h-idx{ color:var(--text-dim-2); transition:color .35s ease; }
+.h-cat.is-active h3{ color:var(--paper); transform:translateX(12px); }
+.h-cat.is-active .h-idx{ color:var(--gold-ink-2); }
+/* The stage: an empty frame in the right column. Each category's glyph and
+   line are positioned over it and only the active one shows, so no copy is
+   duplicated and a screen reader still meets each line with its heading. */
+.h-cat-stage{
+  grid-column:2; grid-row:1 / span 4; margin:28px 0;
+  border:1px solid var(--line); border-radius:24px; overflow:hidden;
+  background:linear-gradient(160deg, var(--ink-3), var(--ink-2));
+  position:relative;
+}
+.h-cat-stage::before{
+  content:''; position:absolute; inset:0;
+  background:radial-gradient(420px circle at 30% 20%, var(--glow-soft), transparent 70%), var(--tex-hero);
+  background-size:100% 100%;
+}
+.h-cat-glyph, .h-cat p{
+  position:absolute; left:calc(56% + clamp(40px, 5vw, 72px) + 44px);
+  opacity:0; transform:translateY(16px); pointer-events:none;
+  transition:opacity .4s ease, transform .6s cubic-bezier(.22,.68,.32,1);
+}
+.h-cat-glyph{ top:84px; width:112px; height:112px; color:var(--glyph-ink); }
+.h-cat p{
+  right:44px; bottom:72px; font-size:clamp(20px, 1.9vw, 27px); font-weight:500;
+  line-height:1.3; letter-spacing:-.01em; color:var(--paper-dim);
+}
+.h-cat.is-active .h-cat-glyph, .h-cat.is-active p{ opacity:1; transform:none; }
+.h-cat.is-active .h-cat-glyph{ transition-delay:.05s; }
+.h-cat.is-active p{ transition-delay:.12s; }
+
+/* ============================================================
+   06 Closing panel — the ask, in the brand's gold
+   ============================================================ */
+section.h-cta{
+  background:linear-gradient(115deg, var(--gold-4), var(--gold-2) 45%, var(--gold-1));
+  background-color:var(--gold-2);
+  color:var(--on-gold); border-top:0; overflow:hidden;
+  border-radius:44px; margin-bottom:0;
+  padding-bottom:0;
+}
+.h-cta-title{
+  font-size:clamp(56px, 10vw, 168px); font-weight:600;
+  line-height:.92; letter-spacing:-.055em; max-width:9ch;
+  margin-bottom:clamp(40px, 5vw, 64px);
+}
+.h-cta-foot{
+  display:flex; align-items:flex-end; justify-content:space-between; gap:28px 48px; flex-wrap:wrap;
+}
+.h-cta-foot p{ font-size:clamp(17px, 1.5vw, 20px); max-width:430px; color:var(--on-gold); }
+/* The primary button is gold on gold here, so this one inverts it. */
+.h-btn-ink{
+  background:var(--on-gold); color:var(--gold-1); min-height:56px; padding:0 34px; font-size:16px;
+}
+.h-btn-ink::after{
+  content:''; width:8px; height:8px; margin-left:16px;
+  border-top:2px solid currentColor; border-right:2px solid currentColor;
+  transform:rotate(45deg); transition:transform .3s ease;
+}
+.h-btn-ink:hover::after{ transform:translateX(4px) rotate(45deg); }
+.h-btn-ink:focus-visible{ outline-color:var(--on-gold); }
+/* The name, set big enough to be architecture, bleeding off the panel's
+   bottom edge. Decorative only. */
+.h-wordmark{
+  font-size:clamp(96px, 22vw, 360px); font-weight:800; letter-spacing:-.06em;
+  line-height:.78; white-space:nowrap; text-align:center;
+  /* A watermark in the panel's own ink. Alpha is in the colour, not in
+     opacity, because the shared reveal sets opacity on arrival. */
+  color:rgba(27,18,4,.12); color:color-mix(in srgb, var(--on-gold) 12%, transparent);
+  user-select:none; margin-top:clamp(56px, 7vw, 96px); margin-bottom:-0.13em;
+}
+main + footer{ margin-top:0; }
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+@media (max-width: 980px){
+  .h-head{ grid-template-columns:1fr; align-items:start; }
+  .h-panel{ margin-top:-32px; border-radius:32px 32px 0 0; }
+  section.h-cta{ border-radius:32px; }
+
+  .h-svc{ grid-template-columns:56px minmax(0, 1fr) 52px; }
+  .h-svc p{ grid-column:2 / 3; }
+
+  .h-pricing-body{ grid-template-columns:1fr; }
+
+  /* The process line turns to run down the left of the steps: four
+     columns are too narrow to read below desktop. */
+  .h-track{ left:7px; right:auto; top:8px; bottom:8px; width:1px; height:auto; }
+  .h-track-fill{ transform:scaleY(var(--p, 1)); transform-origin:50% 0; }
+  .h-steps{ grid-template-columns:1fr; gap:44px; }
+  .h-step{ padding:0 0 0 48px; }
+  .h-step .h-node{ top:4px; }
+  .h-step p{ max-width:420px; }
+
+  .h-why-grid{ grid-template-columns:1fr; }
+  .h-why-lead{ position:static; }
+  .h-reason::before{ left:-22px; }
+
+  /* No stage below desktop: every category shows its glyph and line in
+     place, as a card, so nothing depends on hover or scroll position. */
+  .h-cats{ grid-template-columns:1fr 1fr; gap:16px; border-bottom:0; }
+  .h-cat-stage{ display:none; }
+  .h-cat{
+    grid-column:auto; grid-template-columns:1fr; align-content:start; gap:0;
+    padding:26px; border:1px solid var(--line); border-radius:20px;
+    background:linear-gradient(160deg, var(--ink-3), var(--ink-2));
+  }
+  .h-cat h3, .h-cat.is-active h3{ color:var(--paper); transform:none; font-size:clamp(24px, 3.6vw, 30px); margin-bottom:10px; }
+  .h-cat .h-idx{ color:var(--gold-ink-2); order:-2; margin-bottom:28px; }
+  .h-cat-glyph, .h-cat p{ position:static; opacity:1; transform:none; transition:none; }
+  .h-cat-glyph{ order:-1; width:44px; height:44px; margin-bottom:22px; opacity:var(--glyph-opacity); }
+  .h-cat p{ font-size:15px; font-weight:400; color:var(--text-dim); letter-spacing:0; }
+}
+
+@media (max-width: 760px){
+  .h-svc{
+    grid-template-columns:minmax(0, 1fr) 44px;
+    grid-template-areas:"num arrow" "title arrow" "desc desc";
+    gap:10px 16px;
+  }
+  .h-svc-num{ grid-area:num; }
+  .h-svc h3{ grid-area:title; }
+  .h-svc p{ grid-area:desc; margin-top:4px; }
+  .h-arrow{ grid-area:arrow; width:44px; height:44px; }
+
+  .h-principles li, .h-reason{ grid-template-columns:44px minmax(0, 1fr); }
+  .h-reason::before{ left:-14px; }
+
+
+  .h-cta-foot{ flex-direction:column; align-items:flex-start; }
+}
+
+@media (max-width: 600px){
+  .h-cats{ grid-template-columns:1fr; }
+  .h-panel{ margin-top:-24px; border-radius:24px 24px 0 0; }
+  section.h-cta{ border-radius:24px; }
+}
+
+/* ---------- Reduced motion ----------
+   Everything still shows and every state still reads; it just arrives
+   without travelling. Scroll-driven emphasis stays (it is not motion) but
+   loses its transitions. */
+@media (prefers-reduced-motion: reduce){
+  :where(.js) .reveal.h-mask{ clip-path:none; transform:none; transition:none; }
+  :where(.js) .h-principles li.reveal::before{ transform:none; transition:none; }
+  .h-svc h3, .h-cat h3, .h-cat.is-active h3{ transform:none; }
+  .h-svc:hover h3, .h-svc:focus-visible h3{ transform:none; }
+  .h-svc::before, .h-arrow svg, .h-reason::before, .h-reason h3 .dot,
+  .h-cat-glyph, .h-cat p, .h-node{ transition:none; }
+  .h-reason.is-active h3 .dot{ transform:rotate(45deg); }
+  .h-btn-ink::after{ transition:none; }
+}
