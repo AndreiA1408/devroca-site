@@ -1,4 +1,6 @@
-// Homepage, below the hero. Loaded by index.html only, after main.js.
+// Homepage: the hero's two small interactions, then the sections below it.
+// Loaded by index.html only, after main.js. (The stone itself is
+// gem3d.bundle.js.)
 //
 // Three scroll-linked states, each an enhancement over markup that already
 // reads correctly without it: every process step lit, every reason and
@@ -11,6 +13,61 @@
 {
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const IO = 'IntersectionObserver' in window;
+
+  // ---- Hero: scroll-out ----
+  //
+  // One number, --hs, from 0 at the top to 1 about a screen down; the CSS
+  // in index.html turns it into a slight lag and fade on the copy. Only
+  // listens while the hero is on screen.
+  const hero = document.querySelector('[data-hero]');
+  if (hero && IO && !reduced) {
+    let queued = false;
+    const update = () => {
+      queued = false;
+      const hs = Math.min(Math.max(window.scrollY / (window.innerHeight * 0.9), 0), 1);
+      hero.style.setProperty('--hs', hs.toFixed(3));
+    };
+    const request = () => {
+      if (!queued) { queued = true; requestAnimationFrame(update); }
+    };
+    new IntersectionObserver(([en]) => {
+      if (en.isIntersecting) {
+        window.addEventListener('scroll', request, { passive: true });
+        request();
+      } else {
+        window.removeEventListener('scroll', request);
+        request();
+      }
+    }).observe(hero);
+  }
+
+  // ---- Hero: magnetic calls to action ----
+  //
+  // Fine pointers only: the button leans a few pixels toward the cursor
+  // while it is over it and eases back when it leaves (the easing is the
+  // button's own transform transition). Touch gets the plain button.
+  if (hero && !reduced && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    const PULL = 0.22, MAX = 8;
+    hero.querySelectorAll('.hero-actions .btn').forEach((btn) => {
+      let frame = 0, x = 0, y = 0;
+      const write = () => {
+        frame = 0;
+        btn.style.setProperty('--mag-x', x.toFixed(1) + 'px');
+        btn.style.setProperty('--mag-y', y.toFixed(1) + 'px');
+      };
+      const queue = () => { if (!frame) frame = requestAnimationFrame(write); };
+      btn.addEventListener('pointermove', (e) => {
+        const r = btn.getBoundingClientRect();
+        const clamp = (v) => Math.max(-MAX, Math.min(MAX, v));
+        // Measured from the resting centre, so the pull doesn't feed back
+        // into itself as the button moves under the cursor.
+        x = clamp((e.clientX - (r.left + r.width / 2 - x)) * PULL);
+        y = clamp((e.clientY - (r.top + r.height / 2 - y)) * PULL);
+        queue();
+      });
+      btn.addEventListener('pointerleave', () => { x = 0; y = 0; queue(); });
+    });
+  }
 
   // ---- Process: the line fills as the steps are read ----
   //

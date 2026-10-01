@@ -28,7 +28,10 @@ a handful of uniforms. Module map is at the top of `src/gem3d.js`.
 - **Layout is CSS's job.** The canvas is full-bleed behind the whole hero
   (`.hero-space` in `index.html`). The stone centres and sizes itself on the
   empty `[data-gem-stage]` box, so to move or resize the stone per breakpoint,
-  change that box's CSS — not the script.
+  change that box's CSS — not the script. On desktop the box stretches over
+  the headline's row and, through negative margins, a little past it, so the
+  stone is larger than its column without making the hero taller; on tablets
+  and phones it sits above the copy.
 - **The canvas never takes events.** `pointer-events:none` + `aria-hidden`;
   the cursor is read from `window`. Keep it that way or the hero CTAs stop
   being clickable.
@@ -47,6 +50,15 @@ a handful of uniforms. Module map is at the top of `src/gem3d.js`.
   `src/particles/lifecycle.js`; the spark counts are per tier in
   `quality.js` (none on phones or low-end devices). On a translated page
   it waits until the page is shown. After it, the usual cycle runs.
+- **The copy follows the stone.** As the dust lands (`READY_AT` in
+  `hero.js`, ~0.75s in) the script adds `.is-ready` to the hero, and the
+  CSS in `index.html` releases the copy: eyebrow, headline line by line from
+  behind a mask, the rule, lede, buttons, facts. Without WebGL it is added at
+  once; an inline script in the hero adds it after 1.4s regardless, so the
+  copy never waits on a slow or blocked bundle. The hero's `15` counts up
+  only once it is shown (`main.js`).
+- **Hero headline is three i18n units** (`.ln-in`, one per line), so the
+  dictionaries carry `Websites` / `and apps,` / `built to last.` separately.
 - **No WebGL 2.** Probed on the canvas before three.js is touched; on failure
   the canvas is hidden and `.hero` gets `.no-gem`, which collapses the stage
   box so no empty block is left above the headline on phones.

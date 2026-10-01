@@ -299,14 +299,29 @@ if (counters.length) {
     requestAnimationFrame(tick);
   };
 
+  // A counter in the homepage hero is hidden until the hero's entrance
+  // releases the copy (.is-ready, added by the gem script), so it waits for
+  // that and for the line to have risen — otherwise it finishes unseen.
+  const whenShown = (el, fn) => {
+    const hero = el.closest('[data-hero]');
+    if (!hero || hero.classList.contains('is-ready') || prefersReduced) return fn();
+    const mo = new MutationObserver(() => {
+      if (!hero.classList.contains('is-ready')) return;
+      mo.disconnect();
+      setTimeout(fn, 650);
+    });
+    mo.observe(hero, { attributes: true, attributeFilter: ['class'] });
+  };
+  const start = (el) => whenShown(el, () => runCount(el));
+
   if (!('IntersectionObserver' in window)) {
-    counters.forEach(runCount);
+    counters.forEach(start);
   } else {
     const countObs = new IntersectionObserver((entries) => {
       entries.forEach(en => {
         if (!en.isIntersecting) return;
         countObs.unobserve(en.target);
-        runCount(en.target);
+        start(en.target);
       });
     }, { threshold: 0.6 });
     counters.forEach(el => {

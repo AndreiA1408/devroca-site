@@ -48,7 +48,10 @@
 
 // ---- Home ----
 [`WEB & APP DEVELOPMENT STUDIO`, `STUDIO DE DEZVOLTARE WEB ȘI APLICAȚII`],
-[`Websites and apps,built to last.`, `Site-uri și aplicații,<br><em>construite să dureze.</em>`],
+// The hero headline is three line units (one mask each), keyed per line.
+[`Websites`, `Site-uri`],
+[`and apps,`, `și aplicații,`],
+[`built to last.`, `construite să dureze.`],
 [`Devroca is a web & app development studio. We design, build, and maintain the site or web app your business runs on, and there's a menu of technical add-ons for whenever you're ready.`,
  `Devroca este un studio de dezvoltare web și de aplicații. Proiectăm, construim și întreținem site-ul sau aplicația web pe care se sprijină afacerea dumneavoastră, iar pentru când sunteți gata există și o listă de extensii tehnice.`],
 [`Explore Services`, `Explorați serviciile`],
