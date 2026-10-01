@@ -23,6 +23,7 @@ const STONE_FILL = 0.43;      // stone radius as a share of the stage's short si
 const POINTER_RADIUS = 0.62;  // in stone radii
 const REDUCED_FPS = 20;       // reduced motion keeps only a gentle shimmer
 const LOGO_ROLL = -9 * Math.PI / 180; // same lean as the SVG mark
+const READY_AT = 0.25;        // formation at which the hero copy is released (~0.75s in, as the dust lands)
 
 export function createParticleHero(canvas, theme) {
   const stage = document.querySelector('[data-gem-stage]') || canvas;
@@ -36,8 +37,19 @@ export function createParticleHero(canvas, theme) {
   // the headline and would otherwise leave an empty block there.
   const noGem = () => {
     canvas.hidden = true;
-    hero.classList.add('no-gem');
+    hero.classList.add('no-gem', 'is-ready');
     return null;
+  };
+
+  /* The hero's copy waits for the stone: it is released (.is-ready, see
+     index.html) as the particles land, so the headline rises while the
+     stone pops rather than both arriving at once. index.html carries a
+     timed fallback, so this is a cue, never a gate. */
+  let released = hero.classList.contains('is-ready');
+  const release = () => {
+    if (released) return;
+    released = true;
+    hero.classList.add('is-ready');
   };
 
   // Probed first, on the real canvas, so a device without WebGL 2 takes the
@@ -239,6 +251,11 @@ export function createParticleHero(canvas, theme) {
   let heroHeight = 1;
   let pixelRatio = quality.dpr;
 
+  // The canvas's page position, so the frame loop can derive its client
+  // rect from scrollY instead of asking for layout every frame.
+  const box = { left: 0, top: 0, width: 1, height: 1, bottom: 1 };
+  let docTop = 0;
+
   let sized = '';
   function layout() {
     const w = canvas.clientWidth || 1;
@@ -258,6 +275,8 @@ export function createParticleHero(canvas, theme) {
     worldPerPx = (2 * CAM_DIST * tanHalf) / h;
     const c = canvas.getBoundingClientRect();
     const s = stage.getBoundingClientRect();
+    docTop = c.top + window.scrollY;
+    box.left = c.left; box.width = w; box.height = h;
     const cx = s.left + s.width / 2 - c.left;
     const cy = s.top + s.height / 2 - c.top;
     home.x = (cx - w / 2) * worldPerPx;
@@ -341,11 +360,13 @@ export function createParticleHero(canvas, theme) {
     const scrollY = Math.max(window.scrollY, 0);
     const p = Math.min(scrollY / heroHeight, 1);
 
-    const rect = canvas.getBoundingClientRect();
-    const pt = pointer.update(dt, time, rect, rect.left + home.offsetX, rect.top + home.offsetY);
+    box.top = docTop - window.scrollY;
+    box.bottom = box.top + box.height;
+    const pt = pointer.update(dt, time, box, box.left + home.offsetX, box.top + home.offsetY);
     // A translated page is held hidden until its text is in (see
     // assets/i18n.js); the entrance waits for it rather than playing unseen.
     if (!reduced && !root.classList.contains('i18n-pending')) life.update(dt);
+    if (!released && (reduced || life.formation >= READY_AT)) release();
 
     // The stone leans toward the cursor, and the camera drifts slightly
     // with it — enough parallax to feel the depth, not enough to notice.
@@ -421,6 +442,9 @@ export function createParticleHero(canvas, theme) {
   new ResizeObserver(layout).observe(hero);
   new ResizeObserver(layout).observe(stage);
   window.addEventListener('resize', layout, { passive: true });
+  // The web font changes the copy's height, which can move the stage
+  // without resizing it or the hero — neither observer would see that.
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(layout);
 
   if ('IntersectionObserver' in window) {
     new IntersectionObserver(([entry]) => {

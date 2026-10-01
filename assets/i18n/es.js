@@ -48,7 +48,10 @@
 
 // ---- Home ----
 [`WEB & APP DEVELOPMENT STUDIO`, `ESTUDIO DE DESARROLLO WEB Y DE APPS`],
-[`Websites and apps,built to last.`, `Sitios web y apps,<br><em>hechos para durar.</em>`],
+// The hero headline is three line units (one mask each), keyed per line.
+[`Websites`, `Sitios web`],
+[`and apps,`, `y apps,`],
+[`built to last.`, `hechos para durar.`],
 [`Devroca is a web & app development studio. We design, build, and maintain the site or web app your business runs on, and there's a menu of technical add-ons for whenever you're ready.`,
  `Devroca es un estudio de desarrollo web y de apps. Diseñamos, construimos y mantenemos el sitio o la aplicación web con la que funciona tu negocio, y hay una carta de complementos técnicos para cuando estés listo.`],
 [`Explore Services`, `Ver servicios`],
